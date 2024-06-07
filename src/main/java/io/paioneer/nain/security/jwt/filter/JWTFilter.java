@@ -1,8 +1,10 @@
 package io.paioneer.nain.security.jwt.filter;
 
 // 필요한 클래스와 인터페이스를 import 합니다.
-import com.apocaly.apocaly_path_private.security.jwt.util.JWTUtil;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import io.paioneer.nain.member.model.output.CustomMemberDetails;
+import io.paioneer.nain.security.jwt.util.JWTUtil;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -80,21 +82,21 @@ public class JWTFilter extends OncePerRequestFilter {
 
 
         // 토큰에서 사용자 이메일과 관리자 여부를 추출합니다.
-        String userEmail = jwtUtil.getUserEmailFromToken(token);
-        boolean is_admin = jwtUtil.isAdminFromToken(token);
+        String memberEmail = jwtUtil.getUserEmailFromToken(token);
+        boolean admin = jwtUtil.isAdminFromToken(token);
 
         // 인증에 사용할 임시 User 객체를 생성하고, 이메일과 관리자 여부를 설정합니다.
-        User user = new User();
-        user.setEmail(userEmail);
-        user.setPassword("tempPassword"); // 실제 인증에서는 사용되지 않는 임시 비밀번호를 설정합니다.
-        user.setIsAdmin(is_admin);
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setMemberEmail(memberEmail);
+        memberEntity.setMemberPwd("tempPassword"); // 실제 인증에서는 사용되지 않는 임시 비밀번호를 설정합니다.
+        memberEntity.setAdmin(admin);
 
         // User 객체를 기반으로 CustomUserDetails 객체를 생성합니다.
-        CustomUserDetails customUserDetails = new CustomUserDetails(user);
+        CustomMemberDetails customMemberDetails = new CustomMemberDetails(memberEntity);
 
         // Spring Security의 Authentication 객체를 생성하고, SecurityContext에 설정합니다.
         // 이로써 해당 요청에 대한 사용자 인증이 완료됩니다.
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         // 필터 체인을 계속 진행합니다.

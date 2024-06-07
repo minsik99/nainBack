@@ -16,9 +16,9 @@ import java.util.GregorianCalendar;
 @Builder
 @Table(name="TB_MEMBER")
 @Entity //jpa 가 관리함, repository 와 연결됨
-public class Member {
-    @Id
+public class MemberEntity {
 
+    @Id
     @Column(name="MEMBER_NO", nullable = false)
     private Long memberNo;            //회원 번호
 
@@ -38,7 +38,7 @@ public class Member {
     private String subscribeYN;         //회원 구독여부
 
     @Column(name="ADMIN")
-    private String admin;               //관리자
+    private Boolean admin;               //관리자
 
     @Column(name="PAYMENT_DATE")
     private Date paymentDate;           //회원 결제일
@@ -54,6 +54,9 @@ public class Member {
 
     @Column(name="MEMBER_UPDATE")
     private Date memberUpdate;          //회원 정보수정일
+
+    @Column(name="LOGIN_TYPE", nullable = false, columnDefinition = "VARCHAR2(50) DEFAULT 'local'")
+    private String loginType;
 
     @PrePersist  //jpa 로 넘어가지 전에 작동
     public void prePersist() {

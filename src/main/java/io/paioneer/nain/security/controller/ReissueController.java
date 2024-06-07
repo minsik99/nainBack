@@ -1,9 +1,11 @@
 package io.paioneer.nain.security.controller;
 
-import com.apocaly.apocaly_path_private.security.jwt.util.JWTUtil;
-import com.apocaly.apocaly_path_private.security.service.RefreshService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import io.paioneer.nain.member.model.service.MemberService;
+import io.paioneer.nain.security.jwt.util.JWTUtil;
 import io.paioneer.nain.security.model.entity.RefreshToken;
+import io.paioneer.nain.security.service.RefreshService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +23,7 @@ import java.util.Optional;
 public class ReissueController {
 
     private final JWTUtil jwtUtil; // JWT 처리를 위한 유틸리티 클래스
-    private final UserService userService; // 사용자 정보를 처리하는 서비스
+    private final MemberService memberService; // 사용자 정보를 처리하는 서비스
     private final RefreshService refreshService; // 리프레시 토큰 관련 서비스
 
     @PostMapping("/reissue") // POST 요청을 '/reissue' 경로로 매핑합니다.
@@ -57,14 +59,14 @@ public class ReissueController {
         String username = jwtUtil.getUserEmailFromToken(token);
 
         // 사용자 정보 조회
-        Optional<User> userOptional = userService.findByEmail(username);
+        Optional<MemberEntity> userOptional = memberService.findByMemberEmail(username);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
         }
 
         // 리프레시 토큰이 유효한지 확인합니다.
         Optional<RefreshToken> refreshTokenOptional = refreshService.findByTokenValue(token);
-        if (refreshTokenOptional.isEmpty() || !refreshTokenOptional.get().getUser().equals(userOptional.get())) {
+        if (refreshTokenOptional.isEmpty() || !refreshTokenOptional.get().getMemberEntity().equals(userOptional.get())) {
             return new ResponseEntity<>("refresh token not found or does not match", HttpStatus.BAD_REQUEST);
         }
 
