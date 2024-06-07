@@ -42,5 +42,5 @@ public class CommunityController {
     }
 
 //    @GetMapping("")
-// test 용 주석
+// test 용 주석2
 }
