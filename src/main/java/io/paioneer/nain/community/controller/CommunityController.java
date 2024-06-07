@@ -48,17 +48,17 @@ public class CommunityController {
     }
 
     //내 글 보기
-    @GetMapping("/mylist")
-    public ResponseEntity<ArrayList<CommunityDto>> selectMyList(
-            HttpServletRequest request, @RequestParam(name="page") int page,
-            @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
-        log.info("/community/mylist{}, {}, {}", page, limit, sort);
-        String token = request.getHeader("Authorization").substring("Bearer".length());
-        Long memberNo =  jwtUtil.getMemberIdFromToken(token);
-
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
-        return new ResponseEntity<>(communityService.selectMyList(memberNo, pageable), HttpStatus.OK);
-    }
+//    @GetMapping("/mylist")
+//    public ResponseEntity<ArrayList<CommunityDto>> selectMyList(
+//            HttpServletRequest request, @RequestParam(name="page") int page,
+//            @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
+//        log.info("/community/mylist{}, {}, {}", page, limit, sort);
+//        String token = request.getHeader("Authorization").substring("Bearer".length());
+//        Long memberNo =  jwtUtil.getMemberIdFromToken(token);
+//
+//        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
+//        return new ResponseEntity<>(communityService.selectMyList(memberNo, pageable), HttpStatus.OK);
+//    }
 
     //검색결과 목록
     @GetMapping("/search/{keyword}")
@@ -87,73 +87,112 @@ public class CommunityController {
 
     //댓글 등록
     @PostMapping("/comment/new")
-    public ResponseEntity<CommentDto> insertComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<Void> insertComment(@RequestBody CommentDto commentDto){
         log.info("/community/detail/comment{}", commentDto);
-        return new ResponseEntity<>(commentService.insertComment(commentDto), HttpStatus.NO_CONTENT);
+
+        CommunityDto communityDto = new CommunityDto();
+        communityDto.setCommunityNo(commentDto.getCommunityNo());
+
+        MemberDto memberDto = new MemberDto();
+        memberDto.setMemberNickName(commentDto.getWriter());
+
+        CommentDto parentDto = new CommentDto();
+        parentDto.setCommentNo(commentDto.getParentNo());
+
+        commentDto.setCommunityDto(communityDto);
+        commentDto.setMemberDto(memberDto);
+        commentDto.setCommentDto(parentDto);
+
+        commentService.insertComment(commentDto);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     //댓글 수정
     @PutMapping("/comment/modify")
-    public ResponseEntity<CommentDto> modifyComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<Void> modifyComment(@RequestBody CommentDto commentDto){
         log.info("/community/detail/comment{}", commentDto);
-        return new ResponseEntity<>(commentService.updateComment(commentDto), HttpStatus.NO_CONTENT);
+
+        CommunityDto communityDto = new CommunityDto();
+        communityDto.setCommunityNo(commentDto.getCommunityNo());
+
+        MemberDto memberDto = new MemberDto();
+        memberDto.setMemberNickName(commentDto.getWriter());
+
+        CommentDto parentDto = new CommentDto();
+        parentDto.setCommentNo(commentDto.getParentNo());
+
+        commentDto.setCommunityDto(communityDto);
+        commentDto.setMemberDto(memberDto);
+        commentDto.setCommentDto(parentDto);
+        commentService.updateComment(commentDto);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     //댓글 삭제
     @DeleteMapping("/comment/del")
-    public ResponseEntity<CommentDto> deleteComment(@RequestBody Long commentNo){
+    public ResponseEntity<Void> deleteComment(@RequestBody Long commentNo){
         log.info("/community/detail/comment{}", commentNo);
-        return new ResponseEntity<>(commentService.deleteComment(commentNo), HttpStatus.NO_CONTENT);
-    }
-
-    //등록 ----------------------------------------------------------------------------------------------------------------------------------------------
-    @PostMapping
-    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestParam(name="community") CommunityDto community, @RequestParam("file") MultipartFile file) throws IOException {
-        log.info("/community/{}", community);
-        String token = request.getHeader("Authorization").substring("Bearer ".length());
-        Long memberNo =  jwtUtil.getMemberIdFromToken(token);
-
-        MemberDto loginMember = memberService.selectMember(memberNo);
-        if(loginMember == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        if(!file.isEmpty()){
-            String savePath = request.getServletContext().getRealPath("/community_files");
-            String fileName = file.getOriginalFilename();
-            String fileRename = FileNameChange.change(fileName, "yyyyMMddHHmmdd");
-            File saveFile = new File(savePath + "\\" + fileRename);
-            file.transferTo(saveFile);
-
-            communityDto.setFileUpload(fileName);
-            communityDto.setFileModified(fileRename);
-        }
-        communityDto.setMemberDto(loginMember);
-        communityService.insertCommunity(communityDto);
-        return new ResponseEntity<>(HttpStatus.CREATED);
-    }
-
-    //수정 ----------------------------------------------------------------------------------------------------------------------------------------------------
-    @PutMapping("/{communityNo}")
-    public ResponseEntity<Void> updateCommunity(@PathVariable("communityNo") Long communityNo, @RequestBody CommunityDto communityDto){
-        log.info("/update/{}", communityDto);
-        communityService.updateCommunity(communityDto);
+        commentService.deleteComment(commentNo);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
+    //등록 ----------------------------------------------------------------------------------------------------------------------------------------------
+//    @PostMapping
+//    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestParam(name="community") CommunityDto community, @RequestParam("file") MultipartFile file) throws IOException {
+//        log.info("/community/{}", community);
+//        String token = request.getHeader("Authorization").substring("Bearer ".length());
+//        Long memberNo =  jwtUtil.getMemberIdFromToken(token);
+//
+//        MemberDto loginMember = memberService.selectMember(memberNo);
+//        if(loginMember == null){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//        if(!file.isEmpty()){
+//            String savePath = request.getServletContext().getRealPath("/community_files");
+//            String fileName = file.getOriginalFilename();
+//            String fileRename = FileNameChange.change(fileName, "yyyyMMddHHmmdd");
+//            File saveFile = new File(savePath + "\\" + fileRename);
+//            file.transferTo(saveFile);
+//
+//            communityDto.setFileUpload(fileName);
+//            communityDto.setFileModified(fileRename);
+//        }
+//        communityDto.setMemberDto(loginMember);
+//        communityService.insertCommunity(communityDto);
+//        return new ResponseEntity<>(HttpStatus.CREATED);
+//    }
+
+    //수정 ----------------------------------------------------------------------------------------------------------------------------------------------------
+//    @PutMapping("/{communityNo}")
+//    public ResponseEntity<Void> updateCommunity(
+//            HttpServletRequest request, @PathVariable("communityNo") Long communityNo, @RequestBody CommunityDto communityDto){
+//        log.info("/update/{}", communityDto);
+//        String token = request.getHeader("Authorization").substring("Bearer ".length());
+//        Long memberNo =  jwtUtil.getMemberIdFromToken(token);
+//
+//        MemberDto loginMember = memberService.selectMember(memberNo);
+//        if(loginMember == null){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//        communityDto.setMemberDto(loginMember);
+//        communityService.updateCommunity(communityDto);
+//        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+//    }
+
     //삭제 -------------------------------------------------------------------------------------------------------------------------------------------------------
-    @DeleteMapping("/{communityNo")
-    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @PathVariable("communityNo") Long communityNo){
-        log.info("/delete/{}", communityNo);
-        String token = request.getHeader("Authorization").substring("Bearer ".length());
-        Long memberNo = jwtUtil.getMemberIdFromToken(token);
-
-        MemberDto loginMember = memberService.selectMember(memberNo);
-
-        if(communityService.selectOne(communityNo).getWriter().equals(loginMember.getMemberNickName())) {
-            communityService.deleteCommunity(communityNo);
-            return new ResponseEntity<>(HttpStatus.OK);
-        }
-        return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
-    }
+//    @DeleteMapping("/{communityNo")
+//    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @PathVariable("communityNo") Long communityNo){
+//        log.info("/delete/{}", communityNo);
+//        String token = request.getHeader("Authorization").substring("Bearer ".length());
+//        Long memberNo = jwtUtil.getMemberIdFromToken(token);
+//
+//        MemberDto loginMember = memberService.selectMember(memberNo);
+//
+//        if(communityService.selectOne(communityNo).getWriter().equals(loginMember.getMemberNickName())) {
+//            communityService.deleteCommunity(communityNo);
+//            return new ResponseEntity<>(HttpStatus.OK);
+//        }
+//        return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+//    }
 
 }

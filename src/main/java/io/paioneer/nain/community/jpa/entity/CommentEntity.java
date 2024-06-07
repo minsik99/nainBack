@@ -1,7 +1,7 @@
 package io.paioneer.nain.community.jpa.entity;
 
 import io.paioneer.nain.community.model.dto.CommentDto;
-import io.paioneer.nain.member.jpa.entity.Member;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -23,7 +23,7 @@ public class CommentEntity {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="MEMBER_NO", insertable = false, updatable = false)
-    private Member memberEntity;
+    private MemberEntity memberEntity;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="COMMUNITY_NO", referencedColumnName = "COMMUNITY_NO")
@@ -42,9 +42,9 @@ public class CommentEntity {
     public CommentDto toDto(){
         return CommentDto.builder()
                 .commentNo(this.commentNo)
-                .writer(this.memberEntity.toDto().getMemberNickName())
-                .communityNo(this.communityEntity.toDto().getCommunityNo())
-                .parentNo(this.commentEntity.toDto().getCommentNo())
+                .writer(this.memberEntity.getMemberNickName())
+                .communityNo(this.communityEntity.getCommunityNo())
+                .parentNo(this.commentEntity.getCommentNo())
                 .content(this.content)
                 .commentDate(this.commentDate)
                 .build();
