@@ -38,4 +38,6 @@ public class StatisticalController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
+    수정합니다.....
+
 }
