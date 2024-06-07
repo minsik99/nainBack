@@ -5,6 +5,7 @@ import io.paioneer.nain.community.jpa.entity.CommunityEntity;
 import io.paioneer.nain.community.jpa.entity.QCommunityEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -32,4 +33,14 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
     }
+
+    @Override
+    public Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
+        return queryFactory
+                .selectFrom(communityEntity)
+                .where(communityEntity.memberNo.eq(memberNo))
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
 }

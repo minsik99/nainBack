@@ -1,8 +1,6 @@
 package io.paioneer.nain.community.model.dto;
 
 import io.paioneer.nain.community.jpa.entity.CommentEntity;
-import io.paioneer.nain.community.jpa.entity.CommunityEntity;
-import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.member.model.dto.MemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

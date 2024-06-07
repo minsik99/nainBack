@@ -2,7 +2,7 @@ package io.paioneer.nain.community.jpa.entity;
 
 
 import io.paioneer.nain.community.model.dto.CommunityDto;
-import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import io.paioneer.nain.member.jpa.entity.Member;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -46,12 +46,25 @@ public class CommunityEntity {
 
     public CommunityEntity(CommunityDto communityDto){
         this.communityNo = communityDto.getCommunityNo();
-        this.memberEntity = communityDto.getMemberEntity();
+        this.memberEntity = communityDto.getMemberDto().toEntity();
         this.title = communityDto.getTitle();
         this.content = communityDto.getContent();
         this.fileUpload = communityDto.getFileUpload();
         this.fileModified = communityDto.getFileModified();
         this.communityDate = communityDto.getCommunityDate();
         this.readCount = communityDto.getReadCount();
+    }
+
+    public CommunityDto toDto(){
+        return CommunityDto.builder()
+                .communityNo(this.communityNo)
+                .writer(this.memberEntity.getMemberNickName)
+                .title(this.title)
+                .content(this.content)
+                .fileUpload(this.fileUpload)
+                .fileModified(this.fileModified)
+                .communityDate(this.communityDate)
+                .readCount(this.readCount)
+                .build();
     }
 }

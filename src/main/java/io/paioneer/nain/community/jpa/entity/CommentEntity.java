@@ -1,12 +1,12 @@
 package io.paioneer.nain.community.jpa.entity;
 
 import io.paioneer.nain.community.model.dto.CommentDto;
-import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import io.paioneer.nain.member.jpa.entity.Member;
 import jakarta.persistence.*;
-import jakarta.transaction.Transactional;
-import lombok.*;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
@@ -23,7 +23,7 @@ public class CommentEntity {
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="MEMBER_NO", insertable = false, updatable = false)
-    private MemberEntity memberEntity;
+    private Member memberEntity;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="COMMUNITY_NO", referencedColumnName = "COMMUNITY_NO")
