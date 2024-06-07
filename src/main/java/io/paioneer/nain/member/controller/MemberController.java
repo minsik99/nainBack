@@ -1,41 +1,33 @@
 package io.paioneer.nain.member.controller;
 
 
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.member.model.dto.MemberDto;
+import io.paioneer.nain.member.model.input.InputMember;
 import io.paioneer.nain.member.model.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.lang.reflect.Member;
 
-@Slf4j
-@RequiredArgsConstructor
 @RestController
-@RequestMapping("/members")
-@CrossOrigin
+@RequestMapping("/api/auth")
+@Slf4j
 public class MemberController {
+
     private final MemberService memberService;
-    private final MemberDto memberDto;
 
+    @Autowired
+    public MemberController(final MemberService memberService) {this.memberService = memberService;}
 
-    //회원가입
-    @PostMapping("/register")
-    public ResponseEntity<Void> insertMemberRegister(@RequestBody MemberDto memberDto) {
-        log.info(("insertMemberRegister : " + memberDto));
-        memberService.insertMemberRegister(memberDto);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    @PostMapping("/user")
+    public ResponseEntity<?> signUpMember(@RequestBody InputMember member){
+        MemberEntity newMember = memberService.signUpMember(member);
+        return ResponseEntity.ok(newMember);
     }
-
-    //이메일 중복확인
-    @GetMapping("/check-email")
-    public ResponseEntity<Long> selectEmailCheck(@RequestParam String email) {
-        Long memberEmail = memberService.selectEmailCheck(email);
-        return new ResponseEntity<>(memberEmail, HttpStatus.OK);
-    }
-
-
 
 }
