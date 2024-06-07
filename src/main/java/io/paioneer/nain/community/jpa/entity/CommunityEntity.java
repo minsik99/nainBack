@@ -2,6 +2,7 @@ package io.paioneer.nain.community.jpa.entity;
 
 
 import io.paioneer.nain.community.model.dto.CommunityDto;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -57,7 +58,7 @@ public class CommunityEntity {
     public CommunityDto toDto(){
         return CommunityDto.builder()
                 .communityNo(this.communityNo)
-                .writer(this.memberEntity.toDto().getMemberNickName)
+                .writer(this.memberEntity.getMemberNickName())
                 .title(this.title)
                 .content(this.content)
                 .fileUpload(this.fileUpload)

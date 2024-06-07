@@ -14,7 +14,7 @@ import java.util.List;
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final EntityManager entityManger;
-    private QCommentEntity commentEntity = QCommentEntity.commentEntity;
+    private QCommentEntity commentEntity = QCommentEntity.commentEntity1;
 
     @Override
     public List<CommentEntity> findList(Long communityNo) {
