@@ -7,6 +7,7 @@ import io.paioneer.nain.companylist.model.dto.CompanylistDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,9 +19,4 @@ import java.util.List;
 public class CompanylistService {
 
     private final CompanylistRepository companylistRepository;
-
-    public List<CompanylistDto> selectCompanyList(String sorting) {
-        return null;
-        //return companylistRepository.selectCompanyList(sorting);
-    }
 }

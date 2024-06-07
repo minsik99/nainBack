@@ -4,12 +4,13 @@ import io.paioneer.nain.companylist.model.dto.CompanylistDto;
 import io.paioneer.nain.companylist.model.service.CompanylistService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -21,11 +22,9 @@ import java.util.List;
 public class CompanylistController {
     private final CompanylistService companylistService;
 
-    public ResponseEntity<List<CompanylistDto>> selectCompanyList(String sorting) {
-
-        List<CompanylistDto> companylistDto = companylistService.selectCompanyList(sorting);
-
+    public ResponseEntity<List<CompanylistDto>> selectCompanyList(@PathVariable("page") int page,String sorting) {
+        PageRequest pageable = PageRequest.of(0, page,Sort.by("sorting"));
+        List<CompanylistDto> companylistDto = companylistService.selectCompanyList(pageable);
         return new ResponseEntity<>(companylistDto, HttpStatus.OK);
-
     }
 }
