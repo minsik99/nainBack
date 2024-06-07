@@ -1,6 +1,6 @@
 package io.paioneer.nain.security.model.entity;
 
-import io.paioneer.nain.member.jpa.entity.Member;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -24,7 +24,7 @@ public class RefreshToken {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_no", referencedColumnName = "member_no", nullable = false)
-    private Member member;
+    private MemberEntity memberEntity;
 
     @Column(name = "token_value", nullable = false, length = 255)
     private String tokenValue;
@@ -39,7 +39,7 @@ public class RefreshToken {
     private LocalDateTime expirationDate;
 
     @Column(name = "member_agent")
-    private String userAgent;
+    private String memberAgent;
 
     @Column(length = 50)
     private String status;

@@ -1,10 +1,14 @@
 // 필요한 클래스와 인터페이스를 import합니다.
 package io.paioneer.nain.security.jwt.filter;
 
-import com.apocaly.apocaly_path_private.security.jwt.util.JWTUtil;
-import com.apocaly.apocaly_path_private.security.service.RefreshService;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.paioneer.nain.security.RefreshToken;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import io.paioneer.nain.member.model.input.InputMember;
+import io.paioneer.nain.member.model.output.CustomMemberDetails;
+import io.paioneer.nain.member.model.service.MemberService;
+import io.paioneer.nain.security.jwt.util.JWTUtil;
+import io.paioneer.nain.security.model.entity.RefreshToken;
+import io.paioneer.nain.security.service.RefreshService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,15 +35,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     private final Long accessExpiredMs;
     private final Long refreshExpiredMs;
 
-    private final UserService userService;
+    private final MemberService memberService;
     private final RefreshService refreshService;
 
     private final AuthenticationManager authenticationManager;
     private final JWTUtil jwtUtil;
 
     // 생성자를 통해 AuthenticationManager와 JWTUtil의 인스턴스를 주입받습니다.
-    public LoginFilter(UserService userService, RefreshService refreshService, AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
-        this.userService = userService;
+    public LoginFilter(MemberService memberService, RefreshService refreshService, AuthenticationManager authenticationManager, JWTUtil jwtUtil) {
+        this.memberService = memberService;
         this.refreshService = refreshService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
@@ -51,10 +55,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) {
         try {
             // 요청 본문에서 사용자의 로그인 데이터를 InputUser 객체로 변환합니다.
-            InputUser loginData = new ObjectMapper().readValue(request.getInputStream(), InputUser.class);
+            InputMember loginData = new ObjectMapper().readValue(request.getInputStream(), InputMember.class);
             // 사용자 이름과 비밀번호를 기반으로 AuthenticationToken을 생성합니다. 이 토큰은 사용자가 제공한 이메일과 비밀번호를 담고 있으며, 이후 인증 과정에서 사용됩니다.
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
-                    loginData.getEmail(), loginData.getPassword());
+                    loginData.getMemberEmail(), loginData.getMemberPwd());
             // AuthenticationManager를 사용하여 실제 인증을 수행합니다. 이 과정에서 사용자의 이메일과 비밀번호가 검증됩니다.
             return authenticationManager.authenticate(authToken);
         } catch (AuthenticationException e) {
@@ -69,23 +73,23 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
     @Override
     protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         // 인증 객체에서 CustomUserDetails를 추출합니다.
-        CustomUserDetails customUserDetails = (CustomUserDetails) authentication.getPrincipal();
+        CustomMemberDetails customMemberDetails = (CustomMemberDetails) authentication.getPrincipal();
 
         // CustomUserDetails에서 사용자 이름(이메일)을 추출합니다.
-        String username = customUserDetails.getUsername();
+        String username = customMemberDetails.getUsername();
 
         // 사용자 이름을 사용하여 JWT를 생성합니다.
         String access  = jwtUtil.generateToken(username,"access",accessExpiredMs);
         String refresh  = jwtUtil.generateToken(username,"refresh",refreshExpiredMs);
-        Optional<User> userOptional = userService.findByEmail(username);
-        if(userOptional.isPresent()){
-            User user = userOptional.get();
+        Optional<MemberEntity> memberEntityOptional = memberService.findByMemberEmail(username);
+        if(memberEntityOptional.isPresent()){
+            MemberEntity memberEntity = memberEntityOptional.get();
 
             RefreshToken refreshToken = RefreshToken.builder()
                     .id(UUID.randomUUID())
                     .status("activated")
-                    .userAgent(request.getHeader("User-Agent"))
-                    .user(user)
+                    .memberAgent(request.getHeader("Member-Agent"))
+                    .memberEntity(memberEntity)
                     .tokenValue(refresh)
                     .expiresIn(refreshExpiredMs)
                     .build();
@@ -101,10 +105,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 여기서 부터 사용자 정보를 응답 바디에 추가하는 코드입니다.
         // 사용자의 권한이나 추가 정보를 JSON 형태로 변환하여 응답 바디에 포함시킬 수 있습니다.
-        boolean isAdmin = customUserDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+        boolean admin = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("username", username);
-        responseBody.put("isAdmin", isAdmin);
+        responseBody.put("isAdmin", admin);
         responseBody.put("refresh",refresh);
 
         // ObjectMapper를 사용하여 Map을 JSON 문자열로 변환합니다.

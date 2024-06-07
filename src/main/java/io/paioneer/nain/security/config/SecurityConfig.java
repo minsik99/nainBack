@@ -5,11 +5,11 @@ package io.paioneer.nain.security.config;
 import io.paioneer.nain.security.jwt.filter.JWTFilter;
 
 // Spring Framework 설정 관련 클래스들을 import 합니다.
-import com.apocaly.apocaly_path_private.security.service.RefreshService;
 import io.paioneer.nain.member.model.service.MemberService;
 import io.paioneer.nain.security.handler.CustomLogoutHandler;
 import io.paioneer.nain.security.jwt.filter.LoginFilter;
 import io.paioneer.nain.security.jwt.util.JWTUtil;
+import io.paioneer.nain.security.service.RefreshService;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -64,7 +64,7 @@ public class SecurityConfig {
                 .addFilterAt(new LoginFilter(memberService, refreshService, authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 // 로그아웃 처리를 커스터마이징합니다.
                 .logout(logout -> logout
-                        .addLogoutHandler(new CustomLogoutHandler(jwtUtil, refreshService, userService))
+                        .addLogoutHandler(new CustomLogoutHandler(jwtUtil, refreshService, memberService))
                         .logoutSuccessHandler((request, response, authentication) -> {
                             response.setStatus(HttpServletResponse.SC_OK);
                         }))

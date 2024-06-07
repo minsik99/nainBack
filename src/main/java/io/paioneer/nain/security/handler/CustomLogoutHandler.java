@@ -1,9 +1,11 @@
 package io.paioneer.nain.security.handler;
 
-import com.apocaly.apocaly_path_private.security.jwt.util.JWTUtil;
-import com.apocaly.apocaly_path_private.security.service.RefreshService;
 import io.jsonwebtoken.ExpiredJwtException;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import io.paioneer.nain.member.model.service.MemberService;
+import io.paioneer.nain.security.jwt.util.JWTUtil;
 import io.paioneer.nain.security.model.entity.RefreshToken;
+import io.paioneer.nain.security.service.RefreshService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -19,12 +21,12 @@ import java.util.Optional;
 public class CustomLogoutHandler implements LogoutHandler {
     private final JWTUtil jwtUtil;
     private final RefreshService refreshService;
-    private final UserService userService;
+    private final MemberService memberService;
 
-    public CustomLogoutHandler(JWTUtil jwtUtil, RefreshService refreshService, UserService userService) {
+    public CustomLogoutHandler(JWTUtil jwtUtil, RefreshService refreshService, MemberService memberService) {
         this.jwtUtil = jwtUtil;
         this.refreshService = refreshService;
-        this.userService = userService;
+        this.memberService = memberService;
     }
 
     @Override
@@ -51,13 +53,13 @@ public class CustomLogoutHandler implements LogoutHandler {
 
             // 만료 여부와 상관없이 사용자 정보를 조회하여 로그아웃 처리를 합니다.
             String userName = jwtUtil.getUserEmailFromToken(token);
-            Optional<User> userOptional = userService.findByEmail(userName);
+            Optional<MemberEntity> userOptional = memberService.findByMemberEmail(userName);
             if (userOptional.isPresent()) {
-                User user = userOptional.get();
+                MemberEntity member = userOptional.get();
 
                 // 카카오 로그아웃 처리
-                if ("kakao".equals(user.getLoginType())) {
-                    String kakaoAccessToken = user.getSnsAccessToken(); // 저장된 카카오 액세스 토큰 사용
+                if ("kakao".equals(member.getLoginType())) {
+                    String kakaoAccessToken = member.toString(); // 저장된 카카오 액세스 토큰 사용
                     String kakaoLogoutUrl = "https://kapi.kakao.com/v1/user/logout";
                     HttpHeaders headers = new HttpHeaders();
                     headers.set("Authorization", "Bearer " + kakaoAccessToken);
@@ -68,7 +70,7 @@ public class CustomLogoutHandler implements LogoutHandler {
                     log.info("Kakao logout response = {}", kakaoResponse.getBody());
                 }
 
-                Optional<RefreshToken> refresh = refreshService.findByUserId(user.getId());
+                Optional<RefreshToken> refresh = refreshService.findByUserId(member.getMemberNo());
                 refresh.ifPresent(refreshToken -> refreshService.deleteByRefresh(refreshToken.getTokenValue()));
             }
         }
