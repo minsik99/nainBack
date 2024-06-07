@@ -19,26 +19,37 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     private  QCommunityEntity communityEntity = QCommunityEntity.communityEntity;
 
     @Override
-    public CommunityEntity selectCommunityOne(Long communityNo) {
+    public Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
         return queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.communityNo.eq(communityNo))
-                .fetch().get(0);
-    }
-
-    @Override
-    public List<CommunityEntity> selectCommunityList(Pageable pageable) {
-        return queryFactory
-                .selectFrom(communityEntity)
+                .where(communityEntity.memberNo.eq(memberNo))
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
     @Override
-    public Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
+    public Page<CommunityEntity> searchTitle(String keyword, Pageable pageable) {
         return queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.memberNo.eq(memberNo))
+                .where(communityEntity.title.like("%" + keyword + "%"))
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public Page<CommunityEntity> searchWriter(String keyword, Pageable pageable) {
+        return queryFactory
+                .selectFrom(communityEntity)
+                .where(communityEntity.writer.like("%" + keyword + "%"))
+                .limit(pageable.getPageSize())
+                .fetch();
+    }
+
+    @Override
+    public Page<CommunityEntity> searchContent(String keyword, Pageable pageable) {
+        return queryFactory
+                .selectFrom(communityEntity)
+                .where(communityEntity.content.like("%" + keyword + "%"))
                 .limit(pageable.getPageSize())
                 .fetch();
     }

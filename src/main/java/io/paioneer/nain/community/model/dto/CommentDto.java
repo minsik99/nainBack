@@ -1,6 +1,7 @@
 package io.paioneer.nain.community.model.dto;
 
 import io.paioneer.nain.community.jpa.entity.CommentEntity;
+import io.paioneer.nain.community.jpa.entity.CommunityEntity;
 import io.paioneer.nain.member.model.dto.MemberDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,18 +18,27 @@ import java.util.Date;
 @Component
 public class CommentDto {
     private Long commentNo;
+
     private MemberDto memberDto;
+    private String writer;
+
     private CommunityDto communityDto;
+    private Long communityNo;
+
     private CommentDto commentDto;
+    private Long parentNo;
+
     private String content;
     private Date commentDate;
 
-    public CommentDto(CommentEntity commentEntity) {
-        this.commentNo = commentEntity.getCommentNo();
-        this.memberDto = commentEntity.getMemberEntity().toDto();
-        this.communityDto = new CommunityDto(commentEntity.getCommunityEntity());
-        this.commentDto = new CommentDto(commentEntity.getCommentEntity());
-        this.content = commentEntity.getContent();
-        this.commentDate = commentEntity.getCommentDate();
+    public CommentEntity toEntity(){
+        return CommentEntity.builder()
+                .commentNo(this.commentNo)
+                .memberEntity(this.memberDto.toEntity())
+                .communityEntity(this.communityDto.toEntity())
+                .commentEntity(this.commentDto.toEntity())
+                .content(this.content)
+                .commentDate(this.commentDate)
+                .build();
     }
 }

@@ -58,7 +58,7 @@ public class CommunityEntity {
     public CommunityDto toDto(){
         return CommunityDto.builder()
                 .communityNo(this.communityNo)
-                .writer(this.memberEntity.getMemberNickName)
+                .writer(this.memberEntity.toDto().getMemberNickName)
                 .title(this.title)
                 .content(this.content)
                 .fileUpload(this.fileUpload)

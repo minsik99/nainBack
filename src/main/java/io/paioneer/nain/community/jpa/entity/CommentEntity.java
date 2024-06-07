@@ -39,12 +39,14 @@ public class CommentEntity {
     @Column(name="COMMENT_DATE", nullable=false)
     private Date commentDate;
 
-    public CommentEntity(CommentDto commentDto){
-        this.commentNo = commentDto.getCommentNo();
-        this.memberEntity = commentDto.getMemberDto().toEntity();
-        this.communityEntity = new CommunityEntity(commentDto.getCommunityDto());
-        this.commentEntity = new CommentEntity(commentDto.getCommentDto());
-        this.content = commentDto.getContent();
-        this.commentDate = commentDto.getCommentDate();
+    public CommentDto toDto(){
+        return CommentDto.builder()
+                .commentNo(this.commentNo)
+                .writer(this.memberEntity.toDto().getMemberNickName())
+                .communityNo(this.communityEntity.toDto().getCommunityNo())
+                .parentNo(this.commentEntity.toDto().getCommentNo())
+                .content(this.content)
+                .commentDate(this.commentDate)
+                .build();
     }
 }

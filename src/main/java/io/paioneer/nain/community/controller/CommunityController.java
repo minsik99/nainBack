@@ -37,49 +37,78 @@ public class CommunityController {
     private final MemberService memberService;
 
 
-    //-------------------------- 목록 조회 ------------------------------------------------------------
+    //-------------------------- 목록 조회 -----------------------------------------------------------------------------------------------------
     //전체 목록
     @GetMapping("/list")
-    public ResponseEntity<ArrayList<CommunityDto>> selectCommunitylList(@RequestParam(name="page") int page, @RequestParam(name="limit") int limit){
-        log.info("/community/list{}, {}", page, limit);
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, "communityNo"));
+    public ResponseEntity<ArrayList<CommunityDto>> selectCommunityList(
+            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
+        log.info("/community/list{}, {}, {}", page, limit, sort);
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
         return new ResponseEntity<>(communityService.selectList(pageable), HttpStatus.OK);
     }
 
     //내 글 보기
     @GetMapping("/mylist")
-    public Response<ArrayList<CommunityDto>> selectMyList(HttpServletRequest request,
-                                                          @RequestParam(name="page") int page, @RequestParam(name="limit") int limit){
+    public ResponseEntity<ArrayList<CommunityDto>> selectMyList(
+            HttpServletRequest request, @RequestParam(name="page") int page,
+            @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
+        log.info("/community/mylist{}, {}, {}", page, limit, sort);
         String token = request.getHeader("Authorization").substring("Bearer".length());
-        Long memberNo = Long memberNo =  jwtUtil.getMemberIdFromToken(token);
+        Long memberNo =  jwtUtil.getMemberIdFromToken(token);
 
-        Pageable pageable = PageRequest.of(page - 1, limit. Sort.by(Sort.Direction.DESC, "communityNo"));
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
         return new ResponseEntity<>(communityService.selectMyList(memberNo, pageable), HttpStatus.OK);
     }
 
     //검색결과 목록
-//    @GetMapping("/search/{keyword}")
-//    public Response<ArrayList<CommunityDto>> selectMyList(@PathVariable("keyword") String keyword,
-//                                                          @RequestParam(name="page") int page, @RequestParam(name="limit") int limit){
-//
-//        Pageable pageable = PageRequest.of(page - 1, limit. Sort.by(Sort.Direction.DESC, "communityDate"));
-//        return new ResponseEntity<>(communityService.selectSearchList(keyword, pageable), HttpStatus.OK);
-//    }
+    @GetMapping("/search/{keyword}")
+    public ResponseEntity<ArrayList<CommunityDto>> selectSearchList(
+            @PathVariable("keyword") String keyword, @RequestParam(name="type") String type,
+            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
+        log.info("/community/search{}, {}, {}", keyword, type, page, sort);
+        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
+        return new ResponseEntity<>(communityService.selectSearchList(type, keyword, pageable), HttpStatus.OK);
+    }
 
-    //목록 표시 개수 변경
-
-    //정렬 기준 변경
-
-    //상세 보기 -----------------------------------------------------------------------------------------
-    @GetMapping("/detail")
-    public ResponseEntity<CommunityDto> selectCommunityDetail(@RequestParam(name="communityNo") Long communityNo){
-        log.info("/community/detail{}, {}", communityNo);
+    //상세 보기 ---------------------------------------------------------------------------------------------------------------------------------------
+    //상세보기_communityDto
+    @GetMapping("/detail/{communityNo}")
+    public ResponseEntity<CommunityDto> selectCommunityDetail(@PathVariable(name="communityNo") Long communityNo){
+        log.info("/community/detail{}", communityNo);
         return new ResponseEntity<>(communityService.selectOne(communityNo), HttpStatus.OK);
+    }
+
+    //상세보기_commentDto
+    @GetMapping("/detail/comments/{communityNo}")
+    public ResponseEntity<ArrayList<CommentDto>> selectCommentList(@PathVariable(name="communityNo") Long communityNo){
+        log.info("/community/detail/comments/{}", communityNo);
+        return new ResponseEntity<>(commentService.selectList(communityNo), HttpStatus.OK);
+    }
+
+    //댓글 등록
+    @PostMapping("/comment/new")
+    public ResponseEntity<CommentDto> insertComment(@RequestBody CommentDto commentDto){
+        log.info("/community/detail/comment{}", commentDto);
+        return new ResponseEntity<>(commentService.insertComment(commentDto), HttpStatus.NO_CONTENT);
+    }
+
+    //댓글 수정
+    @PutMapping("/comment/modify")
+    public ResponseEntity<CommentDto> modifyComment(@RequestBody CommentDto commentDto){
+        log.info("/community/detail/comment{}", commentDto);
+        return new ResponseEntity<>(commentService.updateComment(commentDto), HttpStatus.NO_CONTENT);
+    }
+
+    //댓글 삭제
+    @DeleteMapping("/comment/del")
+    public ResponseEntity<CommentDto> deleteComment(@RequestBody Long commentNo){
+        log.info("/community/detail/comment{}", commentNo);
+        return new ResponseEntity<>(commentService.deleteComment(commentNo), HttpStatus.NO_CONTENT);
     }
 
     //등록 ----------------------------------------------------------------------------------------------------------------------------------------------
     @PostMapping
-    public ResponseEntity<> insertCommunity(HttpServletRequest request, @RequestParam(name="community") CommunityDto community, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestParam(name="community") CommunityDto community, @RequestParam("file") MultipartFile file) throws IOException {
         log.info("/community/{}", community);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberIdFromToken(token);
@@ -88,7 +117,6 @@ public class CommunityController {
         if(loginMember == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-
         if(!file.isEmpty()){
             String savePath = request.getServletContext().getRealPath("/community_files");
             String fileName = file.getOriginalFilename();
@@ -99,7 +127,6 @@ public class CommunityController {
             communityDto.setFileUpload(fileName);
             communityDto.setFileModified(fileRename);
         }
-
         communityDto.setMemberDto(loginMember);
         communityService.insertCommunity(communityDto);
         return new ResponseEntity<>(HttpStatus.CREATED);

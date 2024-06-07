@@ -7,7 +7,8 @@ import org.springframework.data.domain.Pageable;
 import java.util.List;
 
 public interface CommunityRepositoryCustom{
-    CommunityEntity selectCommunityOne(Long communityNo);
-    List<CommunityEntity> selectCommunityList(Pageable pageable);
     Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable);
+    Page<CommunityEntity> searchTitle(String keyword, Pageable pageable);
+    Page<CommunityEntity> searchWriter(String keyword, Pageable pageable);
+    Page<CommunityEntity> searchContent(String keyword, Pageable pageable);
 }

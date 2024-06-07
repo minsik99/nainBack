@@ -38,8 +38,8 @@ public class StatisticalController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
-    수정합니다.....
-    두번째 수정합니다..
-    세번쨰 수정합니다..
+//    수정합니다.....
+//    두번째 수정합니다..
+//    세번쨰 수정합니다..
 
 }

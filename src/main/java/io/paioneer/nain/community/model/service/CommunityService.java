@@ -68,4 +68,20 @@ public class CommunityService {
         }
         return list;
     }
+
+    public ArrayList<CommunityDto> selectSearchList(String type, String keyword, Pageable pageable) {
+        Page<CommunityEntity> entities;
+        if(type.equals("title")){
+            entities = communityRepository.searchTitle(keyword, pageable);
+        }else if(type.equals("writer")){
+            entities = communityRepository.searchWriter(keyword, pageable);
+        }else{
+            entities = communityRepository.searchContent(keyword, pageable);
+        }
+        ArrayList<CommunityDto> list = new ArrayList<>();
+        for (CommunityEntity entity : entities) {
+            list.add(entity.toDto());
+        }
+        return list;
+    }
 }
