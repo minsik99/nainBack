@@ -20,7 +20,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     @Override
     public Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
-        return queryFactory
+        return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.memberNo.eq(memberNo))
                 .limit(pageable.getPageSize())
@@ -29,7 +29,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     @Override
     public Page<CommunityEntity> searchTitle(String keyword, Pageable pageable) {
-        return queryFactory
+        return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.title.like("%" + keyword + "%"))
                 .limit(pageable.getPageSize())
@@ -38,16 +38,16 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     @Override
     public Page<CommunityEntity> searchWriter(String keyword, Pageable pageable) {
-        return queryFactory
+        return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.writer.like("%" + keyword + "%"))
+                .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%"))
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
     @Override
     public Page<CommunityEntity> searchContent(String keyword, Pageable pageable) {
-        return queryFactory
+        return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.content.like("%" + keyword + "%"))
                 .limit(pageable.getPageSize())

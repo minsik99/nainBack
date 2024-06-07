@@ -24,7 +24,6 @@ public class CommentService {
         for (CommentEntity commentEntity : commentEntities) {
             list.add(new commentEntity.toDto());
         }
-
         return list;
     }
 
