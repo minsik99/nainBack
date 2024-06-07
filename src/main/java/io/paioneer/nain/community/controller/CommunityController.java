@@ -89,6 +89,20 @@ public class CommunityController {
     @PostMapping("/comment/new")
     public ResponseEntity<Void> insertComment(@RequestBody CommentDto commentDto){
         log.info("/community/detail/comment{}", commentDto);
+
+        CommunityDto communityDto = new CommunityDto();
+        communityDto.setCommunityNo(commentDto.getCommunityNo());
+
+        MemberDto memberDto = new MemberDto();
+        memberDto.setMemberNickName(commentDto.getWriter());
+
+        CommentDto parentDto = new CommentDto();
+        parentDto.setCommentNo(commentDto.getParentNo());
+
+        commentDto.setCommunityDto(communityDto);
+        commentDto.setMemberDto(memberDto);
+        commentDto.setCommentDto(parentDto);
+
         commentService.insertComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -97,6 +111,19 @@ public class CommunityController {
     @PutMapping("/comment/modify")
     public ResponseEntity<Void> modifyComment(@RequestBody CommentDto commentDto){
         log.info("/community/detail/comment{}", commentDto);
+
+        CommunityDto communityDto = new CommunityDto();
+        communityDto.setCommunityNo(commentDto.getCommunityNo());
+
+        MemberDto memberDto = new MemberDto();
+        memberDto.setMemberNickName(commentDto.getWriter());
+
+        CommentDto parentDto = new CommentDto();
+        parentDto.setCommentNo(commentDto.getParentNo());
+
+        commentDto.setCommunityDto(communityDto);
+        commentDto.setMemberDto(memberDto);
+        commentDto.setCommentDto(parentDto);
         commentService.updateComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -136,12 +163,21 @@ public class CommunityController {
 //    }
 
     //수정 ----------------------------------------------------------------------------------------------------------------------------------------------------
-    @PutMapping("/{communityNo}")
-    public ResponseEntity<Void> updateCommunity(@PathVariable("communityNo") Long communityNo, @RequestBody CommunityDto communityDto){
-        log.info("/update/{}", communityDto);
-        communityService.updateCommunity(communityDto);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-    }
+//    @PutMapping("/{communityNo}")
+//    public ResponseEntity<Void> updateCommunity(
+//            HttpServletRequest request, @PathVariable("communityNo") Long communityNo, @RequestBody CommunityDto communityDto){
+//        log.info("/update/{}", communityDto);
+//        String token = request.getHeader("Authorization").substring("Bearer ".length());
+//        Long memberNo =  jwtUtil.getMemberIdFromToken(token);
+//
+//        MemberDto loginMember = memberService.selectMember(memberNo);
+//        if(loginMember == null){
+//            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+//        }
+//        communityDto.setMemberDto(loginMember);
+//        communityService.updateCommunity(communityDto);
+//        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+//    }
 
     //삭제 -------------------------------------------------------------------------------------------------------------------------------------------------------
 //    @DeleteMapping("/{communityNo")
