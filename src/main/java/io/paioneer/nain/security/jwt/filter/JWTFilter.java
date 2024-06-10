@@ -85,13 +85,13 @@ public class JWTFilter extends OncePerRequestFilter {
         String memberEmail = jwtUtil.getUserEmailFromToken(token);
         boolean admin = jwtUtil.isAdminFromToken(token);
 
-        // 인증에 사용할 임시 User 객체를 생성하고, 이메일과 관리자 여부를 설정합니다.
+        // 인증에 사용할 임시 MemberEntity 객체를 생성하고, 이메일과 관리자 여부를 설정합니다.
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setMemberEmail(memberEmail);
         memberEntity.setMemberPwd("tempPassword"); // 실제 인증에서는 사용되지 않는 임시 비밀번호를 설정합니다.
         memberEntity.setAdmin(admin);
 
-        // User 객체를 기반으로 CustomUserDetails 객체를 생성합니다.
+        // MemberEntity 객체를 기반으로 CustomUserDetails 객체를 생성합니다.
         CustomMemberDetails customMemberDetails = new CustomMemberDetails(memberEntity);
 
         // Spring Security의 Authentication 객체를 생성하고, SecurityContext에 설정합니다.

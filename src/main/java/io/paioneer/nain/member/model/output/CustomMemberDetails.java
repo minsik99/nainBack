@@ -1,11 +1,9 @@
 package io.paioneer.nain.member.model.output;
 
-
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-
 
 import java.util.ArrayList;
 import java.util.Collection;
