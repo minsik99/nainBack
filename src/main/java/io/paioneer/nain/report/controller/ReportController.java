@@ -26,7 +26,7 @@ public class ReportController {
     //글 신고
     @PostMapping("/community")
     public ResponseEntity<Void> reportCommunity(HttpServletRequest request, @RequestBody RcommunityDto rcommunityDto){
-        String token = request.getHeader("Authorization").substring("Bearer".length());
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
         rcommunityDto.setReporter(memberNo);
         try{
@@ -40,7 +40,7 @@ public class ReportController {
     //댓글 신고
     @PostMapping("/comment")
     public ResponseEntity<Void> reportComment(HttpServletRequest request, @RequestBody RcommentDto rcommentDto){
-        String token = request.getHeader("Authorization").substring("Bearer".length());
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
         rcommentDto.setReporter(memberNo);
         try{

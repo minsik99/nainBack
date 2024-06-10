@@ -25,7 +25,7 @@ public class CommunityService {
 
     //글 전체목록
     public ArrayList<CommunityDto> selectList(Pageable pageable) {
-        Page<CommunityEntity> entities = communityRepository.findAll(pageable);
+        Page<CommunityEntity> entities = communityRepository.findListAll(pageable);
         ArrayList<CommunityDto> list = new ArrayList<>();
         for (CommunityEntity entity : entities) {
             list.add(entity.toDto());
@@ -37,13 +37,13 @@ public class CommunityService {
     public CommunityDto selectOne(Long communityNo) {
         CommunityDto communityDto = communityRepository.findById(communityNo).get().toDto();
         communityDto.setReadCount(communityDto.getReadCount() + 1);
-        communityRepository.save(new CommunityEntity(communityDto));
+        communityRepository.save(communityDto.toEntity());
         return communityDto;
     }
 
     //등록
     public void insertCommunity(CommunityDto communityDto) {
-        communityRepository.save(new CommunityEntity(communityDto));
+        communityRepository.save(communityDto.toEntity());
     }
 
     //수정
@@ -55,8 +55,13 @@ public class CommunityService {
         communityRepository.save(communityEntity);
     }
 
-    //삭제
-    public void deleteCommunity(Long communityNo){
+    //삭제값 추가
+    public void deleteCommunity(CommunityDto communityDto){
+        communityRepository.save(communityDto.toEntity());
+    }
+
+    //글 DB 삭제
+    public void terminateCommunity(Long communityNo){
         communityRepository.deleteById(communityNo);
     }
 
@@ -68,6 +73,8 @@ public class CommunityService {
         }
         return list;
     }
+
+
 
     public ArrayList<CommunityDto> selectSearchList(String type, String keyword, Pageable pageable) {
         Page<CommunityEntity> entities;

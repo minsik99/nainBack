@@ -1,6 +1,7 @@
 package io.paioneer.nain.report.model.dto;
 
 import io.paioneer.nain.community.model.dto.CommentDto;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.member.model.dto.MemberDto;
 import io.paioneer.nain.report.jpa.entity.RcommentEntity;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class RcommentDto {
     private Long cReportNo;
 
     private MemberDto memberDto;
-    private Long reporter;
+    private String reporter;
 
     private CommentDto commentDto;
     private Long commentNo;
@@ -28,6 +29,12 @@ public class RcommentDto {
     private String reportType;
     private Date reportDate;
     private String handledYN;
+
+    private MemberEntity adminEntity;
+    private String admin;
+
+    private Date handledDate;
+
 
     public RcommentEntity toEntity(){
         return RcommentEntity.builder()
@@ -37,6 +44,8 @@ public class RcommentDto {
                 .reportType(this.reportType)
                 .reportDate(this.reportDate)
                 .handledYN(this.handledYN)
+                .adminEntity(this.adminEntity)
+                .handledDate(this.handledDate)
                 .build();
     }
 

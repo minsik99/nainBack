@@ -1,6 +1,7 @@
 package io.paioneer.nain.report.model.dto;
 
 import io.paioneer.nain.community.model.dto.CommunityDto;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.member.model.dto.MemberDto;
 import io.paioneer.nain.report.jpa.entity.RcommunityEntity;
 import lombok.AllArgsConstructor;
@@ -20,7 +21,7 @@ public class RcommunityDto {
     private Long bReportNo;
 
     private MemberDto memberDto;
-    private Long reporter;
+    private String reporter;
 
     private CommunityDto communityDto;
     private Long communityNo;
@@ -28,6 +29,11 @@ public class RcommunityDto {
     private String reportType;
     private Date reportDate;
     private String handledYN;
+
+    private MemberEntity adminEntity;
+    private String admin;
+
+    private Date handledDate;
 
     public RcommunityEntity toEntity(){
         return RcommunityEntity.builder()
@@ -37,6 +43,8 @@ public class RcommunityDto {
                 .reportType(this.reportType)
                 .reportDate(this.reportDate)
                 .handledYN(this.handledYN)
+                .adminEntity(this.adminEntity)
+                .handledDate(this.handledDate)
                 .build();
     }
 }

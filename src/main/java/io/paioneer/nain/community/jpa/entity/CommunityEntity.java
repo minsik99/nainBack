@@ -41,19 +41,17 @@ public class CommunityEntity {
     @Column(name="COMMUNITY_DATE")
     private Date communityDate;
 
+    @Column(name="MODIFIED_DATE")
+    private Date modifiedDate;
+
+    @Column(name="DELETED_DATE")
+    private Date deletedDate;
+
     @Column(name="READCOUNT", nullable = false)
     private String readCount;
 
-    public CommunityEntity(CommunityDto communityDto){
-        this.communityNo = communityDto.getCommunityNo();
-        this.memberEntity = communityDto.getMemberDto().toEntity();
-        this.title = communityDto.getTitle();
-        this.content = communityDto.getContent();
-        this.fileUpload = communityDto.getFileUpload();
-        this.fileModified = communityDto.getFileModified();
-        this.communityDate = communityDto.getCommunityDate();
-        this.readCount = communityDto.getReadCount();
-    }
+
+
 
     public CommunityDto toDto(){
         return CommunityDto.builder()
@@ -64,6 +62,8 @@ public class CommunityEntity {
                 .fileUpload(this.fileUpload)
                 .fileModified(this.fileModified)
                 .communityDate(this.communityDate)
+                .modifiedDate(this.modifiedDate)
+                .deletedDate(this.deletedDate)
                 .readCount(this.readCount)
                 .build();
     }
