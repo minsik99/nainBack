@@ -6,7 +6,13 @@ import java.time.LocalDate;
 
 public interface StatisticalRepositoryCustom {
 
-    double totalAmountBetweenDates(Span span);
+    long totalAmountBetweenDates(Span span);
 
-    double newSubscribeCountBetweenDates(Span span);
+    long newSubscribeCountBetweenDates(Span span);
+
+//    long visitorCount(Span span);
+
+    long signupCount(Span span);
+
+    long withdrawalCount(Span span);
 }

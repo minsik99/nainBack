@@ -18,13 +18,27 @@ public class StatisticalService {
         this.statisticalRepository = statisticalRepository;
     }
 
-    public int selectTotalPayAmount(Span span) {
-        double totalPayAmount = statisticalRepository.totalAmountBetweenDates(span);
-        return (int)totalPayAmount;
+    private long convertToLong(long value) {
+        return (long) value;
     }
 
-    public int selectNewSubscribeCount(Span span) {
-        double newSubscribeCount = statisticalRepository.newSubscribeCountBetweenDates(span);
-        return (int)newSubscribeCount;
+    public long selectTotalPayAmount(Span span) {
+        return convertToLong(statisticalRepository.totalAmountBetweenDates(span));
+    }
+
+    public long selectNewSubscribeCount(Span span) {
+        return convertToLong(statisticalRepository.newSubscribeCountBetweenDates(span));
+    }
+
+//    public Long selectVisitorCount(Span span) {
+//        return convertToLong(statisticalRepository.visitorCount(span));
+//    }
+
+    public Long selectSignupCount(Span span) {
+        return convertToLong(statisticalRepository.signupCount(span));
+    }
+
+    public Long selectWithdrawalCount(Span span) {
+        return convertToLong(statisticalRepository.withdrawalCount(span));
     }
 }
