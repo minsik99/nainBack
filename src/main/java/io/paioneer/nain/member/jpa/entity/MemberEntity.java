@@ -7,6 +7,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
@@ -25,7 +26,7 @@ public class MemberEntity {
     @Column(name="MEMBER_EMAIL", nullable = false, unique = true)
     private String memberEmail;         //회원 이메일, 아이디로 사용됨
 
-    @Column(name="MEMBER_PWD")
+    @Column(name="MEMBER_PWD", nullable = true)
     private String memberPwd;           //회원 비밀번호
 
     @Column(name="MEMBER_NAME", nullable = false)
@@ -47,7 +48,7 @@ public class MemberEntity {
     private Date expireDate;            //회원 구독만료일
 
     @Column(name="SIGNUP_DATE")
-    private Date signUpDate;            //회원 가입일
+    private LocalDateTime signUpDate;            //회원 가입일
 
     @Column(name="WITHDRAWAL_DATE")
     private Date withDrawalDate;        //회원 탈퇴일
@@ -58,11 +59,13 @@ public class MemberEntity {
     @Column(name="LOGIN_TYPE", nullable = false, columnDefinition = "VARCHAR2(50) DEFAULT 'local'")
     private String loginType;
 
+    @Column(name="SNS_ACCESS_TOKEN", nullable = true)
+    private String snsAccessToken;
+
     @PrePersist  //jpa 로 넘어가지 전에 작동
     public void prePersist() {
         paymentDate = new GregorianCalendar().getGregorianChange();
         expireDate = new GregorianCalendar().getGregorianChange();
-        signUpDate = new GregorianCalendar().getGregorianChange();
         withDrawalDate = new GregorianCalendar().getGregorianChange();
         memberUpdate = new GregorianCalendar().getGregorianChange();
     }
