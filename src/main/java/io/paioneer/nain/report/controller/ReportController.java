@@ -1,6 +1,5 @@
 package io.paioneer.nain.report.controller;
 
-import io.paioneer.nain.community.model.dto.CommunityDto;
 import io.paioneer.nain.member.model.service.MemberService;
 import io.paioneer.nain.report.model.dto.RcommentDto;
 import io.paioneer.nain.report.model.dto.RcommunityDto;
