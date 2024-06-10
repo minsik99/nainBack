@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Data   //Getter, Setter, toString 메서드를 자동으로 생성해주는 기능.
@@ -23,11 +24,11 @@ public class MemberDto {
     private String memberNickName;      //회원 닉네임
     private String subscribeYN;         //회원 구독여부
     private Boolean admin;               //관리자
-    private Date paymentDate;           //회원 결제일
-    private Date expireDate;            //회원 구독만료일
-    private Date signUpDate;            //회원 가입일
-    private Date withDrawalDate;        //회원 탈퇴일
-    private Date memberUpdate;          //회원 정보수정일
+    private LocalDateTime paymentDate;           //회원 결제일
+    private LocalDateTime expireDate;            //회원 구독만료일
+    private LocalDateTime signUpDate;            //회원 가입일
+    private LocalDateTime withDrawalDate;        //회원 탈퇴일
+    private LocalDateTime memberUpdate;          //회원 정보수정일
 
     public MemberEntity toEntity() {
         return MemberEntity.builder()
