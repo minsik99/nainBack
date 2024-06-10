@@ -8,8 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.Date;
-import java.util.GregorianCalendar;
 
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,33 +40,25 @@ public class MemberEntity {
     private Boolean admin;               //관리자
 
     @Column(name="PAYMENT_DATE")
-    private Date paymentDate;           //회원 결제일
+    private LocalDateTime paymentDate;           //회원 결제일
 
     @Column(name="EXPIRE_DATE")
-    private Date expireDate;            //회원 구독만료일
+    private LocalDateTime expireDate;            //회원 구독만료일
 
     @Column(name="SIGNUP_DATE")
     private LocalDateTime signUpDate;            //회원 가입일
 
     @Column(name="WITHDRAWAL_DATE")
-    private Date withDrawalDate;        //회원 탈퇴일
+    private LocalDateTime withDrawalDate;        //회원 탈퇴일
 
     @Column(name="MEMBER_UPDATE")
-    private Date memberUpdate;          //회원 정보수정일
+    private LocalDateTime memberUpdate;          //회원 정보수정일
 
     @Column(name="LOGIN_TYPE", nullable = false, columnDefinition = "VARCHAR2(50) DEFAULT 'local'")
     private String loginType;
 
     @Column(name="SNS_ACCESS_TOKEN", nullable = true)
     private String snsAccessToken;
-
-    @PrePersist  //jpa 로 넘어가지 전에 작동
-    public void prePersist() {
-        paymentDate = new GregorianCalendar().getGregorianChange();
-        expireDate = new GregorianCalendar().getGregorianChange();
-        withDrawalDate = new GregorianCalendar().getGregorianChange();
-        memberUpdate = new GregorianCalendar().getGregorianChange();
-    }
 
     public MemberDto toDto() {
         return MemberDto.builder()
