@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
+import java.util.function.Function;
 
 
 @RestController
@@ -23,17 +24,45 @@ public class StatisticalController {
         this.statisticalService = statisticalService;
     }
 
-    //매출 통계
-    @GetMapping("/")
-    public ResponseEntity<Integer> totalPayAmount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
-
+    private ResponseEntity<Long> getStatistical(Function<Span, Long> spanFunction, LocalDate begin, LocalDate end) {
         Span span = new Span(begin, end);
-
         try {
-            int result = statisticalService.selecttotalPayAmount(span);
+            long result = spanFunction.apply(span);
             return new ResponseEntity<>(result, HttpStatus.OK);
-        } catch (Exception e) {
+        }catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
     }
+
+    //매출 통계
+    @GetMapping("/totalPayAmount")
+    public ResponseEntity<Long> totalPayAmount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
+        return getStatistical(statisticalService::selectTotalPayAmount, begin, end);
+    }
+
+    //신규구독자 통계
+    @GetMapping("/newSubscribeCount")
+    public ResponseEntity<Long> newSubscribeCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
+        return getStatistical(statisticalService::selectNewSubscribeCount, begin, end);
+    }
+
+//    //방문자수 통계
+//    @GetMapping("/visitorCount")
+//    public ResponseEntity<Long> visitorCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
+//        return getStatistical(statisticalService::selectVisitorCount, begin, end);
+//    }
+
+    //가입자 통계
+    @GetMapping("/signupCount")
+    public ResponseEntity<Long> signupCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
+        return getStatistical(statisticalService::selectSignupCount, begin, end);
+    }
+
+    //탈퇴자 통계
+    @GetMapping("/withdrawalCount")
+    public ResponseEntity<Long> withdrawalCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
+        return getStatistical(statisticalService::selectWithdrawalCount, begin, end);
+    }
+
+
 }
