@@ -1,6 +1,5 @@
 package io.paioneer.nain.security.config;
 
-
 // Spring Security와 관련된 클래스들을 import 합니다.
 import io.paioneer.nain.security.jwt.filter.JWTFilter;
 
