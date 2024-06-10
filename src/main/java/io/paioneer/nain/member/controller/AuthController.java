@@ -111,7 +111,7 @@ public class AuthController {
             refreshService.save(refreshToken);
 
             // 로그인 성공 후 URL에 토큰 정보 포함
-            String redirectUrl = String.format("http://localhost:3000/member/success?access=%s&refresh=%s&isAdmin=%s",
+            String redirectUrl = String.format("http://localhost:3000/member/success?access=%s&refresh=%s&admin=%s",
                     accessTokenJwt, refreshTokenJwt, memberEntity.getAdmin());
 
             response.sendRedirect(redirectUrl);

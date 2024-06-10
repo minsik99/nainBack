@@ -59,6 +59,10 @@ public class MemberService {
                 });
         return memberRepository.save(memberEntity);
     }
+
+    public MemberDto findById(Long memberNo) {
+        return memberRepository.findById(memberNo).get().toDto();
+    }
 }
 
 

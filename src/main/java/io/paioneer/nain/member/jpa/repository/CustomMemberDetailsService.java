@@ -40,8 +40,8 @@ public class CustomMemberDetailsService implements UserDetailsService {
         // 주어진 이메일로 사용자를 조회합니다. 사용자가 존재하지 않을 경우 UsernameNotFoundException 예외를 발생시킵니다.\
         MemberEntity memberEntity = memberRepository.findByMemberEmail(inputMember.getMemberEmail())
                 .orElseThrow(() -> new UsernameNotFoundException("존재하지 않는 이메일입니다." + inputMember.getMemberEmail()));
-        // 사용자 계정이 삭제도니 경우 UsernameNotFoundException 예외를 발생시킵니다.
-        return memberEntity;
+        // 사용자 계정이 삭제된 경우 UsernameNotFoundException 예외를 발생시킵니다.
+        return memberEntity; // 유효한 사용자 정보를 반환합니다.
     }
 
 }
