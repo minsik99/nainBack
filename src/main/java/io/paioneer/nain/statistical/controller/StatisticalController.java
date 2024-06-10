@@ -24,13 +24,26 @@ public class StatisticalController {
     }
 
     //매출 통계
-    @GetMapping("/")
-    public ResponseEntity<Integer> totalPayAmount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end) {
+    @GetMapping("/totalPayAmount")
+    public ResponseEntity<Integer> totalPayAmount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
 
         Span span = new Span(begin, end);
 
         try {
-            int result = statisticalService.selecttotalPayAmount(span);
+            int result = statisticalService.selectTotalPayAmount(span);
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
+    }
+
+    @GetMapping("/newSubscribeCount")
+    public ResponseEntity<Integer> newSubscribeCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
+
+        Span span = new Span(begin, end);
+
+        try {
+            int result = statisticalService.selectNewSubscribeCount(span);
             return new ResponseEntity<>(result, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);

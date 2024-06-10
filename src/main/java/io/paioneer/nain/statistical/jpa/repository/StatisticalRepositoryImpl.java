@@ -29,4 +29,15 @@ public class StatisticalRepositoryImpl implements StatisticalRepositoryCustom {
                 .where(subscribeEntity.paymentDate.between(Date.valueOf(span.getBegin()),Date.valueOf(span.getEnd())))
                 .fetchOne();
     }
+
+    @Override
+    public double newSubscribeCountBetweenDates(Span span) {
+        return queryFactory
+                .select(subscribeEntity.payNo.count())
+                .from(subscribeEntity)
+                .where(subscribeEntity.paymentDate.between(Date.valueOf(span.getBegin()),Date.valueOf(span.getEnd())))
+                .fetchOne();
+    }
+
+
 }

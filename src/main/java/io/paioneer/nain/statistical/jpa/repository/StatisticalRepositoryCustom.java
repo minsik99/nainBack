@@ -7,4 +7,6 @@ import java.time.LocalDate;
 public interface StatisticalRepositoryCustom {
 
     double totalAmountBetweenDates(Span span);
+
+    double newSubscribeCountBetweenDates(Span span);
 }

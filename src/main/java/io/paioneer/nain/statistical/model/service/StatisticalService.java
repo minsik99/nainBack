@@ -18,8 +18,13 @@ public class StatisticalService {
         this.statisticalRepository = statisticalRepository;
     }
 
-    public int selecttotalPayAmount(Span span) {
+    public int selectTotalPayAmount(Span span) {
         double totalPayAmount = statisticalRepository.totalAmountBetweenDates(span);
         return (int)totalPayAmount;
+    }
+
+    public int selectNewSubscribeCount(Span span) {
+        double newSubscribeCount = statisticalRepository.newSubscribeCountBetweenDates(span);
+        return (int)newSubscribeCount;
     }
 }
