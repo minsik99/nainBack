@@ -25,13 +25,22 @@ public class CommentEntity {
     @JoinColumn(name="MEMBER_NO", insertable = false, updatable = false)
     private MemberEntity memberEntity;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="COMMUNITY_NO", referencedColumnName = "COMMUNITY_NO")
-    private CommunityEntity communityEntity;
+    @Column(name="MEMBER_NO", nullable = false)
+    private Long memberNo;
 
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="COMMENT_PARENT", referencedColumnName = "COMMENT_NO")
-    private CommentEntity commentEntity;
+//    @ManyToOne(fetch=FetchType.LAZY)
+//    @JoinColumn(name="COMMUNITY_NO", referencedColumnName = "COMMUNITY_NO")
+//    private CommunityEntity communityEntity;
+
+    @Column(name="COMMUNITY_NO", nullable = false)
+    private Long communityNo;
+
+//    @ManyToOne(fetch=FetchType.LAZY)
+//    @JoinColumn(name="COMMENT_PARENT", referencedColumnName = "COMMENT_NO")
+//    private CommentEntity commentEntity;
+
+    @Column(name="COMMENT_PARENT")
+    private Long parentCommentNo;
 
     @Column(name="COMMENT_CONTENT", nullable=false)
     private String content;
@@ -39,14 +48,22 @@ public class CommentEntity {
     @Column(name="COMMENT_DATE", nullable=false)
     private Date commentDate;
 
+    @Column(name="MODIFIED_DATE")
+    private Date modifiedDate;
+
+    @Column(name="DELETED_DATE")
+    private Date deletedDate;
+
     public CommentDto toDto(){
         return CommentDto.builder()
                 .commentNo(this.commentNo)
                 .writer(this.memberEntity.getMemberNickName())
-                .communityNo(this.communityEntity.getCommunityNo())
-                .parentNo(this.commentEntity.getCommentNo())
+                .communityNo(this.communityNo)
+                .parentNo(this.parentCommentNo)
                 .content(this.content)
                 .commentDate(this.commentDate)
+                .modifiedDate(this.modifiedDate)
+                .deletedDate(this.deletedDate)
                 .build();
     }
 }

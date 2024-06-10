@@ -39,6 +39,13 @@ public class RcommunityEntity {
     @Column(name="HANDLED_YN")
     private String handledYN;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="ADMIN_NO", referencedColumnName = "MEMBER_NO")
+    private MemberEntity adminEntity;
+
+    @Column(name="HANDLED_DATE")
+    private Date handledDate;
+
     public RcommunityDto toDto(){
         return RcommunityDto.builder()
                 .bReportNo(this.bReportNo)
@@ -47,6 +54,8 @@ public class RcommunityEntity {
                 .reportType(this.reportType)
                 .reportDate(this.reportDate)
                 .handledYN(this.handledYN)
+                .admin(this.adminEntity.getMemberNickName())
+                .handledDate(this.handledDate)
                 .build();
     }
 }

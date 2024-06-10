@@ -24,7 +24,10 @@ public class CommunityDto {
     private String fileUpload;
     private String fileModified;
     private Date communityDate;
+    private Date modifiedDate;
+    private Date deletedDate;
     private String readCount;
+
 
     public CommunityEntity toEntity(){
         return CommunityEntity.builder()
@@ -36,6 +39,8 @@ public class CommunityDto {
                 .fileModified(this.fileModified)
                 .communityDate(this.communityDate)
                 .readCount(this.readCount)
+                .modifiedDate(this.modifiedDate)
+                .deletedDate(this.deletedDate)
                 .build();
     }
 }

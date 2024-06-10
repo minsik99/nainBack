@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Date;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,7 +55,7 @@ public class CommunityController {
             HttpServletRequest request, @RequestParam(name="page") int page,
             @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
         log.info("/community/mylist{}, {}, {}", page, limit, sort);
-        String token = request.getHeader("Authorization").substring("Bearer".length());
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
@@ -88,21 +89,17 @@ public class CommunityController {
 
     //댓글 등록
     @PostMapping("/comment/new")
-    public ResponseEntity<Void> insertComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<Void> insertComment(HttpServletRequest request, @RequestBody CommentDto commentDto){
         log.info("/community/detail/comment{}", commentDto);
 
-        CommunityDto communityDto = new CommunityDto();
-        communityDto.setCommunityNo(commentDto.getCommunityNo());
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
-        MemberDto memberDto = new MemberDto();
-        memberDto.setMemberNickName(commentDto.getWriter());
-
-        CommentDto parentDto = new CommentDto();
-        parentDto.setCommentNo(commentDto.getParentNo());
-
-        commentDto.setCommunityDto(communityDto);
-        commentDto.setMemberDto(memberDto);
-        commentDto.setCommentDto(parentDto);
+        MemberDto loginMember = memberService.findById(memberNo);
+        if(loginMember == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        commentDto.setMemberNo(memberNo);
 
         commentService.insertComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -110,32 +107,39 @@ public class CommunityController {
 
     //댓글 수정
     @PutMapping("/comment/modify")
-    public ResponseEntity<Void> modifyComment(@RequestBody CommentDto commentDto){
+    public ResponseEntity<Void> modifyComment(HttpServletRequest request, @RequestBody CommentDto commentDto){
         log.info("/community/detail/comment{}", commentDto);
 
-        CommunityDto communityDto = new CommunityDto();
-        communityDto.setCommunityNo(commentDto.getCommunityNo());
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
-        MemberDto memberDto = new MemberDto();
-        memberDto.setMemberNickName(commentDto.getWriter());
+        MemberDto loginMember = memberService.findById(memberNo);
+        if(loginMember == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
 
-        CommentDto parentDto = new CommentDto();
-        parentDto.setCommentNo(commentDto.getParentNo());
-
-        commentDto.setCommunityDto(communityDto);
-        commentDto.setMemberDto(memberDto);
-        commentDto.setCommentDto(parentDto);
+        commentDto.setMemberNo(memberNo);
+        commentDto.setModifiedDate(new Date());
         commentService.updateComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
-    //댓글 삭제
-    @DeleteMapping("/comment/del")
-    public ResponseEntity<Void> deleteComment(@RequestBody Long commentNo){
-        log.info("/community/detail/comment{}", commentNo);
-        commentService.deleteComment(commentNo);
+    //댓글 삭제값 추가
+    @PutMapping("/comment/del")
+    public ResponseEntity<Void> deleteComment(@RequestBody CommentDto commentDto){
+        log.info("/community/del/comment{}", commentDto);
+        commentService.deleteComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
+
+    //댓글 DB 데이터 삭제
+    @DeleteMapping("/comment/{commentNo}")
+    public ResponseEntity<Void> terminateComment(@RequestBody Long commentNo){
+        log.info("/community/terminate/comment{}", commentNo);
+        commentService.terminateComment(commentNo);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
 
     //등록 ----------------------------------------------------------------------------------------------------------------------------------------------
     @PostMapping
@@ -144,10 +148,11 @@ public class CommunityController {
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
-        MemberDto loginMember = memberService.selectMember(memberNo);
+        MemberDto loginMember = memberService.findById(memberNo);
         if(loginMember == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
+
         if(!file.isEmpty()){
             String savePath = request.getServletContext().getRealPath("/community_files");
             String fileName = file.getOriginalFilename();
@@ -171,26 +176,44 @@ public class CommunityController {
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
-        MemberDto loginMember = memberService.selectMember(memberNo);
+        MemberDto loginMember = memberService.findById(memberNo);
         if(loginMember == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         communityDto.setMemberDto(loginMember);
+        communityDto.setModifiedDate(new Date());
         communityService.updateCommunity(communityDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     //삭제 -------------------------------------------------------------------------------------------------------------------------------------------------------
-    @DeleteMapping("/{communityNo")
-    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @PathVariable("communityNo") Long communityNo){
-        log.info("/delete/{}", communityNo);
+    //삭제값 입력
+    @PutMapping("/community/del")
+    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @RequestBody CommunityDto communityDto){
+        log.info("/delete/{}", communityDto);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo = jwtUtil.getMemberNoFromToken(token);
 
-        MemberDto loginMember = memberService.selectMember(memberNo);
+        MemberDto loginMember = memberService.findById(memberNo);
+
+        if(communityDto.getWriter().equals(loginMember.getMemberNickName())) {
+            communityService.deleteCommunity(communityDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }
+        return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+    }
+
+    //댓글 DB 삭제
+    @DeleteMapping("/{communityNo}")
+    public ResponseEntity<Void> terminateCommunity(HttpServletRequest request, @PathVariable("communityNo") Long communityNo){
+        log.info("/terminate/{}", communityNo);
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo = jwtUtil.getMemberNoFromToken(token);
+
+        MemberDto loginMember = memberService.findById(memberNo);
 
         if(communityService.selectOne(communityNo).getWriter().equals(loginMember.getMemberNickName())) {
-            communityService.deleteCommunity(communityNo);
+            communityService.terminateCommunity(communityNo);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);

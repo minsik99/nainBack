@@ -11,4 +11,5 @@ public interface CommunityRepositoryCustom{
     Page<CommunityEntity> searchTitle(String keyword, Pageable pageable);
     Page<CommunityEntity> searchWriter(String keyword, Pageable pageable);
     Page<CommunityEntity> searchContent(String keyword, Pageable pageable);
+    public Page<CommunityEntity> findListAll(Pageable pageable);
 }

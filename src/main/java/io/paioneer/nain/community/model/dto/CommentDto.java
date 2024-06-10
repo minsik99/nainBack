@@ -19,26 +19,27 @@ import java.util.Date;
 public class CommentDto {
     private Long commentNo;
 
-    private MemberDto memberDto;
+    private Long memberNo;
     private String writer;
 
-    private CommunityDto communityDto;
     private Long communityNo;
-
-    private CommentDto commentDto;
     private Long parentNo;
 
     private String content;
     private Date commentDate;
+    private Date modifiedDate;
+    private Date deletedDate;
 
     public CommentEntity toEntity(){
         return CommentEntity.builder()
                 .commentNo(this.commentNo)
-                .memberEntity(this.memberDto.toEntity())
-                .communityEntity(this.communityDto.toEntity())
-                .commentEntity(this.commentDto.toEntity())
+                .memberNo(this.memberNo)
+                .communityNo(this.communityNo)
+                .parentCommentNo(this.parentNo)
                 .content(this.content)
                 .commentDate(this.commentDate)
+                .modifiedDate(this.modifiedDate)
+                .deletedDate(this.deletedDate)
                 .build();
     }
 }

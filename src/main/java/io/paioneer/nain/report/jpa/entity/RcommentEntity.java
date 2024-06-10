@@ -39,6 +39,13 @@ public class RcommentEntity {
     @Column(name="HANDLED_YN")
     private String handledYN;
 
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="ADMIN_NO", referencedColumnName = "MEMBER_NO")
+    private MemberEntity adminEntity;
+
+    @Column(name="HANDLED_DATE")
+    private Date handledDate;
+
     public RcommentDto toDto(){
         return RcommentDto.builder()
                 .cReportNo(this.cReportNo)
@@ -47,6 +54,8 @@ public class RcommentEntity {
                 .reportType(this.reportType)
                 .reportDate(this.reportDate)
                 .handledYN(this.handledYN)
+                .admin(this.adminEntity.getMemberNickName())
+                .handledDate(this.handledDate)
                 .build();
     }
 }
