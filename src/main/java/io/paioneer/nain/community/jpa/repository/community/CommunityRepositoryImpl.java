@@ -22,7 +22,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
         return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.memberNo.eq(memberNo))
+                .where(communityEntity.memberEntity.memberNo.eq(memberNo))
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -53,5 +53,4 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .limit(pageable.getPageSize())
                 .fetch();
     }
-
 }

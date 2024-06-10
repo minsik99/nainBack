@@ -45,12 +45,14 @@ public class JWTUtil {
 
         // 사용자의 관리자 여부를 확인합니다.
         boolean admin = memberEntity.get().getAdmin();
+        Long memberNo = memberEntity.get().getMemberNo();
 
         // JWT를 생성합니다. 여기서는 사용자 이메일을 주체(subject)로, 관리자 여부를 클레임으로 추가합니다.
         return Jwts.builder()
                 .setSubject(userEmail)
                 .claim("admin", admin) // "admin" 클레임에 관리자 여부를 설정합니다.
                 .claim("category",category)
+                .claim("memberNo",memberNo)
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs)) // 만료 시간을 설정합니다.
                 .signWith(secretKey, SignatureAlgorithm.HS256) // 비밀키와 HS256 알고리즘으로 JWT를 서명합니다.
                 .compact(); // JWT 문자열을 생성합니다.
@@ -60,6 +62,11 @@ public class JWTUtil {
     public String getUserEmailFromToken(String token) {
         Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
         return claims.getSubject();
+    }
+
+    public Long getMemberNoFromToken(String token) {
+        Claims claims = Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+        return claims.get("memberNo", Long.class);
     }
 
     // JWT의 만료 여부를 검증합니다.

@@ -49,9 +49,9 @@ public class CommunityService {
     //수정
     public void updateCommunity(CommunityDto communityDto) {
         CommunityEntity communityEntity = communityRepository.findById(communityDto.getCommunityNo()).get();
-        log.info("updateCommunity{}", communityDto);
         communityEntity.setTitle(communityDto.getTitle());
         communityEntity.setContent(communityDto.getContent());
+        communityEntity.setCommunityDate(communityDto.getCommunityDate());
         communityRepository.save(communityEntity);
     }
 

@@ -22,7 +22,7 @@ public class MemberDto {
     private String memberName;          //회원 이름
     private String memberNickName;      //회원 닉네임
     private String subscribeYN;         //회원 구독여부
-    private String admin;               //관리자
+    private Boolean admin;               //관리자
     private Date paymentDate;           //회원 결제일
     private Date expireDate;            //회원 구독만료일
     private Date signUpDate;            //회원 가입일
