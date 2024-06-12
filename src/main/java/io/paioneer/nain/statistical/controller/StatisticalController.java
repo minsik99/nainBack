@@ -2,27 +2,22 @@ package io.paioneer.nain.statistical.controller;
 
 import io.paioneer.nain.common.Span;
 import io.paioneer.nain.statistical.model.service.StatisticalService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
 import java.util.function.Function;
 
-
+@CrossOrigin
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/Staticstical")
-
 public class StatisticalController {
     private final StatisticalService statisticalService;
 
-    public StatisticalController(StatisticalService statisticalService) {
-        this.statisticalService = statisticalService;
-    }
 
     private ResponseEntity<Long> getStatistical(Function<Span, Long> spanFunction, LocalDate begin, LocalDate end) {
         Span span = new Span(begin, end);

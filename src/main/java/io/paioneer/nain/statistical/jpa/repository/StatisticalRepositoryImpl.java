@@ -14,11 +14,9 @@ import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.time.LocalDateTime;
 
-@Repository
 @RequiredArgsConstructor
 public class StatisticalRepositoryImpl implements StatisticalRepositoryCustom {
 
-    @PersistenceContext
 
     private final JPAQueryFactory queryFactory;
     private final QSubscribeEntity subscribeEntity = QSubscribeEntity.subscribeEntity;

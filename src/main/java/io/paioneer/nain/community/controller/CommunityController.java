@@ -146,7 +146,7 @@ public class CommunityController {
 
     //삭제 -------------------------------------------------------------------------------------------------------------------------------------------------------
     //삭제값 입력
-    @PutMapping("/del/{/{communityNo}")
+    @PutMapping("/del/{communityNo}")
     public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @PathVariable(name="communityNo") Long communityNo,@RequestBody CommunityDto communityDto){
         log.info("/delete/{}", communityDto);
         String token = request.getHeader("Authorization").substring("Bearer ".length());

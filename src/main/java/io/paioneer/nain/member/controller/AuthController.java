@@ -7,14 +7,13 @@ import io.paioneer.nain.security.jwt.util.JWTUtil;
 import io.paioneer.nain.security.model.entity.RefreshToken;
 import io.paioneer.nain.security.service.RefreshService;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
