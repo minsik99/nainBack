@@ -187,6 +187,8 @@ public class AuthController {
             response.sendRedirect("http://localhost:3000/member/login");
         }
     }
+
+
 }
 
 
