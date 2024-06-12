@@ -2,6 +2,7 @@ package io.paioneer.nain.member.controller;
 
 
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import io.paioneer.nain.member.jpa.repository.MemberRepository;
 import io.paioneer.nain.member.model.dto.MemberDto;
 import io.paioneer.nain.member.model.input.InputMember;
 import io.paioneer.nain.member.model.service.MemberService;
@@ -20,10 +21,13 @@ public class MemberController {
 
     private final MemberService memberService;
     private final JWTUtil jWTUtil;
+    private final MemberRepository memberRepository;
 
     @Autowired
-    public MemberController(final MemberService memberService, JWTUtil jWTUtil) {this.memberService = memberService;
+    public MemberController(final MemberService memberService, JWTUtil jWTUtil, MemberRepository memberRepository) {
+        this.memberService = memberService;
         this.jWTUtil = jWTUtil;
+        this.memberRepository = memberRepository;
     }
 
     @PostMapping("/member")
@@ -35,8 +39,15 @@ public class MemberController {
     @GetMapping("/mypage")
     public ResponseEntity<MemberDto> selectMemberById(HttpServletRequest request){
         String token = request.getHeader("Authorization").substring("Bearer ".length());
+        //JWTUtill 클래스를 사용하여 토큰에서 회원 번호를 추출
         Long memberNo = jWTUtil.getMemberNoFromToken(token);
-        return new ResponseEntity<>(memberService.findById(memberNo), HttpStatus.OK);
+        //회원서비스에서 회원 번호로 회원 정보를 조회
+        MemberDto memberDto = memberService.findById(memberNo);
+        // 조회된 회원정보를 반환
+        return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
+
+
+
 
 }

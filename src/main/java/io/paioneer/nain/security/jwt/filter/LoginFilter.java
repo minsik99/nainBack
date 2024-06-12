@@ -81,6 +81,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 사용자 이름을 사용하여 JWT를 생성합니다.
         String access  = jwtUtil.generateToken(username,"access",accessExpiredMs);
         String refresh  = jwtUtil.generateToken(username,"refresh",refreshExpiredMs);
+        log.info(access, refresh);
         Optional<MemberEntity> memberEntityOptional = memberService.findByMemberEmail(username);
         if(memberEntityOptional.isPresent()){
             MemberEntity memberEntity = memberEntityOptional.get();

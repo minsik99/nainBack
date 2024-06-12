@@ -23,9 +23,52 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public Page<CommunityEntity> findListAll(Pageable pageable){
         return  (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.deletedDate.eq(null))
+                .where(communityEntity.deletedDate.isNull())
                 .limit(pageable.getPageSize())
                 .fetch();
+    }
+
+    @Override
+    public long countMyList(Long memberNo) {
+        return queryFactory
+                .select(communityEntity.count())
+                .from(communityEntity)
+                .where(communityEntity.memberEntity.memberNo.eq(memberNo)
+                        .and(communityEntity.deletedDate.isNull()))
+                .fetchOne();
+    }
+
+    @Override
+    public long searchTitleCount(String keyword, Pageable pageable) {
+        return queryFactory
+                .select(communityEntity.count())
+                .from(communityEntity)
+                .where(communityEntity.title.like("%" + keyword + "%")
+                        .and(communityEntity.deletedDate.isNull()))
+                .limit(pageable.getPageSize())
+                .fetchOne();
+    }
+
+    @Override
+    public long searchWriterCount(String keyword, Pageable pageable) {
+        return queryFactory
+                .select(communityEntity.count())
+                .from(communityEntity)
+                .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
+                        .and(communityEntity.deletedDate.isNull()))
+                .limit(pageable.getPageSize())
+                .fetchOne();
+    }
+
+    @Override
+    public long searchContentCount(String keyword, Pageable pageable) {
+        return queryFactory
+                .select(communityEntity.count())
+                .from(communityEntity)
+                .where(communityEntity.content.like("%" + keyword + "%")
+                        .and(communityEntity.deletedDate.isNull()))
+                .limit(pageable.getPageSize())
+                .fetchOne();
     }
 
     //내 글 목록 조회
@@ -33,8 +76,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
         return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.memberEntity.memberNo.eq(memberNo))
-                .and(communityEntity.deletedDate.eq(null))
+                .where(communityEntity.memberEntity.memberNo.eq(memberNo)
+                .and(communityEntity.deletedDate.isNull()))
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -44,8 +87,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public Page<CommunityEntity> searchTitle(String keyword, Pageable pageable) {
         return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.title.like("%" + keyword + "%"))
-                .and(communityEntity.deletedDate.eq(null))
+                .where(communityEntity.title.like("%" + keyword + "%")
+                .and(communityEntity.deletedDate.isNull()))
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -55,8 +98,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public Page<CommunityEntity> searchWriter(String keyword, Pageable pageable) {
         return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%"))
-                .and(communityEntity.deletedDate.eq(null))
+                .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
+                .and(communityEntity.deletedDate.isNull()))
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -66,8 +109,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public Page<CommunityEntity> searchContent(String keyword, Pageable pageable) {
         return (Page<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.content.like("%" + keyword + "%"))
-                .and(communityEntity.deletedDate.eq(null))
+                .where(communityEntity.content.like("%" + keyword + "%")
+                .and(communityEntity.deletedDate.isNull()))
                 .limit(pageable.getPageSize())
                 .fetch();
     }

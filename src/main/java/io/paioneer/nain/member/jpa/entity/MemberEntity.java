@@ -18,19 +18,21 @@ import java.time.LocalDateTime;
 public class MemberEntity {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MEMBER_NO")
+    @SequenceGenerator(name = "SEQ_MEMBER_NO", sequenceName = "SEQ_MEMBER_NO", allocationSize = 1)
     @Column(name="MEMBER_NO", nullable = false)
     private Long memberNo;            //회원 번호
 
     @Column(name="MEMBER_EMAIL", nullable = false, unique = true)
     private String memberEmail;         //회원 이메일, 아이디로 사용됨
 
-    @Column(name="MEMBER_PWD", nullable = true)
+    @Column(name="MEMBER_PWD")
     private String memberPwd;           //회원 비밀번호
 
     @Column(name="MEMBER_NAME", nullable = false)
     private String memberName;          //회원 이름
 
-    @Column(name="MEMBER_NICKNAME")
+    @Column(name="NICKNAME")
     private String memberNickName;      //회원 닉네임
 
     @Column(name="SUBSCRIBE_YN")
@@ -59,6 +61,15 @@ public class MemberEntity {
 
     @Column(name="SNS_ACCESS_TOKEN", nullable = true)
     private String snsAccessToken;
+
+    @PrePersist
+    public void prePersist(){
+        this.signUpDate = LocalDateTime.now();
+        this.paymentDate = LocalDateTime.now();
+        this.expireDate = LocalDateTime.now();
+        this.withDrawalDate = LocalDateTime.now();
+        this.memberUpdate = LocalDateTime.now();
+    }
 
     public MemberDto toDto() {
         return MemberDto.builder()

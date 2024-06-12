@@ -1,5 +1,6 @@
 package io.paioneer.nain.member.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,8 @@ public class MemberDto {
     private Boolean admin;               //관리자
     private LocalDateTime paymentDate;           //회원 결제일
     private LocalDateTime expireDate;            //회원 구독만료일
-    private LocalDateTime signUpDate;            //회원 가입일
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private LocalDateTime signUpDate;       //회원 가입일
     private LocalDateTime withDrawalDate;        //회원 탈퇴일
     private LocalDateTime memberUpdate;          //회원 정보수정일
 

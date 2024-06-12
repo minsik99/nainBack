@@ -51,14 +51,7 @@ public class MemberService {
         return memberRepository.findByMemberEmail(username);
     }
 
-    @Transactional
-    public MemberEntity signUpMember(MemberEntity memberEntity){
-        memberRepository.findByMemberEmail(memberEntity.getMemberEmail())
-                .ifPresent(u -> {
-                    throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"이메일이 이미 사용중입니다.");
-                });
-        return memberRepository.save(memberEntity);
-    }
+
 
     public MemberDto findById(Long memberNo) {
         return memberRepository.findById(memberNo).get().toDto();

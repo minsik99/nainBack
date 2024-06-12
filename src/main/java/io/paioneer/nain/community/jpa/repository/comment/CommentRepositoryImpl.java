@@ -14,15 +14,15 @@ import java.util.List;
 public class CommentRepositoryImpl implements CommentRepositoryCustom {
     private final JPAQueryFactory queryFactory;
     private final EntityManager entityManger;
-    private QCommentEntity commentEntity = QCommentEntity.commentEntity1;
+    private QCommentEntity commentEntity = QCommentEntity.commentEntity;
 
     //삭제 상태가 아닌 댓글 목록 조회
     @Override
     public List<CommentEntity> findList(Long communityNo) {
         return queryFactory
                 .selectFrom(commentEntity)
-                .where(commentEntity.communityEntity.communityNo.eq(communityNo)
-                .and(commentEntity.deletedDate.eq(null))
+                .where(commentEntity.communityNo.eq(communityNo)
+                .and(commentEntity.deletedDate.isNull()))
                 .orderBy(commentEntity.commentDate.desc())
                 .fetch();
     }

@@ -70,7 +70,7 @@ public class CustomLogoutHandler implements LogoutHandler {
                     log.info("Kakao logout response = {}", kakaoResponse.getBody());
                 }
 
-                Optional<RefreshToken> refresh = refreshService.findByUserId(member.getMemberNo());
+                Optional<RefreshToken> refresh = refreshService.findByMemberNo(member.getMemberNo());
                 refresh.ifPresent(refreshToken -> refreshService.deleteByRefresh(refreshToken.getTokenValue()));
             }
         }

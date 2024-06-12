@@ -1,6 +1,7 @@
 package io.paioneer.nain.community.controller;
 
 import io.paioneer.nain.common.FileNameChange;
+import io.paioneer.nain.common.Paging;
 import io.paioneer.nain.community.model.dto.CommentDto;
 import io.paioneer.nain.community.model.dto.CommunityDto;
 import io.paioneer.nain.community.model.service.CommentService;
@@ -21,8 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
+import java.util.*;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,16 +42,23 @@ public class CommunityController {
     //-------------------------- 목록 조회 -----------------------------------------------------------------------------------------------------
     //전체 목록
     @GetMapping("/list")
-    public ResponseEntity<ArrayList<CommunityDto>> selectCommunityList(
+    public ResponseEntity<Map> selectCommunityList(
             @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
         log.info("/community/list{}, {}, {}", page, limit, sort);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
-        return new ResponseEntity<>(communityService.selectList(pageable), HttpStatus.OK);
+
+        Paging pg = new Paging(communityService.countCommunity(), page, limit);
+        pg.calculate();
+
+        HashMap result = new HashMap();
+        result.put("communities", communityService.selectList(pageable));
+        result.put("pg", pg);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     //내 글 보기
     @GetMapping("/mylist")
-    public ResponseEntity<ArrayList<CommunityDto>> selectMyList(
+    public ResponseEntity<Map> selectMyList(
             HttpServletRequest request, @RequestParam(name="page") int page,
             @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
         log.info("/community/mylist{}, {}, {}", page, limit, sort);
@@ -59,87 +66,38 @@ public class CommunityController {
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
-        return new ResponseEntity<>(communityService.selectMyList(memberNo, pageable), HttpStatus.OK);
+
+        Paging pg = new Paging(communityService.countMyList(memberNo), page, limit);
+        pg.calculate();
+
+        HashMap result = new HashMap();
+        result.put("communities", communityService.selectList(pageable));
+        result.put("pg", pg);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     //검색결과 목록
     @GetMapping("/search/{keyword}")
-    public ResponseEntity<ArrayList<CommunityDto>> selectSearchList(
+    public ResponseEntity<Map> selectSearchList(
             @PathVariable("keyword") String keyword, @RequestParam(name="type") String type,
             @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
         log.info("/community/search{}, {}, {}", keyword, type, page, sort);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
-        return new ResponseEntity<>(communityService.selectSearchList(type, keyword, pageable), HttpStatus.OK);
-    }
 
-    //상세 보기 ---------------------------------------------------------------------------------------------------------------------------------------
-    //상세보기_communityDto
+        Paging pg = new Paging(communityService.countSearchList(type, keyword, pageable), page, limit);
+        pg.calculate();
+
+        HashMap result = new HashMap();
+        result.put("communities", communityService.selectSearchList(type, keyword, pageable));
+        result.put("pg", pg);
+        return new ResponseEntity<>(result, HttpStatus.OK);
+    }
+    //상세보기 ------------------------------------------------------------------------------------------------------------------------------------------------------
     @GetMapping("/detail/{communityNo}")
     public ResponseEntity<CommunityDto> selectCommunityDetail(@PathVariable(name="communityNo") Long communityNo){
         log.info("/community/detail{}", communityNo);
         return new ResponseEntity<>(communityService.selectOne(communityNo), HttpStatus.OK);
     }
-
-    //상세보기_commentDto
-    @GetMapping("/detail/comments/{communityNo}")
-    public ResponseEntity<ArrayList<CommentDto>> selectCommentList(@PathVariable(name="communityNo") Long communityNo){
-        log.info("/community/detail/comments/{}", communityNo);
-        return new ResponseEntity<>(commentService.selectList(communityNo), HttpStatus.OK);
-    }
-
-    //댓글 등록
-    @PostMapping("/comment/new")
-    public ResponseEntity<Void> insertComment(HttpServletRequest request, @RequestBody CommentDto commentDto){
-        log.info("/community/detail/comment{}", commentDto);
-
-        String token = request.getHeader("Authorization").substring("Bearer ".length());
-        Long memberNo =  jwtUtil.getMemberNoFromToken(token);
-
-        MemberDto loginMember = memberService.findById(memberNo);
-        if(loginMember == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-        commentDto.setMemberNo(memberNo);
-
-        commentService.insertComment(commentDto);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-    }
-
-    //댓글 수정
-    @PutMapping("/comment/modify")
-    public ResponseEntity<Void> modifyComment(HttpServletRequest request, @RequestBody CommentDto commentDto){
-        log.info("/community/detail/comment{}", commentDto);
-
-        String token = request.getHeader("Authorization").substring("Bearer ".length());
-        Long memberNo =  jwtUtil.getMemberNoFromToken(token);
-
-        MemberDto loginMember = memberService.findById(memberNo);
-        if(loginMember == null){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
-        commentDto.setMemberNo(memberNo);
-        commentDto.setModifiedDate(new Date());
-        commentService.updateComment(commentDto);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-    }
-
-    //댓글 삭제값 추가
-    @PutMapping("/comment/del")
-    public ResponseEntity<Void> deleteComment(@RequestBody CommentDto commentDto){
-        log.info("/community/del/comment{}", commentDto);
-        commentService.deleteComment(commentDto);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-    }
-
-    //댓글 DB 데이터 삭제
-    @DeleteMapping("/comment/{commentNo}")
-    public ResponseEntity<Void> terminateComment(@RequestBody Long commentNo){
-        log.info("/community/terminate/comment{}", commentNo);
-        commentService.terminateComment(commentNo);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
-    }
-
 
     //등록 ----------------------------------------------------------------------------------------------------------------------------------------------
     @PostMapping
@@ -169,7 +127,7 @@ public class CommunityController {
     }
 
     //수정 ----------------------------------------------------------------------------------------------------------------------------------------------------
-    @PutMapping("/{communityNo}")
+    @PutMapping("/modify/{communityNo}")
     public ResponseEntity<Void> updateCommunity(
             HttpServletRequest request, @PathVariable("communityNo") Long communityNo, @RequestBody CommunityDto communityDto){
         log.info("/update/{}", communityDto);
@@ -188,8 +146,8 @@ public class CommunityController {
 
     //삭제 -------------------------------------------------------------------------------------------------------------------------------------------------------
     //삭제값 입력
-    @PutMapping("/community/del")
-    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @RequestBody CommunityDto communityDto){
+    @PutMapping("/del/{/{communityNo}")
+    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @PathVariable(name="communityNo") Long communityNo,@RequestBody CommunityDto communityDto){
         log.info("/delete/{}", communityDto);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo = jwtUtil.getMemberNoFromToken(token);
@@ -197,14 +155,15 @@ public class CommunityController {
         MemberDto loginMember = memberService.findById(memberNo);
 
         if(communityDto.getWriter().equals(loginMember.getMemberNickName())) {
+            communityDto.setDeletedDate(new Date());
             communityService.deleteCommunity(communityDto);
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
     }
 
-    //댓글 DB 삭제
-    @DeleteMapping("/{communityNo}")
+    //글 DB 삭제
+    @DeleteMapping("/terminate/{communityNo}")
     public ResponseEntity<Void> terminateCommunity(HttpServletRequest request, @PathVariable("communityNo") Long communityNo){
         log.info("/terminate/{}", communityNo);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
@@ -217,6 +176,69 @@ public class CommunityController {
             return new ResponseEntity<>(HttpStatus.OK);
         }
         return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+    }
+
+
+    //댓글 ---------------------------------------------------------------------------------------------------------------------------------------
+    //상세보기_commentDto
+    @GetMapping("/comment/{communityNo}")
+    public ResponseEntity<ArrayList<CommentDto>> selectCommentList(@PathVariable(name="communityNo") Long communityNo){
+        log.info("/community/detail/comments/{}", communityNo);
+        return new ResponseEntity<>(commentService.selectList(communityNo), HttpStatus.OK);
+    }
+
+    //댓글 등록
+    @PostMapping("/comment")
+    public ResponseEntity<Void> insertComment(HttpServletRequest request, @RequestBody CommentDto commentDto){
+        log.info("/community/detail/comment{}", commentDto);
+
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo =  jwtUtil.getMemberNoFromToken(token);
+
+        MemberDto loginMember = memberService.findById(memberNo);
+        if(loginMember == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        commentDto.setMemberNo(memberNo);
+
+        commentService.insertComment(commentDto);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
+    //댓글 수정
+    @PutMapping("/comment/modify/{commentNo}")
+    public ResponseEntity<Void> modifyComment(HttpServletRequest request, @PathVariable(name="commentNo") Long commentNo, @RequestBody CommentDto commentDto){
+        log.info("/community/detail/comment{}", commentDto);
+
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo =  jwtUtil.getMemberNoFromToken(token);
+
+        MemberDto loginMember = memberService.findById(memberNo);
+        if(loginMember == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        commentDto.setMemberNo(memberNo);
+        commentDto.setModifiedDate(new Date());
+        commentService.updateComment(commentDto);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
+    //댓글 삭제값 추가
+    @PutMapping("/comment/del/{commentNo}")
+    public ResponseEntity<Void> deleteComment(@PathVariable(name="commentNo") Long commentNo, @RequestBody CommentDto commentDto){
+        log.info("/community/del/comment{}", commentDto);
+        commentDto.setDeletedDate(new Date());
+        commentService.deleteComment(commentDto);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+    }
+
+    //댓글 DB 데이터 삭제
+    @DeleteMapping("/comment/terminate/{commentNo}")
+    public ResponseEntity<Void> terminateComment(@RequestBody Long commentNo){
+        log.info("/community/terminate/comment{}", commentNo);
+        commentService.terminateComment(commentNo);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
 }
