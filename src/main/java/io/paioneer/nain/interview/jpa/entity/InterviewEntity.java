@@ -33,10 +33,10 @@ public class InterviewEntity {
     @Column(name="title", nullable = false)
     private String title;
 
-    @Column(name="VIDEO_SCORE", nullable = false, columnDefinition = "0")
+    @Column(name="VIDEO_SCORE", nullable = false)
     private int videoScore;
 
-    @Column(name="VOICE_SCORE", nullable = false, columnDefinition = "0")
+    @Column(name="VOICE_SCORE", nullable = false)
     private int voiceScore;
 
     @Column(name="ITV_DATE", nullable = false)
