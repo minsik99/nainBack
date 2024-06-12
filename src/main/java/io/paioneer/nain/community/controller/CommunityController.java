@@ -50,7 +50,7 @@ public class CommunityController {
         Paging pg = new Paging(communityService.countCommunity(), page, limit);
         pg.calculate();
 
-        Map result = new HashMap();
+        HashMap result = new HashMap();
         result.put("communities", communityService.selectList(pageable));
         result.put("pg", pg);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -70,7 +70,7 @@ public class CommunityController {
         Paging pg = new Paging(communityService.countMyList(memberNo), page, limit);
         pg.calculate();
 
-        Map result = new HashMap();
+        HashMap result = new HashMap();
         result.put("communities", communityService.selectList(pageable));
         result.put("pg", pg);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -87,7 +87,7 @@ public class CommunityController {
         Paging pg = new Paging(communityService.countSearchList(type, keyword, pageable), page, limit);
         pg.calculate();
 
-        Map result = new HashMap();
+        HashMap result = new HashMap();
         result.put("communities", communityService.selectSearchList(type, keyword, pageable));
         result.put("pg", pg);
         return new ResponseEntity<>(result, HttpStatus.OK);
