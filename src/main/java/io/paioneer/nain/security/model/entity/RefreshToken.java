@@ -23,7 +23,7 @@ public class RefreshToken {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "memberno", referencedColumnName = "memberno", nullable = false)
+    @JoinColumn(name = "member_no", referencedColumnName = "member_no", nullable = false)
     private MemberEntity memberEntity;
 
 //    @Column(name = "member_no")

@@ -17,7 +17,7 @@ public interface RefreshRepository extends JpaRepository<RefreshToken, UUID> {
 
     void deleteByTokenValue(String refresh);
 
-    @Query("SELECT r FROM RefreshToken r WHERE r.memberEntity.memberNo = :memberNo")
+    @Query("SELECT r FROM RefreshToken r WHERE r.memberEntity.memberNo = :member_No")
     Optional<RefreshToken> findByMemberNo(@Param("memberNo") Long memberNo);
 
 }

@@ -20,7 +20,7 @@ public class MemberEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_MEMBER_NO")
     @SequenceGenerator(name = "SEQ_MEMBER_NO", sequenceName = "SEQ_MEMBER_NO", allocationSize = 1)
-    @Column(name="MEMBERNO", nullable = false)
+    @Column(name="MEMBER_NO", nullable = false)
     private Long memberNo;            //회원 번호
 
     @Column(name="MEMBER_EMAIL", nullable = false, unique = true)
