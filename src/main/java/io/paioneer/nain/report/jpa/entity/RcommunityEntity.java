@@ -27,7 +27,7 @@ public class RcommunityEntity {
     private MemberEntity memberEntity;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="COMMENT_NO", referencedColumnName = "COMMENT_NO")
+    @JoinColumn(name="COMMUNITY_NO", referencedColumnName = "COMMUNITY_NO")
     private CommunityEntity communityEntity;
 
     @Column(name="REPORT_TYPE", nullable=false)
