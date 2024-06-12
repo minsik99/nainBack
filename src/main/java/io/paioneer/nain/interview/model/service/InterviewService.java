@@ -24,8 +24,10 @@ public class InterviewService {
         interviewRepository.save(interviewEntity);
     }
 
-    public List<InterviewDto> selectInterviewList() {
+//    public List<InterviewDto> selectInterviewList() {
+//        return interviewRepository.findAll().toDto();
+//
+//    }
 
-    }
 
 }

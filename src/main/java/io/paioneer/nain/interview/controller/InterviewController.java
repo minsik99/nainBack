@@ -28,12 +28,12 @@ public class InterviewController {
     }
 
 
-    @GetMapping("/list")
-    public ResponseEntity<List<InterviewDto>> selectInterviewList(String sotring) {
-        List<InterviewDto> interview = interviewService.selectInterviewList();
-
-        return new ResponseEntity<>(interview, HttpStatus.OK);
-    }
+//    @GetMapping("/list")
+//    public ResponseEntity<List<InterviewDto>> selectInterviewList(String sotring) {
+//        List<InterviewDto> interview = interviewService.selectInterviewList();
+//
+//        return new ResponseEntity<>(interview, HttpStatus.OK);
+//    }
 
 
 }
