@@ -12,6 +12,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Date;
+
 @Slf4j
 @RequiredArgsConstructor
 @RestController
@@ -28,7 +30,9 @@ public class ReportController {
     public ResponseEntity<Void> reportCommunity(HttpServletRequest request, @RequestBody RcommunityDto rcommunityDto){
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
-        rcommunityDto.setReporter(memberNo);
+
+        rcommunityDto.setReporter(memberService.findById(memberNo).getMemberNickName());
+        rcommunityDto.setReportDate(new Date());
         try{
             reportService.insertBReport(rcommunityDto);
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -42,7 +46,8 @@ public class ReportController {
     public ResponseEntity<Void> reportComment(HttpServletRequest request, @RequestBody RcommentDto rcommentDto){
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
-        rcommentDto.setReporter(memberNo);
+        rcommentDto.setReporter(memberService.findById(memberNo).getMemberNickName());
+        rcommentDto.setReportDate(new Date());
         try{
             reportService.insertCReport(rcommentDto);
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);

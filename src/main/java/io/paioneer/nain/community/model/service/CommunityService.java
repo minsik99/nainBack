@@ -75,7 +75,7 @@ public class CommunityService {
     }
 
 
-
+    //검색 목록 조회
     public ArrayList<CommunityDto> selectSearchList(String type, String keyword, Pageable pageable) {
         Page<CommunityEntity> entities;
         if(type.equals("title")){
@@ -90,5 +90,27 @@ public class CommunityService {
             list.add(entity.toDto());
         }
         return list;
+    }
+
+    //게시글 전체 개수 조회
+    public long countCommunity() {
+        return communityRepository.count();
+    }
+
+    //내 글 목록 개수 조회
+    public long countMyList(Long memberNo) {
+        return communityRepository.countMyList(memberNo);
+    }
+
+    public long countSearchList(String type, String keyword, Pageable pageable) {
+        long count;
+        if(type.equals("title")){
+            count = communityRepository.searchTitleCount(keyword, pageable);
+        }else if(type.equals("writer")){
+            count = communityRepository.searchWriterCount(keyword, pageable);
+        }else{
+            count = communityRepository.searchContentCount(keyword, pageable);
+        }
+        return count;
     }
 }

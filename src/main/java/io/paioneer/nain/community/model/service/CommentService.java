@@ -36,18 +36,13 @@ public class CommentService {
 
     //댓글 수정
     public void updateComment(CommentDto commentDto) {
-        CommentEntity commentEntity = commentRepository.findById(commentDto.getCommentNo()).get();
-        commentEntity.setContent(commentDto.getContent());
-        commentEntity.setCommentDate(commentDto.getCommentDate());
         commentRepository.save(commentDto.toEntity());
 
     }
 
     //삭제컬럼 값추가
     public void deleteComment(CommentDto commentDto) {
-        CommentEntity commentEntity = commentDto.toEntity();
-        commentEntity.setDeletedDate(new Date());
-        commentRepository.save(commentEntity);
+        commentRepository.save(commentDto.toEntity());
     }
 
     //DB 행 삭제

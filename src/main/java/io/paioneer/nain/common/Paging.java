@@ -38,7 +38,5 @@ public class Paging {
         this.endRow = startRow + limit - 1;
     }
 
-
-
 }
 
