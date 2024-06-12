@@ -23,8 +23,11 @@ public class RefreshToken {
     private UUID id;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "member_no", referencedColumnName = "member_no", nullable = false)
+    @JoinColumn(name = "memberno", referencedColumnName = "memberno", nullable = false)
     private MemberEntity memberEntity;
+
+//    @Column(name = "member_no")
+//    private Long memberNo;
 
     @Column(name = "token_value", nullable = false, length = 255)
     private String tokenValue;
@@ -41,7 +44,7 @@ public class RefreshToken {
     @Column(name = "member_agent")
     private String memberAgent;
 
-    @Column(length = 50)
+    @Column(name = "STATUS", length = 50)
     private String status;
 
     @PrePersist
