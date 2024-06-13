@@ -145,7 +145,7 @@ public class AuthController {
         log.info("accessToken = {}", accessToken);
 
         // 사용자 정보를 요청하기 위한 URL 및 헤더 설정
-        String userInfoUrl = "https://kapi.kakao.com/v2/member/me";
+        String userInfoUrl = "https://kapi.kakao.com/v2/user/me";
         HttpHeaders userInfoHeaders = new HttpHeaders();
         userInfoHeaders.set("Authorization", "Bearer " + accessToken);
 
@@ -158,6 +158,8 @@ public class AuthController {
         String email = userJson.getJSONObject("kakao_account").has("email") ?
                 userJson.getJSONObject("kakao_account").getString("email") : "이메일 정보가 없습니다.";
         log.info("email = {}", email);
+        String userName = userJson.getJSONObject("kakao_account").has("name") ?
+                userJson.getJSONObject("kakao_account").getString("name") : "유저 정보가 없습니다.";
 
         Optional<MemberEntity> optionalMember = memberRepository.findByMemberEmailAndLoginType(email, "kakao");
 
@@ -168,6 +170,7 @@ public class AuthController {
             MemberEntity newMemberEntity = new MemberEntity();
             newMemberEntity.setMemberEmail(email);
             newMemberEntity.setLoginType("kakao");
+            newMemberEntity.setMemberName(userName);
             newMemberEntity.setMemberPwd("");
             newMemberEntity.setAdmin(false);
             newMemberEntity.setSignUpDate(LocalDateTime.now());
