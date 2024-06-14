@@ -25,7 +25,7 @@ public class CommunityService {
 
     //글 전체목록
     public ArrayList<CommunityDto> selectList(Pageable pageable) {
-        Page<CommunityEntity> entities = communityRepository.findListAll(pageable);
+        ArrayList<CommunityEntity> entities = communityRepository.findListAll(pageable);
         ArrayList<CommunityDto> list = new ArrayList<>();
         for (CommunityEntity entity : entities) {
             list.add(entity.toDto());
@@ -66,7 +66,7 @@ public class CommunityService {
     }
 
     public ArrayList<CommunityDto> selectMyList(Long memberNo, Pageable pageable) {
-        Page<CommunityEntity> entities = communityRepository.findMyList(memberNo, pageable);
+        ArrayList<CommunityEntity> entities = communityRepository.findMyList(memberNo, pageable);
         ArrayList<CommunityDto> list = new ArrayList<>();
         for (CommunityEntity entity : entities) {
             list.add(entity.toDto());
@@ -77,7 +77,7 @@ public class CommunityService {
 
     //검색 목록 조회
     public ArrayList<CommunityDto> selectSearchList(String type, String keyword, Pageable pageable) {
-        Page<CommunityEntity> entities;
+        ArrayList<CommunityEntity> entities;
         if(type.equals("title")){
             entities = communityRepository.searchTitle(keyword, pageable);
         }else if(type.equals("writer")){

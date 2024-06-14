@@ -9,6 +9,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -20,8 +21,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //삭제된 글 이외 전체 목록 조회
     @Override
-    public Page<CommunityEntity> findListAll(Pageable pageable){
-        return  (Page<CommunityEntity>) queryFactory
+    public ArrayList<CommunityEntity> findListAll(Pageable pageable){
+        return  (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.deletedDate.isNull())
                 .limit(pageable.getPageSize())
@@ -73,8 +74,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //내 글 목록 조회
     @Override
-    public Page<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
-        return (Page<CommunityEntity>) queryFactory
+    public ArrayList<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
+        return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.memberEntity.memberNo.eq(memberNo)
                 .and(communityEntity.deletedDate.isNull()))
@@ -84,8 +85,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //제목 검색 목록 조회
     @Override
-    public Page<CommunityEntity> searchTitle(String keyword, Pageable pageable) {
-        return (Page<CommunityEntity>) queryFactory
+    public ArrayList<CommunityEntity> searchTitle(String keyword, Pageable pageable) {
+        return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.title.like("%" + keyword + "%")
                 .and(communityEntity.deletedDate.isNull()))
@@ -95,8 +96,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //작성자 검색 목록 조회
     @Override
-    public Page<CommunityEntity> searchWriter(String keyword, Pageable pageable) {
-        return (Page<CommunityEntity>) queryFactory
+    public ArrayList<CommunityEntity> searchWriter(String keyword, Pageable pageable) {
+        return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
                 .and(communityEntity.deletedDate.isNull()))
@@ -106,8 +107,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //내용 검색 목록 조회
     @Override
-    public Page<CommunityEntity> searchContent(String keyword, Pageable pageable) {
-        return (Page<CommunityEntity>) queryFactory
+    public ArrayList<CommunityEntity> searchContent(String keyword, Pageable pageable) {
+        return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.content.like("%" + keyword + "%")
                 .and(communityEntity.deletedDate.isNull()))

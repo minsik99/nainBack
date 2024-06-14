@@ -43,15 +43,15 @@ public class CommunityController {
     //전체 목록
     @GetMapping("/list")
     public ResponseEntity<Map> selectCommunityList(
-            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
-        log.info("/community/list{}, {}, {}", page, limit, sort);
+            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="sort") String sort){
+        log.info("/community/list?page={}&limit={}&sort={}", page, limit, sort);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
-
         Paging pg = new Paging(communityService.countCommunity(), page, limit);
         pg.calculate();
-
+        ArrayList<CommunityDto> list = communityService.selectList(pageable);
+        log.info(list.toString());
         HashMap result = new HashMap();
-        result.put("communities", communityService.selectList(pageable));
+        result.put("list", list);
         result.put("pg", pg);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
