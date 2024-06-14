@@ -47,7 +47,10 @@ public class CommunityController {
         log.info("/community/list?page={}&limit={}&sort={}", page, limit, sort);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
         Paging pg = new Paging(communityService.countCommunity(), page, limit);
+        log.info(pg.toString());
         pg.calculate();
+        log.info(pg.toString());
+        log.info(pageable.toString());
         ArrayList<CommunityDto> list = communityService.selectList(pageable);
         log.info(list.toString());
         HashMap result = new HashMap();
