@@ -1,16 +1,11 @@
 package io.paioneer.nain.statistical.jpa.repository;
 
 import com.querydsl.core.types.Expression;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.paioneer.nain.common.Span;
-import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.member.jpa.entity.QMemberEntity;
 import io.paioneer.nain.subscribe.jpa.entity.QSubscribeEntity;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Repository;
 import java.sql.Date;
 import java.time.LocalDateTime;
 
@@ -22,14 +17,17 @@ public class StatisticalRepositoryImpl implements StatisticalRepositoryCustom {
     private final QSubscribeEntity subscribeEntity = QSubscribeEntity.subscribeEntity;
     private final QMemberEntity memberEntity = QMemberEntity.memberEntity;
 
-
     @Override
-    public long totalAmountBetweenDates(Span span) {
-        return queryFactory
+    public Long selectYearTotalPayAmount(Span span) {
+        Integer i = queryFactory
                 .select(subscribeEntity.payAmount.sum())
                 .from(subscribeEntity)
-                .where(subscribeEntity.paymentDate.between(Date.valueOf(span.getBegin()),Date.valueOf(span.getEnd())))
+                .where(subscribeEntity.paymentDate.between(Date.valueOf(span.getBegin()), Date.valueOf(span.getEnd())))
                 .fetchOne();
+        if (i == null) {
+            i=0;
+        }
+        return Long.valueOf(i);
     }
 
 

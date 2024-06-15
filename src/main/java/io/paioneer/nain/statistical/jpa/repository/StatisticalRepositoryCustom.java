@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public interface StatisticalRepositoryCustom {
 
-    long totalAmountBetweenDates(Span span);
+    Long selectYearTotalPayAmount(Span span);
 
     long newSubscribeCountBetweenDates(Span span);
 
