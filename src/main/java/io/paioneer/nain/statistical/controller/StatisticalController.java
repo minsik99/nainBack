@@ -2,6 +2,7 @@ package io.paioneer.nain.statistical.controller;
 
 import io.paioneer.nain.common.Span;
 import io.paioneer.nain.statistical.model.service.StatisticalService;
+import io.paioneer.nain.subscribe.model.dto.YearlySubscribePaymentDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -9,15 +10,15 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.function.Function;
 
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/Staticstical")
+@RequestMapping("/staticstical")
 public class StatisticalController {
     private final StatisticalService statisticalService;
-
 
     private ResponseEntity<Long> getStatistical(Function<Span, Long> spanFunction, LocalDate begin, LocalDate end) {
         Span span = new Span(begin, end);
@@ -30,9 +31,10 @@ public class StatisticalController {
     }
 
     //매출 통계
-    @GetMapping("/totalPayAmount")
-    public ResponseEntity<Long> totalPayAmount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
-        return getStatistical(statisticalService::selectTotalPayAmount, begin, end);
+    @GetMapping("/yeartotalpayamount")
+    public ResponseEntity<?> totalPayAmount(){
+        List<YearlySubscribePaymentDto> dto = statisticalService.selectYearTotalPayAmount();
+        return ResponseEntity.status(HttpStatus.OK).body(dto);
     }
 
     //신규구독자 통계
