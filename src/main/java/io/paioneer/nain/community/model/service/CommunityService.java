@@ -43,6 +43,7 @@ public class CommunityService {
 
     //등록
     public void insertCommunity(CommunityDto communityDto) {
+        communityDto.setCommunityNo(communityRepository.findLastNo() + 1);
         communityRepository.save(communityDto.toEntity());
     }
 

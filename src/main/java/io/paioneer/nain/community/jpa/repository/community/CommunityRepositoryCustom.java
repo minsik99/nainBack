@@ -18,4 +18,5 @@ public interface CommunityRepositoryCustom{
     long searchTitleCount(String keyword, Pageable pageable);
     long searchWriterCount(String keyword, Pageable pageable);
     long searchContentCount(String keyword, Pageable pageable);
+    Long findLastNo();
 }

@@ -76,6 +76,14 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .fetchOne();
     }
 
+    @Override
+    public Long findLastNo() {
+        return queryFactory
+                .select(communityEntity.communityNo.max())
+                .from(communityEntity)
+                .fetchOne();
+    }
+
     //내 글 목록 조회
     @Override
     public ArrayList<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
@@ -95,6 +103,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .selectFrom(communityEntity)
                 .where(communityEntity.title.like("%" + keyword + "%")
                 .and(communityEntity.deletedDate.isNull()))
+                .orderBy()
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
