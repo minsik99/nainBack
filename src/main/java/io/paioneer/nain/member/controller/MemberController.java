@@ -31,8 +31,8 @@ public class MemberController {
     }
 
     @PostMapping("/member")
-    public ResponseEntity<?> signUpMember(@RequestBody InputMember member){
-        MemberEntity newMember = memberService.signUpMember(member);
+    public ResponseEntity<?> signUpMember(@RequestBody MemberEntity memberEntity){
+        MemberEntity newMember = memberService.signUpMember(memberEntity);
         return ResponseEntity.ok(newMember);
     }
 
