@@ -1,4 +1,4 @@
-package io.paioneer.nain.subscribe.model.dto;
+package io.paioneer.nain.statistical.model.dto;
 
 import lombok.*;
 
@@ -9,5 +9,5 @@ import lombok.*;
 @ToString
 public class YearlySubscribePaymentDto {
     private String year;
-    private long totalAmount;
+    private long amount;
 }

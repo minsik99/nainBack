@@ -1,18 +1,23 @@
 package io.paioneer.nain.statistical.jpa.repository;
 
 import io.paioneer.nain.common.Span;
+import io.paioneer.nain.common.SpanTime;
 
 import java.time.LocalDate;
 
 public interface StatisticalRepositoryCustom {
 
-    Long selectYearTotalPayAmount(Span span);
+    Long selectYearlyTotalPayAmount(Span span);
 
-    long newSubscribeCountBetweenDates(Span span);
+    Long selectMonthlyTotalPayAmount(Span span);
 
-//    long visitorCount(Span span);
+    int countNewSubscribersInSpan(SpanTime span);
 
-    long signupCount(Span span);
+    int selectMemberCount();
 
-    long withdrawalCount(Span span);
+    int selectSubscription();
+
+    int countNewMembers(SpanTime span);
+
+    int withdrawal(SpanTime span);
 }
