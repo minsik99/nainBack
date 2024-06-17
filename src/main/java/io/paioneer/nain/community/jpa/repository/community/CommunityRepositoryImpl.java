@@ -25,6 +25,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
         return  (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.deletedDate.isNull())
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -46,6 +47,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .from(communityEntity)
                 .where(communityEntity.title.like("%" + keyword + "%")
                         .and(communityEntity.deletedDate.isNull()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchOne();
     }
@@ -57,6 +59,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .from(communityEntity)
                 .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
                         .and(communityEntity.deletedDate.isNull()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchOne();
     }
@@ -68,7 +71,16 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .from(communityEntity)
                 .where(communityEntity.content.like("%" + keyword + "%")
                         .and(communityEntity.deletedDate.isNull()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .fetchOne();
+    }
+
+    @Override
+    public Long findLastNo() {
+        return queryFactory
+                .select(communityEntity.communityNo.max())
+                .from(communityEntity)
                 .fetchOne();
     }
 
@@ -79,6 +91,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .selectFrom(communityEntity)
                 .where(communityEntity.memberEntity.memberNo.eq(memberNo)
                 .and(communityEntity.deletedDate.isNull()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -90,6 +103,8 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .selectFrom(communityEntity)
                 .where(communityEntity.title.like("%" + keyword + "%")
                 .and(communityEntity.deletedDate.isNull()))
+                .orderBy()
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -101,6 +116,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .selectFrom(communityEntity)
                 .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
                 .and(communityEntity.deletedDate.isNull()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
@@ -112,6 +128,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .selectFrom(communityEntity)
                 .where(communityEntity.content.like("%" + keyword + "%")
                 .and(communityEntity.deletedDate.isNull()))
+                .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }

@@ -42,15 +42,18 @@ public class CommunityController {
     //-------------------------- 목록 조회 -----------------------------------------------------------------------------------------------------
     //전체 목록
     @GetMapping("/list")
-    public ResponseEntity<Map> selectCommunityList(
-            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="sort") String sort){
+    public ResponseEntity<Map<String, Object>> selectCommunityList(
+            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="sort", defaultValue ="communityNo") String sort){
         log.info("/community/list?page={}&limit={}&sort={}", page, limit, sort);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
         Paging pg = new Paging(communityService.countCommunity(), page, limit);
+        log.info(pg.toString());
         pg.calculate();
+        log.info(pg.toString());
+        log.info(pageable.toString());
         ArrayList<CommunityDto> list = communityService.selectList(pageable);
         log.info(list.toString());
-        HashMap result = new HashMap();
+        Map<String, Object> result = new HashMap();
         result.put("list", list);
         result.put("pg", pg);
         return new ResponseEntity<>(result, HttpStatus.OK);
@@ -101,7 +104,7 @@ public class CommunityController {
 
     //등록 ----------------------------------------------------------------------------------------------------------------------------------------------
     @PostMapping
-    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestParam(name="community") CommunityDto community, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestBody CommunityDto community, @RequestParam(required = false) MultipartFile file) throws IOException {
         log.info("/community/{}", community);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
@@ -111,18 +114,21 @@ public class CommunityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if(!file.isEmpty()){
+        if(file != null && !file.isEmpty()){
             String savePath = request.getServletContext().getRealPath("/community_files");
             String fileName = file.getOriginalFilename();
             String fileRename = FileNameChange.change(fileName, "yyyyMMddHHmmdd");
             File saveFile = new File(savePath + "\\" + fileRename);
             file.transferTo(saveFile);
 
-            communityDto.setFileUpload(fileName);
-            communityDto.setFileModified(fileRename);
+            community.setFileUpload(fileName);
+            community.setFileModified(fileRename);
         }
-        communityDto.setMemberDto(loginMember);
-        communityService.insertCommunity(communityDto);
+        community.setMemberDto(loginMember);
+        community.setCommunityDate(new Date());
+        log.info(community.toString());
+        communityService.insertCommunity(community);
+
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
