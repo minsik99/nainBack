@@ -1,7 +1,11 @@
 package io.paioneer.nain.community.controller;
 
+import com.querydsl.core.types.Order;
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import io.paioneer.nain.common.FileNameChange;
 import io.paioneer.nain.common.Paging;
+import io.paioneer.nain.community.jpa.entity.CommunityEntity;
 import io.paioneer.nain.community.model.dto.CommentDto;
 import io.paioneer.nain.community.model.dto.CommunityDto;
 import io.paioneer.nain.community.model.service.CommentService;
@@ -39,19 +43,26 @@ public class CommunityController {
 
     private final JWTUtil jwtUtil;
 
+    private OrderSpecifier<?> getOrderSpecifier(String sort) {
+        PathBuilder<CommunityEntity> entityPath = new PathBuilder<>(CommunityEntity.class, "communityEntity");
+        return switch (sort) {
+            case "oldest" -> entityPath.getString("communityDate").asc();
+            case "readCount" -> entityPath.getString("readCount").desc();
+            default -> entityPath.getString("communityDate").desc();
+        };
+    };
+
     //-------------------------- 목록 조회 -----------------------------------------------------------------------------------------------------
     //전체 목록
     @GetMapping("/list")
     public ResponseEntity<Map<String, Object>> selectCommunityList(
             @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="sort", defaultValue ="communityNo") String sort){
         log.info("/community/list?page={}&limit={}&sort={}", page, limit, sort);
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
+        Pageable pageable = PageRequest.of(page - 1, limit);
+
         Paging pg = new Paging(communityService.countCommunity(), page, limit);
-        log.info(pg.toString());
         pg.calculate();
-        log.info(pg.toString());
-        log.info(pageable.toString());
-        ArrayList<CommunityDto> list = communityService.selectList(pageable);
+        ArrayList<CommunityDto> list = communityService.selectList(pageable, getOrderSpecifier(sort));
         log.info(list.toString());
         Map<String, Object> result = new HashMap();
         result.put("list", list);
@@ -63,35 +74,35 @@ public class CommunityController {
     @GetMapping("/mylist")
     public ResponseEntity<Map> selectMyList(
             HttpServletRequest request, @RequestParam(name="page") int page,
-            @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
+            @RequestParam(name="limit") int limit, @RequestParam(name="sort", defaultValue ="communityDate") String sort){
         log.info("/community/mylist{}, {}, {}", page, limit, sort);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
+        MemberDto loginMember = memberService.findById(memberNo);
 
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
+        Pageable pageable = PageRequest.of(page - 1, limit);
 
-        Paging pg = new Paging(communityService.countMyList(memberNo), page, limit);
+        Paging pg = new Paging(communityService.countMyList(memberNo, getOrderSpecifier(sort)), page, limit);
         pg.calculate();
 
-        HashMap result = new HashMap();
-        result.put("communities", communityService.selectList(pageable));
+        Map<String, Object> result = new HashMap();
+        result.put("list", communityService.selectSearchList("writer", loginMember.getMemberNickName(), pageable, getOrderSpecifier(sort)));
         result.put("pg", pg);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     //검색결과 목록
-    @GetMapping("/search/{keyword}")
+    @GetMapping("/search")
     public ResponseEntity<Map> selectSearchList(
-            @PathVariable("keyword") String keyword, @RequestParam(name="type") String type,
-            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="Sort") String sort){
+            @RequestParam(name="keyword") String keyword, @RequestParam(name="type") String type,
+            @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="sort", defaultValue ="communityNo") String sort){
         log.info("/community/search{}, {}, {}", keyword, type, page, sort);
         Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
-
-        Paging pg = new Paging(communityService.countSearchList(type, keyword, pageable), page, limit);
+        Paging pg = new Paging(communityService.countSearchList(type, keyword, pageable, getOrderSpecifier(sort)), page, limit);
         pg.calculate();
 
-        HashMap result = new HashMap();
-        result.put("communities", communityService.selectSearchList(type, keyword, pageable));
+        Map<String, Object> result = new HashMap();
+        result.put("list", communityService.selectSearchList(type, keyword, pageable, getOrderSpecifier(sort)));
         result.put("pg", pg);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
