@@ -2,6 +2,7 @@ package io.paioneer.nain.statistical.model.service;
 
 
 import io.paioneer.nain.common.SpanTime;
+import io.paioneer.nain.member.model.dto.MemberDto;
 import io.paioneer.nain.statistical.jpa.repository.StatisticalRepository;
 import io.paioneer.nain.statistical.model.dto.*;
 import lombok.RequiredArgsConstructor;
@@ -96,8 +97,8 @@ public class StatisticalService {
 
         for (int i = 0; i < 30; i++) {
             LocalDate date = now.minusDays(i);
-            LocalDateTime beginDate = date.atStartOfDay();  // 00:00:00
-            LocalDateTime endDate = date.atTime(LocalTime.MAX);  // 23:59:59.999999999
+            LocalDateTime beginDate = date.atStartOfDay();
+            LocalDateTime endDate = date.atTime(LocalTime.MAX);
             SpanTime span = new SpanTime(beginDate, endDate);
             int newMembers = statisticalRepository.countNewMembers(span);
             String formattedDate = date.format(formatter);
@@ -115,8 +116,8 @@ public class StatisticalService {
 
         for (int i = 30; i > 0; i--) {
             LocalDate date = now.minusDays(i);
-            LocalDateTime beginDate = date.atStartOfDay();  // 00:00:00
-            LocalDateTime endDate = date.atTime(LocalTime.MAX);  // 23:59:59.999999999
+            LocalDateTime beginDate = date.atStartOfDay();
+            LocalDateTime endDate = date.atTime(LocalTime.MAX);
             SpanTime span = new SpanTime(beginDate, endDate);
             int withdrawal = statisticalRepository.withdrawal(span);
             withdrawalAccumulation += withdrawal;
@@ -125,4 +126,5 @@ public class StatisticalService {
         }
         return withdrawalDtoList;
     }
+
 }

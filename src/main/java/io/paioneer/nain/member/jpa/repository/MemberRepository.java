@@ -17,4 +17,6 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     Optional<MemberEntity> findByMemberNo(Long memberNo);
 
     List<MemberEntity> findByMemberNameContaining(String MemberName);
+
+    List<MemberEntity> findByMemberEmailIn(List<String> admin);
 }
