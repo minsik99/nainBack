@@ -8,12 +8,10 @@ import io.paioneer.nain.common.SpanTime;
 import io.paioneer.nain.member.jpa.entity.QMemberEntity;
 import io.paioneer.nain.subscribe.jpa.entity.QSubscribeEntity;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
 
-@Slf4j
 @RequiredArgsConstructor
 public class StatisticalRepositoryImpl implements StatisticalRepositoryCustom {
 
