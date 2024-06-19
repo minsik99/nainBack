@@ -53,9 +53,16 @@ public class MemberService {
         return memberRepository.findByMemberEmail(username);
     }
 
+    @Transactional
     public MemberDto findById(Long memberNo) {
         return memberRepository.findById(memberNo).get().toDto();
     }
+
+    @Transactional
+    public void updateMemberInfo(MemberDto memberDto) {
+        memberRepository.findById(memberDto.getMemberNo());
+    }
+
 }
 
 
