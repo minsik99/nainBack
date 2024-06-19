@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 @Builder
@@ -48,14 +49,16 @@ public class CommunityEntity {
     private Date deletedDate;
 
     @Column(name="READCOUNT", nullable = false)
-    private String readCount;
+    private Long readCount;
 
 
 
 
     public CommunityDto toDto(){
+
         return CommunityDto.builder()
                 .communityNo(this.communityNo)
+                .memberDto(this.memberEntity.toDto())
                 .writer(this.memberEntity.getMemberNickName())
                 .title(this.title)
                 .content(this.content)

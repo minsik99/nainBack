@@ -62,6 +62,7 @@ public class CommunityController {
 
         Paging pg = new Paging(communityService.countCommunity(), page, limit);
         pg.calculate();
+        log.info(pg.toString());
         ArrayList<CommunityDto> list = communityService.selectList(pageable, getOrderSpecifier(sort));
         log.info(list.toString());
         Map<String, Object> result = new HashMap();
@@ -107,8 +108,8 @@ public class CommunityController {
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
     //상세보기 ------------------------------------------------------------------------------------------------------------------------------------------------------
-    @GetMapping("/detail/{communityNo}")
-    public ResponseEntity<CommunityDto> selectCommunityDetail(@PathVariable(name="communityNo") Long communityNo){
+    @GetMapping("/detail")
+    public ResponseEntity<CommunityDto> selectCommunityDetail(@RequestParam(name="communityNo") Long communityNo){
         log.info("/community/detail{}", communityNo);
         return new ResponseEntity<>(communityService.selectOne(communityNo), HttpStatus.OK);
     }
@@ -198,10 +199,12 @@ public class CommunityController {
 
     //댓글 ---------------------------------------------------------------------------------------------------------------------------------------
     //상세보기_commentDto
-    @GetMapping("/comment/{communityNo}")
-    public ResponseEntity<ArrayList<CommentDto>> selectCommentList(@PathVariable(name="communityNo") Long communityNo){
+    @GetMapping("/comment")
+    public ResponseEntity<ArrayList<CommentDto>> selectCommentList(@RequestParam(name="communityNo") Long communityNo){
         log.info("/community/detail/comments/{}", communityNo);
-        return new ResponseEntity<>(commentService.selectList(communityNo), HttpStatus.OK);
+        ArrayList<CommentDto> list = commentService.selectList(communityNo);
+        log.info(list.toString());
+        return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
     //댓글 등록

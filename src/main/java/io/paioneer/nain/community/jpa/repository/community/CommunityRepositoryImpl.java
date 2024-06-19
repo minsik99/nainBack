@@ -52,7 +52,6 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .from(communityEntity)
                 .where(communityEntity.title.like("%" + keyword + "%")
                         .and(communityEntity.deletedDate.isNull()))
-                .orderBy(entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchOne();
@@ -66,7 +65,6 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .from(communityEntity)
                 .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
                         .and(communityEntity.deletedDate.isNull()))
-                .orderBy(entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchOne();
@@ -80,7 +78,6 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .from(communityEntity)
                 .where(communityEntity.content.like("%" + keyword + "%")
                         .and(communityEntity.deletedDate.isNull()))
-                .orderBy(entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetchOne();
@@ -99,7 +96,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public ArrayList<CommunityEntity> searchTitle(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.title.like("%" + keyword + "%")
+                .where(communityEntity.title.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(communityEntity.deletedDate.isNull()))
                 .orderBy(entityPath)
                 .offset(pageable.getOffset())
@@ -112,7 +109,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public ArrayList<CommunityEntity> searchWriter(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
+                .where(communityEntity.memberEntity.memberNickName.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(communityEntity.deletedDate.isNull()))
                 .orderBy(entityPath)
                 .offset(pageable.getOffset())
@@ -125,7 +122,7 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
     public ArrayList<CommunityEntity> searchContent(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.content.like("%" + keyword + "%")
+                .where(communityEntity.content.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(communityEntity.deletedDate.isNull()))
                 .orderBy(entityPath)
                 .offset(pageable.getOffset())
