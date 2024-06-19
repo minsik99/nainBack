@@ -1,6 +1,7 @@
-package io.paioneer.nain.resume.model.dto;
+package resume.model.dto;
 
 import io.paioneer.nain.resume.jpa.entity.ResumeEntity;
+import io.paioneer.nain.resume.model.dto.ExperienceDto;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

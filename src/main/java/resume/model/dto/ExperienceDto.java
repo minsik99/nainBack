@@ -1,4 +1,4 @@
-package io.paioneer.nain.resume.model.dto;
+package resume.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.paioneer.nain.resume.jpa.entity.ExperienceEntity;

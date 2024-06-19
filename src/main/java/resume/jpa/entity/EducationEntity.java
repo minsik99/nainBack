@@ -1,4 +1,4 @@
-package io.paioneer.nain.resume.jpa.entity;
+package resume.jpa.entity;
 
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.resume.model.dto.EducationDto;

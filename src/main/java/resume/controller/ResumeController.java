@@ -1,4 +1,4 @@
-package io.paioneer.nain.resume.controller;
+package resume.controller;
 
 import io.paioneer.nain.resume.model.dto.ResumeDto;
 import io.paioneer.nain.resume.model.service.ResumeService;
