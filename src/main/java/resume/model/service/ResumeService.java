@@ -1,4 +1,4 @@
-package io.paioneer.nain.resume.model.service;
+package resume.model.service;
 
 import io.paioneer.nain.resume.jpa.entity.ResumeEntity;
 import io.paioneer.nain.resume.jpa.repository.ResumeRepository;

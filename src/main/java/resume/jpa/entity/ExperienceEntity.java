@@ -1,4 +1,4 @@
-package io.paioneer.nain.resume.jpa.entity;
+package resume.jpa.entity;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
