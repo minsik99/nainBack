@@ -27,8 +27,8 @@ public class Paging {
 
     public void calculate() {
         this.maxPage = (int)((double)listCount / limit + 0.9);
-        this.startPage = (int)(((double)currentPage / limit + 0.9) - 1) * limit + 1;
-        this.endPage = startPage + limit - 1;
+        this.startPage = (int)(((double)currentPage / 10 + 0.9) - 1) * 10 + 1;
+        this.endPage = startPage + 9;
 
         if(maxPage < endPage) {
             endPage = maxPage;

@@ -47,8 +47,12 @@ public class CommunityService {
 
     //등록
     public void insertCommunity(CommunityDto communityDto) {
-        communityDto.setCommunityNo(communityRepository.findLastNo() + 1);
-        communityDto.setReadCount(String.valueOf(0));
+        if(communityDto.getCommunityNo() == null) {
+            communityDto.setCommunityNo(1L);
+        }else{
+            communityDto.setCommunityNo(communityRepository.findLastNo() + 1);
+        }
+        communityDto.setReadCount(0L);
         communityRepository.save(communityDto.toEntity());
     }
 

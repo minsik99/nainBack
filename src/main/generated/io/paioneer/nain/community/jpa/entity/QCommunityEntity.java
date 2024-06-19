@@ -38,7 +38,7 @@ public class QCommunityEntity extends EntityPathBase<CommunityEntity> {
 
     public final DateTimePath<java.util.Date> modifiedDate = createDateTime("modifiedDate", java.util.Date.class);
 
-    public final StringPath readCount = createString("readCount");
+    public final NumberPath<Long> readCount = createNumber("readCount", Long.class);
 
     public final StringPath title = createString("title");
 

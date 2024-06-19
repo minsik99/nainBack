@@ -26,7 +26,7 @@ public class CommunityDto {
     private Date communityDate;
     private Date modifiedDate;
     private Date deletedDate;
-    private String readCount;
+    private Long readCount;
 
 
     public CommunityEntity toEntity(){
