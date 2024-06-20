@@ -2,10 +2,8 @@ package io.paioneer.nain.resume.model.service;
 
 
 import io.paioneer.nain.resume.jpa.entity.ActivityEntity;
-import io.paioneer.nain.resume.jpa.entity.EducationEntity;
 import io.paioneer.nain.resume.jpa.repository.ActivityRepository;
 import io.paioneer.nain.resume.model.dto.ActivityDto;
-import io.paioneer.nain.resume.model.dto.EducationDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

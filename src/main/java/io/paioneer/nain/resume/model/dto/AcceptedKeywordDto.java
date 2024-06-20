@@ -1,6 +1,5 @@
 package io.paioneer.nain.resume.model.dto;
 
-import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.resume.jpa.entity.AcceptedKeywordEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;

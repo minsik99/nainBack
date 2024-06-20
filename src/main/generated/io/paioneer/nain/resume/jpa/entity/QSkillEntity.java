@@ -44,7 +44,7 @@ public class QSkillEntity extends EntityPathBase<SkillEntity> {
 
     public QSkillEntity(Class<? extends SkillEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.resumeEntity = inits.isInitialized("resumeEntity") ? new QResumeEntity(forProperty("resumeEntity"), inits.get("resumeEntity")) : null;
+        this.resumeEntity = inits.isInitialized("resumeEntity") ? new QResumeEntity(forProperty("resumeEntity")) : null;
     }
 
 }
