@@ -1,4 +1,4 @@
-package io.paioneer.nain.resume.jpa.entity;
+package resume.jpa.entity;
 
 import static com.querydsl.core.types.PathMetadataFactory.*;
 
@@ -15,7 +15,7 @@ import com.querydsl.core.types.Path;
 @Generated("com.querydsl.codegen.DefaultEntitySerializer")
 public class QResumeEntity extends EntityPathBase<ResumeEntity> {
 
-    private static final long serialVersionUID = 85318482L;
+    private static final long serialVersionUID = 1995303271L;
 
     public static final QResumeEntity resumeEntity = new QResumeEntity("resumeEntity");
 

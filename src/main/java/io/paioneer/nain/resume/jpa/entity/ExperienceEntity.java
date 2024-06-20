@@ -1,7 +1,5 @@
 package io.paioneer.nain.resume.jpa.entity;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.resume.model.dto.ExperienceDto;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

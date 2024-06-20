@@ -2,16 +2,12 @@ package io.paioneer.nain.resume.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.paioneer.nain.resume.jpa.entity.ActivityEntity;
-import io.paioneer.nain.resume.jpa.entity.ResumeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
-
-import static io.paioneer.nain.resume.jpa.entity.QActivityEntity.activityEntity;
 
 @Builder
 @Data
