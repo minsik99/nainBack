@@ -1,0 +1,306 @@
+-- 외래 키 제약 조건 비활성화
+ALTER TABLE TB_COMMENT_REPORT DISABLE CONSTRAINT CREPORT_FK_MEMBER_NO;
+ALTER TABLE TB_COMMENT_REPORT DISABLE CONSTRAINT CREPORT_FK_ADMIN_NO;
+
+-- 댓글 신고 테이블 데이터 삭제
+TRUNCATE TABLE TB_COMMENT_REPORT;
+
+-- 기존 테이블 데이터 삭제
+TRUNCATE TABLE TB_MEMBER;
+TRUNCATE TABLE TB_SUBSCRIBE;
+TRUNCATE TABLE TB_CB_COMMENT;
+TRUNCATE TABLE TB_COMMENT_REPORT;
+TRUNCATE TABLE TB_BOARD_REPORT;
+
+
+-- 외래 키 제약 조건 다시 활성화
+ALTER TABLE TB_COMMENT_REPORT ENABLE CONSTRAINT CREPORT_FK_MEMBER_NO;
+ALTER TABLE TB_COMMENT_REPORT ENABLE CONSTRAINT CREPORT_FK_ADMIN_NO;
+
+-- 시퀀스가 이미 존재한다면 삭제
+BEGIN
+    EXECUTE IMMEDIATE 'DROP SEQUENCE MEMBER_NO_SEQ';
+EXCEPTION
+    WHEN OTHERS THEN
+        IF SQLCODE != -2289 THEN -- 시퀀스가 존재하지 않으면 무시
+            RAISE;
+        END IF;
+END;
+/
+
+-- 새로운 시퀀스 생성
+CREATE SEQUENCE MEMBER_NO_SEQ
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+DECLARE
+    v_member_no NUMBER;
+    v_email VARCHAR2(500);
+    v_name VARCHAR2(200);
+    v_nickname VARCHAR2(200);
+    v_subscribe_yn VARCHAR2(1);
+    v_admin VARCHAR2(1);
+    v_payment_date DATE;
+    v_signup_date DATE;
+    v_withdrawal_date DATE;
+    v_login_type VARCHAR2(50);
+    v_sns_access_token VARCHAR2(255);
+BEGIN
+    FOR i IN 1..3000 LOOP
+        v_member_no := MEMBER_NO_SEQ.NEXTVAL; -- SEQUENCE를 사용하여 MEMBER_NO 생성
+        
+        v_email := CASE 
+            WHEN MOD(i, 3) = 0 THEN 'user' || i || '@example.com'
+            WHEN MOD(i, 3) = 1 THEN 'member' || i || '@example.com'
+            ELSE 'customer' || i || '@example.com'
+        END;
+
+        v_name := CASE 
+            WHEN MOD(i, 3) = 0 THEN '김철수'
+            WHEN MOD(i, 3) = 1 THEN '이영희'
+            ELSE '박민수'
+        END;
+
+        v_nickname := CASE 
+            WHEN MOD(i, 3) = 0 THEN 'nick' || i
+            WHEN MOD(i, 3) = 1 THEN 'user' || i
+            ELSE 'member' || i
+        END;
+
+        v_subscribe_yn := CASE 
+            WHEN MOD(i, 2) = 0 THEN 'Y'
+            ELSE 'N'
+        END;
+
+        v_admin := CASE 
+            WHEN MOD(i, 2) = 0 THEN '1'
+            ELSE '0'
+        END;
+
+        v_payment_date := TO_DATE('2019-01-01', 'YYYY-MM-DD') + TRUNC(DBMS_RANDOM.VALUE(0, 365 * 5));
+
+        v_signup_date := TO_DATE('2024-06-19', 'YYYY-MM-DD') - TRUNC(DBMS_RANDOM.VALUE(0, 30));
+
+        v_withdrawal_date := CASE 
+            WHEN i <= 300 THEN TO_DATE('2024-06-19', 'YYYY-MM-DD') - TRUNC(DBMS_RANDOM.VALUE(0, 30))
+            ELSE NULL
+        END;
+
+        v_login_type := CASE 
+            WHEN MOD(i, 2) = 0 THEN 'email'
+            ELSE 'kakao'
+        END;
+
+        v_sns_access_token := SYS_GUID();
+
+        INSERT INTO TB_MEMBER (
+            MEMBER_NO, MEMBER_EMAIL, MEMBER_PWD, MEMBER_NAME, NICKNAME, 
+            SUBSCRIBE_YN, ADMIN, PAYMENT_DATE, EXPIRE_DATE, SIGNUP_DATE, 
+            WITHDRAWAL_DATE, MEMBER_UPDATE, LOGIN_TYPE, SNS_ACCESS_TOKEN
+        ) VALUES (
+            v_member_no,
+            v_email,
+            DBMS_RANDOM.STRING('x', 10),
+            v_name,
+            v_nickname,
+            v_subscribe_yn,
+            v_admin,
+            v_payment_date,
+            NULL,
+            v_signup_date,
+            v_withdrawal_date,
+            NULL,
+            v_login_type,
+            v_sns_access_token
+        );
+    END LOOP;
+END;
+/
+
+
+
+DECLARE
+    v_pay_no NUMBER;
+    v_member_no NUMBER;
+    v_pay_amount NUMBER;
+    v_payment_date DATE;
+    v_expiry_date DATE;
+BEGIN
+    FOR i IN 1..800 LOOP
+        v_pay_no := i;
+        v_member_no := TRUNC(DBMS_RANDOM.VALUE(1, 3001)); -- MEMBER_NO는 1부터 3000까지
+        v_pay_amount := TRUNC(DBMS_RANDOM.VALUE(1000, 3001) / 100) * 100;
+
+        -- 최근 한 달 내의 구독자 수를 적절히 조정
+        IF DBMS_RANDOM.VALUE(0, 1) < 0.25 THEN
+            -- 25% 확률로 최근 한 달 내의 날짜 생성
+            v_payment_date := TRUNC(SYSDATE) - TRUNC(DBMS_RANDOM.VALUE(0, 30));
+        ELSE
+            -- 나머지 75% 확률로 지난 5년 동안의 임의의 날짜 생성
+            v_payment_date := TRUNC(SYSDATE) - TRUNC(DBMS_RANDOM.VALUE(0, 365 * 5));
+        END IF;
+
+        v_expiry_date := ADD_MONTHS(v_payment_date, 1);
+
+        INSERT INTO TB_SUBSCRIBE (
+            PAY_NO, MEMBER_NO, PAY_AMOUNT, PAYMENT_DATE, EXPIRY_DATE
+        ) VALUES (
+            v_pay_no,
+            v_member_no,
+            v_pay_amount,
+            v_payment_date,
+            v_expiry_date
+        );
+    END LOOP;
+END;
+/
+
+
+DECLARE
+    v_comment_no NUMBER;
+    v_member_no NUMBER;
+    v_community_no NUMBER;
+    v_comment_parent NUMBER;
+    v_comment_content VARCHAR2(500);
+    v_comment_date DATE;
+    v_modified_date DATE;
+    v_deleted_date DATE;
+BEGIN
+    FOR i IN 1..200 LOOP
+        v_comment_no := i;
+        v_member_no := TRUNC(DBMS_RANDOM.VALUE(1, 3001)); -- MEMBER_NO는 1부터 3000까지
+        v_community_no := TRUNC(DBMS_RANDOM.VALUE(1, 1001)); -- COMMUNITY_NO는 1부터 1000까지
+        v_comment_parent := CASE 
+                                WHEN DBMS_RANDOM.VALUE(0, 1) > 0.8 THEN TRUNC(DBMS_RANDOM.VALUE(1, i)) 
+                                ELSE NULL 
+                            END; -- 20% 확률로 대댓글 생성
+        v_comment_content := DBMS_RANDOM.STRING('x', DBMS_RANDOM.VALUE(10, 100)); -- 댓글 내용은 임의의 문자열로 생성
+        v_comment_date := TRUNC(SYSDATE) - TRUNC(DBMS_RANDOM.VALUE(0, 365 * 5)); -- 5년 내의 임의의 날짜
+        v_modified_date := CASE 
+                                WHEN DBMS_RANDOM.VALUE(0, 1) > 0.7 THEN v_comment_date + TRUNC(DBMS_RANDOM.VALUE(1, 365))
+                                ELSE NULL 
+                           END; -- 30% 확률로 수정 날짜 생성
+        v_deleted_date := CASE 
+                                WHEN DBMS_RANDOM.VALUE(0, 1) > 0.9 THEN v_comment_date + TRUNC(DBMS_RANDOM.VALUE(1, 365))
+                                ELSE NULL 
+                          END; -- 10% 확률로 삭제 날짜 생성
+
+        INSERT INTO TB_CB_COMMENT (
+            COMMENT_NO, MEMBER_NO, COMMUNITY_NO, COMMENT_PARENT, COMMENT_CONTENT, COMMENT_DATE, MODIFIED_DATE, DELETED_DATE
+        ) VALUES (
+            v_comment_no,
+            v_member_no,
+            v_community_no,
+            v_comment_parent,
+            v_comment_content,
+            v_comment_date,
+            v_modified_date,
+            v_deleted_date
+        );
+    END LOOP;
+END;
+/
+
+
+DECLARE
+    v_c_report_no NUMBER;
+    v_member_no NUMBER;
+    v_comment_no NUMBER;
+    v_report_type VARCHAR2(100);
+    v_report_date DATE;
+    v_handled_yn VARCHAR2(2);
+    v_admin_no NUMBER;
+    v_handled_date DATE;
+BEGIN
+    FOR i IN 1..200 LOOP
+        v_c_report_no := i;
+        v_member_no := TRUNC(DBMS_RANDOM.VALUE(1, 3001)); -- MEMBER_NO는 1부터 3000까지
+        v_comment_no := TRUNC(DBMS_RANDOM.VALUE(1, 201)); -- COMMENT_NO는 1부터 200까지
+        v_report_type := CASE TRUNC(DBMS_RANDOM.VALUE(1, 5))
+                             WHEN 1 THEN '욕설'
+                             WHEN 2 THEN '스팸'
+                             WHEN 3 THEN '도배'
+                             WHEN 4 THEN '기타'
+                         END; -- 신고 사유를 임의로 설정
+        v_report_date := TRUNC(SYSDATE) - TRUNC(DBMS_RANDOM.VALUE(0, 365 * 5)); -- 5년 내의 임의의 날짜
+        v_handled_yn := CASE 
+                            WHEN DBMS_RANDOM.VALUE(0, 1) > 0.7 THEN 'Y' 
+                            ELSE 'N' 
+                        END; -- 30% 확률로 처리 완료
+        v_admin_no := CASE 
+                          WHEN v_handled_yn = 'Y' THEN TRUNC(DBMS_RANDOM.VALUE(1, 101)) 
+                          ELSE NULL 
+                      END; -- 처리 완료인 경우 ADMIN_NO 설정
+        v_handled_date := CASE 
+                              WHEN v_handled_yn = 'Y' THEN v_report_date + TRUNC(DBMS_RANDOM.VALUE(1, 30)) 
+                              ELSE NULL 
+                          END; -- 처리 완료인 경우 신고 날짜로부터 최대 30일 후 처리 날짜 설정
+
+        INSERT INTO TB_COMMENT_REPORT (
+            C_REPORT_NO, MEMBER_NO, COMMENT_NO, REPORT_TYPE, REPORT_DATE, HANDLED_YN, ADMIN_NO, HANDLED_DATE
+        ) VALUES (
+            v_c_report_no,
+            v_member_no,
+            v_comment_no,
+            v_report_type,
+            v_report_date,
+            v_handled_yn,
+            v_admin_no,
+            v_handled_date
+        );
+    END LOOP;
+END;
+/
+
+
+DECLARE
+    v_b_report_no NUMBER;
+    v_member_no NUMBER;
+    v_community_no NUMBER;
+    v_report_type VARCHAR2(100);
+    v_report_date DATE;
+    v_handled_yn VARCHAR2(2);
+    v_admin_no NUMBER;
+    v_handled_date DATE;
+BEGIN
+    FOR i IN 1..200 LOOP
+        v_b_report_no := i;
+        v_member_no := TRUNC(DBMS_RANDOM.VALUE(1, 3001)); -- MEMBER_NO는 1부터 3000까지
+        v_community_no := TRUNC(DBMS_RANDOM.VALUE(1, 1001)); -- COMMUNITY_NO는 1부터 1000까지
+        v_report_type := CASE TRUNC(DBMS_RANDOM.VALUE(1, 4))
+                             WHEN 1 THEN '욕설 및 비방'
+                             WHEN 2 THEN '광고'
+                             WHEN 3 THEN '도배'
+                         END; -- 신고 사유를 임의로 설정
+        v_report_date := TRUNC(SYSDATE) - TRUNC(DBMS_RANDOM.VALUE(0, 365 * 5)); -- 5년 내의 임의의 날짜
+        v_handled_yn := CASE 
+                            WHEN DBMS_RANDOM.VALUE(0, 1) > 0.7 THEN 'Y' 
+                            ELSE 'N' 
+                        END; -- 30% 확률로 처리 완료
+        v_admin_no := CASE 
+                          WHEN v_handled_yn = 'Y' THEN TRUNC(DBMS_RANDOM.VALUE(1, 101)) 
+                          ELSE NULL 
+                      END; -- 처리 완료인 경우 ADMIN_NO 설정
+        v_handled_date := CASE 
+                              WHEN v_handled_yn = 'Y' THEN v_report_date + TRUNC(DBMS_RANDOM.VALUE(1, 30)) 
+                              ELSE NULL 
+                          END; -- 처리 완료인 경우 신고 날짜로부터 최대 30일 후 처리 날짜 설정
+
+        INSERT INTO TB_BOARD_REPORT (
+            B_REPORT_NO, MEMBER_NO, COMMUNITY_NO, REPORT_TYPE, REPORT_DATE, HANDLED_YN, ADMIN_NO, HANDLED_DATE
+        ) VALUES (
+            v_b_report_no,
+            v_member_no,
+            v_community_no,
+            v_report_type,
+            v_report_date,
+            v_handled_yn,
+            v_admin_no,
+            v_handled_date
+        );
+    END LOOP;
+END;
+/
+
+    COMMIT;
