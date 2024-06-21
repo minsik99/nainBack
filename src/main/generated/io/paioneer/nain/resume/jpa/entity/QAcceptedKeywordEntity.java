@@ -19,9 +19,15 @@ public class QAcceptedKeywordEntity extends EntityPathBase<AcceptedKeywordEntity
 
     public static final QAcceptedKeywordEntity acceptedKeywordEntity = new QAcceptedKeywordEntity("acceptedKeywordEntity");
 
-    public final StringPath jobTitle = createString("jobTitle");
+    public final StringPath acceptKeyword = createString("acceptKeyword");
 
-    public final StringPath keyword = createString("keyword");
+    public final NumberPath<Long> frequency = createNumber("frequency", Long.class);
+
+    public final StringPath jobCategory = createString("jobCategory");
+
+    public final NumberPath<Long> keywordNo = createNumber("keywordNo", Long.class);
+
+    public final DateTimePath<java.util.Date> referenceDate = createDateTime("referenceDate", java.util.Date.class);
 
     public QAcceptedKeywordEntity(String variable) {
         super(AcceptedKeywordEntity.class, forVariable(variable));
