@@ -47,7 +47,7 @@ public class CommunityService {
 
     //등록
     public void insertCommunity(CommunityDto communityDto) {
-        if(communityDto.getCommunityNo() == null) {
+        if(communityRepository.findLastNo() == null) {
             communityDto.setCommunityNo(1L);
         }else{
             communityDto.setCommunityNo(communityRepository.findLastNo() + 1);
@@ -58,11 +58,7 @@ public class CommunityService {
 
     //수정
     public void updateCommunity(CommunityDto communityDto) {
-        CommunityEntity communityEntity = communityRepository.findById(communityDto.getCommunityNo()).get();
-        communityEntity.setTitle(communityDto.getTitle());
-        communityEntity.setContent(communityDto.getContent());
-        communityEntity.setCommunityDate(communityDto.getCommunityDate());
-        communityRepository.save(communityEntity);
+        communityRepository.save(communityDto.toEntity());
     }
 
     //삭제값 추가

@@ -34,8 +34,6 @@ public class QCommentEntity extends EntityPathBase<CommentEntity> {
 
     public final io.paioneer.nain.member.jpa.entity.QMemberEntity memberEntity;
 
-    public final NumberPath<Long> memberNo = createNumber("memberNo", Long.class);
-
     public final DateTimePath<java.util.Date> modifiedDate = createDateTime("modifiedDate", java.util.Date.class);
 
     public final NumberPath<Long> parentCommentNo = createNumber("parentCommentNo", Long.class);

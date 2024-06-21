@@ -19,7 +19,7 @@ import java.util.Date;
 public class CommentDto {
     private Long commentNo;
 
-    private Long memberNo;
+    private MemberDto memberDto;
     private String writer;
 
     private Long communityNo;
@@ -33,7 +33,7 @@ public class CommentDto {
     public CommentEntity toEntity(){
         return CommentEntity.builder()
                 .commentNo(this.commentNo)
-                .memberNo(this.memberNo)
+                .memberEntity(this.memberDto.toEntity())
                 .communityNo(this.communityNo)
                 .parentCommentNo(this.parentNo)
                 .content(this.content)
