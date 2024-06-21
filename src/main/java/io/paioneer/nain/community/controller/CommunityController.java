@@ -57,7 +57,7 @@ public class CommunityController {
         PathBuilder<CommunityEntity> entityPath = new PathBuilder<>(CommunityEntity.class, "communityEntity");
         return switch (sort) {
             case "oldest" -> entityPath.getString("communityDate").asc();
-            case "readCount" -> entityPath.getString("readCount").desc();
+            case "readCount" -> entityPath.getNumber("readCount", Long.class).desc();
             default -> entityPath.getString("communityDate").desc();
         };
     };
