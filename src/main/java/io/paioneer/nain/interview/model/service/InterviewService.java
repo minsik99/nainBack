@@ -7,6 +7,8 @@ import io.paioneer.nain.interview.model.dto.InterviewDto;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -20,8 +22,14 @@ public class InterviewService {
 
     public void insertInterview(Long memberNo) {
         InterviewEntity interviewEntity = new InterviewEntity();
-        interviewEntity.setMemberNo(memberNo);
+        interviewEntity.getMember().setMemberNo(memberNo);
         interviewRepository.save(interviewEntity);
+    }
+
+    public Page<InterviewDto> selectInterviewList(Long memberNo, Pageable pageable) {
+        Page<InterviewEntity> interviewEntity = interviewRepository.findAllByMemberNo(memberNo, pageable);
+        Page<InterviewDto> interviewDto = interviewEntity.map(InterviewDto::new);
+        return interviewDto;
     }
 
 //    public List<InterviewDto> selectInterviewList() {
