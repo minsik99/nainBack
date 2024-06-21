@@ -25,9 +25,6 @@ public class CommentEntity {
     @JoinColumn(name="MEMBER_NO", insertable = false, updatable = false)
     private MemberEntity memberEntity;
 
-    @Column(name="MEMBER_NO", nullable = false)
-    private Long memberNo;
-
 //    @ManyToOne(fetch=FetchType.LAZY)
 //    @JoinColumn(name="COMMUNITY_NO", referencedColumnName = "COMMUNITY_NO")
 //    private CommunityEntity communityEntity;
@@ -57,6 +54,7 @@ public class CommentEntity {
     public CommentDto toDto(){
         return CommentDto.builder()
                 .commentNo(this.commentNo)
+                .memberDto(this.memberEntity.toDto())
                 .writer(this.memberEntity.getMemberNickName())
                 .communityNo(this.communityNo)
                 .parentNo(this.parentCommentNo)
