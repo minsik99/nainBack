@@ -58,6 +58,8 @@ public class MemberService {
         return memberRepository.findById(memberNo).get().toDto();
     }
 
+
+
     @Transactional
     public void updateMemberInfo(MemberDto memberDto) {
         memberRepository.findById(memberDto.getMemberNo());
