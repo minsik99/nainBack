@@ -1,6 +1,6 @@
 package io.paioneer.nain.community.controller;
 
-import com.querydsl.core.types.Order;
+
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import io.paioneer.nain.common.FileNameChange;
@@ -16,6 +16,9 @@ import io.paioneer.nain.security.jwt.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -26,6 +29,11 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.*;
 
 @Slf4j
@@ -43,15 +51,23 @@ public class CommunityController {
 
     private final JWTUtil jwtUtil;
 
+    private ResourceLoader resourceLoader;
+
     private OrderSpecifier<?> getOrderSpecifier(String sort) {
         PathBuilder<CommunityEntity> entityPath = new PathBuilder<>(CommunityEntity.class, "communityEntity");
         return switch (sort) {
             case "oldest" -> entityPath.getString("communityDate").asc();
-            case "readCount" -> entityPath.getString("readCount").desc();
+            case "readCount" -> entityPath.getNumber("readCount", Long.class).desc();
             default -> entityPath.getString("communityDate").desc();
         };
     };
 
+    private static Date TimeCalculate(){
+        LocalDateTime localdateTime = LocalDateTime.now();
+        ZoneId zoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime seoulTime = localdateTime.atZone(zoneId);
+        return Date.from(seoulTime.toInstant());
+    }
     //-------------------------- 목록 조회 -----------------------------------------------------------------------------------------------------
     //전체 목록
     @GetMapping("/list")
@@ -62,12 +78,11 @@ public class CommunityController {
 
         Paging pg = new Paging(communityService.countCommunity(), page, limit);
         pg.calculate();
-        log.info(pg.toString());
         ArrayList<CommunityDto> list = communityService.selectList(pageable, getOrderSpecifier(sort));
-        log.info(list.toString());
         Map<String, Object> result = new HashMap();
         result.put("list", list);
         result.put("pg", pg);
+        log.info(TimeCalculate().toString());
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
@@ -111,13 +126,59 @@ public class CommunityController {
     @GetMapping("/detail")
     public ResponseEntity<CommunityDto> selectCommunityDetail(@RequestParam(name="communityNo") Long communityNo){
         log.info("/community/detail{}", communityNo);
-        return new ResponseEntity<>(communityService.selectOne(communityNo), HttpStatus.OK);
+        CommunityDto communityDto = communityService.selectOne(communityNo);
+        log.info(communityDto.toString());
+        return new ResponseEntity<>(communityDto, HttpStatus.OK);
+    }
+
+    //파일 불러오기
+    @GetMapping("/download")
+    public ResponseEntity<Resource> downloadFile(@RequestParam(name = "fileName") String fileName) {
+        try {
+            log.info("파일명 : {} ", fileName);
+            Path resourcePath = Paths.get("src/main/resources/upload");
+            String savePath = resourcePath.toAbsolutePath().toString();
+            log.info(savePath);
+            String filePath = savePath + File.separator + fileName;
+            File file = new File(filePath);
+
+            if (!file.exists()) {
+                return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            }
+
+            Resource resource = new FileSystemResource(file);
+
+            return new ResponseEntity<>(resource, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     //등록 ----------------------------------------------------------------------------------------------------------------------------------------------
+    // 파일 등록
+    @PostMapping("/file")
+    public ResponseEntity<String> insertFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
+        log.info("파일 등록 : /community/{}", file);
+
+        if(file != null && !file.isEmpty()) {
+            Path resourcePath = Paths.get("src/main/resources/upload");
+            String savePath = resourcePath.toAbsolutePath().toString();
+            log.info(savePath);
+            File uploadDir = new File(savePath);
+            String fileName = file.getOriginalFilename();
+            String fileRename = FileNameChange.change(fileName, "yyyyMMddHHmmss");
+            File saveFile = new File(uploadDir, fileRename);
+            file.transferTo(saveFile);
+            return new ResponseEntity<>(fileRename, HttpStatus.CREATED);
+        }else{
+            return new ResponseEntity<>(HttpStatus.NOT_ACCEPTABLE);
+        }
+    }
+    //게시글 등록
     @PostMapping
-    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestBody CommunityDto community, @RequestParam(required = false) MultipartFile file) throws IOException {
-        log.info("/community/{}", community);
+    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestBody CommunityDto community) throws IOException {
+        log.info("게시글 등록 : /community/{}", community);
+
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
@@ -126,29 +187,22 @@ public class CommunityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        if(file != null && !file.isEmpty()){
-            String savePath = request.getServletContext().getRealPath("/community_files");
-            String fileName = file.getOriginalFilename();
-            String fileRename = FileNameChange.change(fileName, "yyyyMMddHHmmdd");
-            File saveFile = new File(savePath + "\\" + fileRename);
-            file.transferTo(saveFile);
 
-            community.setFileUpload(fileName);
-            community.setFileModified(fileRename);
-        }
         community.setMemberDto(loginMember);
-        community.setCommunityDate(new Date());
-        log.info(community.toString());
+        community.setCommunityDate(TimeCalculate());
+        log.info("등록 처리된 게시글 정보: {} ", community);
         communityService.insertCommunity(community);
 
         return new ResponseEntity<>(HttpStatus.CREATED);
     }
 
+
+
     //수정 ----------------------------------------------------------------------------------------------------------------------------------------------------
     @PutMapping("/modify/{communityNo}")
     public ResponseEntity<Void> updateCommunity(
             HttpServletRequest request, @PathVariable("communityNo") Long communityNo, @RequestBody CommunityDto communityDto){
-        log.info("/update/{}", communityDto);
+        log.info("게시글 수정 {}", communityDto);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
@@ -157,7 +211,7 @@ public class CommunityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         communityDto.setMemberDto(loginMember);
-        communityDto.setModifiedDate(new Date());
+        communityDto.setModifiedDate(TimeCalculate());
         communityService.updateCommunity(communityDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -165,7 +219,7 @@ public class CommunityController {
     //삭제 -------------------------------------------------------------------------------------------------------------------------------------------------------
     //삭제값 입력
     @PutMapping("/del/{communityNo}")
-    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @PathVariable(name="communityNo") Long communityNo,@RequestBody CommunityDto communityDto){
+    public ResponseEntity<Void> deleteCommunity(HttpServletRequest request, @PathVariable(name="communityNo") Long communityNo, @RequestBody CommunityDto communityDto){
         log.info("/delete/{}", communityDto);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo = jwtUtil.getMemberNoFromToken(token);
@@ -173,7 +227,9 @@ public class CommunityController {
         MemberDto loginMember = memberService.findById(memberNo);
 
         if(communityDto.getWriter().equals(loginMember.getMemberNickName())) {
-            communityDto.setDeletedDate(new Date());
+            communityDto.setMemberDto(loginMember);
+            communityDto.setDeletedDate(TimeCalculate());
+            log.info(communityDto.toString());
             communityService.deleteCommunity(communityDto);
             return new ResponseEntity<>(HttpStatus.OK);
         }
@@ -203,7 +259,9 @@ public class CommunityController {
     public ResponseEntity<ArrayList<CommentDto>> selectCommentList(@RequestParam(name="communityNo") Long communityNo){
         log.info("/community/detail/comments/{}", communityNo);
         ArrayList<CommentDto> list = commentService.selectList(communityNo);
-        log.info(list.toString());
+        for(CommentDto comment : list){
+            log.info(comment.getCommentNo().toString());
+        }
         return new ResponseEntity<>(list, HttpStatus.OK);
     }
 
@@ -219,7 +277,8 @@ public class CommunityController {
         if(loginMember == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
-        commentDto.setMemberNo(memberNo);
+        commentDto.setMemberDto(loginMember);
+        commentDto.setCommentDate(TimeCalculate());
 
         commentService.insertComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -238,8 +297,8 @@ public class CommunityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        commentDto.setMemberNo(memberNo);
-        commentDto.setModifiedDate(new Date());
+        commentDto.setMemberDto(loginMember);
+        commentDto.setModifiedDate(TimeCalculate());
         commentService.updateComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }

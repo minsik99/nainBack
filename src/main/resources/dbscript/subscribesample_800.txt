@@ -1,0 +1,29 @@
+-- 기존 데이터 삭제
+TRUNCATE TABLE TB_SUBSCRIBE;
+
+DECLARE
+    v_pay_no NUMBER;
+    v_member_no NUMBER;
+    v_pay_amount NUMBER;
+    v_payment_date DATE;
+    v_expiry_date DATE;
+BEGIN
+    FOR i IN 1..800 LOOP
+        v_pay_no := i;
+        v_member_no := TRUNC(DBMS_RANDOM.VALUE(1, 3001)); -- MEMBER_NO는 1부터 3000까지
+        v_pay_amount := TRUNC(DBMS_RANDOM.VALUE(1000, 3001) / 100) * 100;
+        v_payment_date := TO_DATE('2019-01-01', 'YYYY-MM-DD') + TRUNC(DBMS_RANDOM.VALUE(0, 365 * 5));
+        v_expiry_date := ADD_MONTHS(v_payment_date, 1);
+
+        INSERT INTO TB_SUBSCRIBE (
+            PAY_NO, MEMBER_NO, PAY_AMOUNT, PAYMENT_DATE, EXPIRY_DATE
+        ) VALUES (
+            v_pay_no,
+            v_member_no,
+            v_pay_amount,
+            v_payment_date,
+            v_expiry_date
+        );
+    END LOOP;
+END;
+/

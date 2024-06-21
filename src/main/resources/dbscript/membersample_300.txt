@@ -1,0 +1,117 @@
+-- 외래 키 제약 조건 비활성화
+ALTER TABLE TB_COMMENT_REPORT DISABLE CONSTRAINT CREPORT_FK_MEMBER_NO;
+ALTER TABLE TB_COMMENT_REPORT DISABLE CONSTRAINT CREPORT_FK_ADMIN_NO;
+
+-- 댓글 신고 테이블 데이터 삭제
+TRUNCATE TABLE TB_COMMENT_REPORT;
+
+-- 회원 테이블 데이터 삭제
+TRUNCATE TABLE TB_MEMBER;
+
+-- 외래 키 제약 조건 다시 활성화
+ALTER TABLE TB_COMMENT_REPORT ENABLE CONSTRAINT CREPORT_FK_MEMBER_NO;
+ALTER TABLE TB_COMMENT_REPORT ENABLE CONSTRAINT CREPORT_FK_ADMIN_NO;
+
+-- 시퀀스가 이미 존재한다면 삭제
+BEGIN
+    EXECUTE IMMEDIATE 'DROP SEQUENCE MEMBER_NO_SEQ';
+EXCEPTION
+    WHEN OTHERS THEN
+        IF SQLCODE != -2289 THEN -- 시퀀스가 존재하지 않으면 무시
+            RAISE;
+        END IF;
+END;
+/
+
+-- 새로운 시퀀스 생성
+CREATE SEQUENCE MEMBER_NO_SEQ
+START WITH 1
+INCREMENT BY 1
+NOCACHE;
+
+DECLARE
+    v_member_no NUMBER;
+    v_email VARCHAR2(500);
+    v_name VARCHAR2(200);
+    v_nickname VARCHAR2(200);
+    v_subscribe_yn VARCHAR2(1);
+    v_admin VARCHAR2(1);
+    v_payment_date DATE;
+    v_signup_date DATE;
+    v_withdrawal_date DATE;
+    v_login_type VARCHAR2(50);
+    v_sns_access_token VARCHAR2(255);
+BEGIN
+    FOR i IN 1..3000 LOOP
+        v_member_no := MEMBER_NO_SEQ.NEXTVAL; -- SEQUENCE를 사용하여 MEMBER_NO 생성
+        
+        v_email := CASE 
+            WHEN MOD(i, 3) = 0 THEN 'user' || i || '@example.com'
+            WHEN MOD(i, 3) = 1 THEN 'member' || i || '@example.com'
+            ELSE 'customer' || i || '@example.com'
+        END;
+
+        v_name := CASE 
+            WHEN MOD(i, 3) = 0 THEN '김철수'
+            WHEN MOD(i, 3) = 1 THEN '이영희'
+            ELSE '박민수'
+        END;
+
+        v_nickname := CASE 
+            WHEN MOD(i, 3) = 0 THEN 'nick' || i
+            WHEN MOD(i, 3) = 1 THEN 'user' || i
+            ELSE 'member' || i
+        END;
+
+        v_subscribe_yn := CASE 
+            WHEN MOD(i, 2) = 0 THEN 'Y'
+            ELSE 'N'
+        END;
+
+        v_admin := CASE 
+            WHEN MOD(i, 2) = 0 THEN '1'
+            ELSE '0'
+        END;
+
+        v_payment_date := TO_DATE('2019-01-01', 'YYYY-MM-DD') + TRUNC(DBMS_RANDOM.VALUE(0, 365 * 5));
+
+        v_signup_date := TO_DATE('2024-06-19', 'YYYY-MM-DD') - TRUNC(DBMS_RANDOM.VALUE(0, 30));
+
+        v_withdrawal_date := CASE 
+            WHEN i <= 300 THEN TO_DATE('2024-06-19', 'YYYY-MM-DD') - TRUNC(DBMS_RANDOM.VALUE(0, 30))
+            ELSE NULL
+        END;
+
+        v_login_type := CASE 
+            WHEN MOD(i, 2) = 0 THEN 'email'
+            ELSE 'kakao'
+        END;
+
+        v_sns_access_token := SYS_GUID();
+
+        INSERT INTO TB_MEMBER (
+            MEMBER_NO, MEMBER_EMAIL, MEMBER_PWD, MEMBER_NAME, NICKNAME, 
+            SUBSCRIBE_YN, ADMIN, PAYMENT_DATE, EXPIRE_DATE, SIGNUP_DATE, 
+            WITHDRAWAL_DATE, MEMBER_UPDATE, LOGIN_TYPE, SNS_ACCESS_TOKEN
+        ) VALUES (
+            v_member_no,
+            v_email,
+            DBMS_RANDOM.STRING('x', 10),
+            v_name,
+            v_nickname,
+            v_subscribe_yn,
+            v_admin,
+            v_payment_date,
+            NULL,
+            v_signup_date,
+            v_withdrawal_date,
+            NULL,
+            v_login_type,
+            v_sns_access_token
+        );
+    END LOOP;
+    
+    -- 커밋
+    COMMIT;
+END;
+/

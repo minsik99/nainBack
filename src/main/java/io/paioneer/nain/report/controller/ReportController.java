@@ -1,6 +1,8 @@
 package io.paioneer.nain.report.controller;
 
 import io.paioneer.nain.member.model.service.MemberService;
+import io.paioneer.nain.report.model.dto.CommentReportDto;
+import io.paioneer.nain.report.model.dto.CommunityReportDto;
 import io.paioneer.nain.report.model.dto.RcommentDto;
 import io.paioneer.nain.report.model.dto.RcommunityDto;
 import io.paioneer.nain.report.model.service.ReportService;
@@ -13,6 +15,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -55,4 +58,19 @@ public class ReportController {
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    //게시글 신고리스트 가져오기
+    @GetMapping("/community")
+    public ResponseEntity<List<CommunityReportDto>> getCommunityReport(){
+        List<CommunityReportDto> communityReportDto = reportService.getCommunityReport();
+        return ResponseEntity.status(HttpStatus.OK).body(communityReportDto);
+    }
+
+    //댓글 신고리스트 가져오기
+    @GetMapping("/comment")
+    public ResponseEntity<List<CommentReportDto>> getCommentReport(){
+        List<CommentReportDto> commentReportDto = reportService.getCommentReport();
+        return ResponseEntity.status(HttpStatus.OK).body(commentReportDto);
+    }
+
 }

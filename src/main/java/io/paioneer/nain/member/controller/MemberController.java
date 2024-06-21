@@ -30,13 +30,13 @@ public class MemberController {
         this.memberRepository = memberRepository;
     }
 
-    @PostMapping("/member")
+    @PostMapping("/member/signup")
     public ResponseEntity<?> signUpMember(@RequestBody MemberEntity memberEntity){
         MemberEntity newMember = memberService.signUpMember(memberEntity);
         return ResponseEntity.ok(newMember);
     }
 
-    @GetMapping("/member/mypage")
+    @GetMapping("/member/")
     public ResponseEntity<MemberDto> selectMemberById(HttpServletRequest request){
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         //JWTUtill 클래스를 사용하여 토큰에서 회원 번호를 추출
