@@ -9,6 +9,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import java.time.LocalDateTime;
@@ -25,10 +27,9 @@ public class InterviewEntity {
     private Long itvNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name="MEMBER_NO", insertable = false, updatable = false)
+    @JoinColumn(name="MEMBER_NO")
     private MemberEntity member;
 
-    private Long memberNo;
 
     @Column(name="title", nullable = false)
     private String title;
@@ -54,10 +55,12 @@ public class InterviewEntity {
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)
-                .itvDate(this.itvDate)
+                .itvDate(formatDate(this.itvDate)) // 포맷팅된 문자열 사용
                 .build();
     }
 
-
-
+    private String formatDate(Date date) {
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+        return dateFormat.format(date);
+    }
 }

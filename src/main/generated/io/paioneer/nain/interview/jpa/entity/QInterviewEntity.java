@@ -28,8 +28,6 @@ public class QInterviewEntity extends EntityPathBase<InterviewEntity> {
 
     public final io.paioneer.nain.member.jpa.entity.QMemberEntity member;
 
-    public final NumberPath<Long> memberNo = createNumber("memberNo", Long.class);
-
     public final StringPath title = createString("title");
 
     public final NumberPath<Integer> videoScore = createNumber("videoScore", Integer.class);
