@@ -49,6 +49,9 @@ dependencies {
 
     testImplementation 'junit:junit:4.12'
 
+    // mqtt
+    implementation 'org.springframework.integration:spring-integration-mqtt'
+    implementation 'org.eclipse.paho:org.eclipse.paho.client.mqttv3:1.2.5'
 }
 
 def querydslSrcDir = 'src/main/generated'
