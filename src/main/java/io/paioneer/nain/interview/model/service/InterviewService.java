@@ -4,6 +4,7 @@ package io.paioneer.nain.interview.model.service;
 import io.paioneer.nain.interview.jpa.entity.InterviewEntity;
 import io.paioneer.nain.interview.jpa.repository.InterviewRepository;
 import io.paioneer.nain.interview.model.dto.InterviewDto;
+import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,7 +23,9 @@ public class InterviewService {
 
     public Long insertInterview(Long memberNo) {
         InterviewEntity interviewEntity = new InterviewEntity();
-        interviewEntity.getMember().setMemberNo(memberNo);
+        MemberEntity memberEntity = new MemberEntity();
+        memberEntity.setMemberNo(memberNo);
+        interviewEntity.setMember(memberEntity);
         InterviewEntity interview = interviewRepository.save(interviewEntity);
         return interview.toDto().getItvNo();
     }
