@@ -25,9 +25,8 @@ public class InterviewController {
     private final InterviewService interviewService;
 
     @PostMapping
-    public ResponseEntity<Void> insertInterview(@RequestBody Long memberNo) {
-        interviewService.insertInterview(memberNo);
-        return new ResponseEntity<>(HttpStatus.OK);
+    public ResponseEntity<Long> insertInterview(@PathVariable(name="memberNo") Long memberNo) {
+        return new ResponseEntity<>(interviewService.insertInterview(memberNo), HttpStatus.OK);
     }
 
 
@@ -36,7 +35,6 @@ public class InterviewController {
     , @RequestParam(name="memberNo") String memberNo) {
         Pageable pageable = PageRequest.of(page, size);
         Page<InterviewDto> interview = interviewService.selectInterviewList(Long.parseLong(memberNo), pageable);
-        log.info("list::::", interview.toString());
         return new ResponseEntity<>(interview, HttpStatus.OK);
     }
 
