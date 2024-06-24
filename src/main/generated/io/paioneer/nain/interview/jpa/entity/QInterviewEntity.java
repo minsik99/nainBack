@@ -30,6 +30,8 @@ public class QInterviewEntity extends EntityPathBase<InterviewEntity> {
 
     public final StringPath title = createString("title");
 
+    public final StringPath url = createString("url");
+
     public final NumberPath<Integer> videoScore = createNumber("videoScore", Integer.class);
 
     public final NumberPath<Integer> voiceScore = createNumber("voiceScore", Integer.class);

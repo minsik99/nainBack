@@ -5,6 +5,8 @@ import io.paioneer.nain.community.model.dto.CommentDto;
 import io.paioneer.nain.interview.model.dto.InterviewDto;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -24,6 +26,8 @@ import java.time.LocalDateTime;
 public class InterviewEntity {
     @Id
     @Column(name="ITV_NO", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_ITV_NO")
+    @SequenceGenerator(name = "SEQ_ITV_NO", sequenceName = "SEQ_ITV_NO", allocationSize = 1)
     private Long itvNo;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -34,6 +38,7 @@ public class InterviewEntity {
     @Column(name="title", nullable = false)
     private String title;
 
+
     @Column(name="VIDEO_SCORE", nullable = false)
     private int videoScore;
 
@@ -43,8 +48,16 @@ public class InterviewEntity {
     @Column(name="ITV_DATE", nullable = false)
     private Date itvDate;
 
+    @Column(name="URL", nullable = false)
+    private String url;
+
+
     @PrePersist
     protected void onCreate() {
+        this.videoScore = 1;
+        this.voiceScore = 1;
+        this.url = "url";
+        this.title = "title";
         itvDate = new Date();
     }
 

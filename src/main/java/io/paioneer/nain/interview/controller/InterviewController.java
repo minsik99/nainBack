@@ -24,7 +24,7 @@ public class InterviewController {
 
     private final InterviewService interviewService;
 
-    @PostMapping
+    @PostMapping("/{memberNo}")
     public ResponseEntity<Long> insertInterview(@PathVariable(name="memberNo") Long memberNo) {
         return new ResponseEntity<>(interviewService.insertInterview(memberNo), HttpStatus.OK);
     }
