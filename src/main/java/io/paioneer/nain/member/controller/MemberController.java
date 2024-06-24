@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/api/auth")
 @Slf4j
@@ -36,13 +38,14 @@ public class MemberController {
         return ResponseEntity.ok(newMember);
     }
 
-    @GetMapping("/member/")
+    @GetMapping("/myinfo")
     public ResponseEntity<MemberDto> selectMemberById(HttpServletRequest request){
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         //JWTUtill 클래스를 사용하여 토큰에서 회원 번호를 추출
         Long memberNo = jWTUtil.getMemberNoFromToken(token);
         //회원서비스에서 회원 번호로 회원 정보를 조회
         MemberDto memberDto = memberService.findById(memberNo);
+        log.info(memberDto.toString());
         // 조회된 회원정보를 반환
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
@@ -53,6 +56,9 @@ public class MemberController {
         memberService.updateMemberInfo(memberDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
+
+    // 이메일 유효성 검사 ------------------------
+
 
 
 
