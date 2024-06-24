@@ -6,4 +6,5 @@ import java.util.List;
 
 public interface CommentRepositoryCustom {
     List<CommentEntity> findList(Long communityNo);
+    Long getLastCommentNo();
 }

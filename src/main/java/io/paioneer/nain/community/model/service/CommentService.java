@@ -31,13 +31,17 @@ public class CommentService {
 
     //댓글 입력
     public void insertComment(CommentDto commentDto) {
+        if(commentRepository.getLastCommentNo() == null) {
+            commentDto.setCommentNo(1L);
+        }else{
+            commentDto.setCommentNo(commentRepository.getLastCommentNo() + 1);
+        }
         commentRepository.save(commentDto.toEntity());
     }
 
     //댓글 수정
     public void updateComment(CommentDto commentDto) {
         commentRepository.save(commentDto.toEntity());
-
     }
 
     //삭제컬럼 값추가

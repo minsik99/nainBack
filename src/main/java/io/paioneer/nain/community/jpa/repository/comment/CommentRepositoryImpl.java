@@ -27,4 +27,12 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .fetch();
     }
 
+    @Override
+    public Long getLastCommentNo() {
+        return queryFactory
+                .select(commentEntity.commentNo.max())
+                .from(commentEntity)
+                .fetchOne();
+    }
+
 }
