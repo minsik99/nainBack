@@ -10,6 +10,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -26,7 +28,7 @@ public class VoiceDto {
 
     private String voiceContent;
 
-    public VoiceEntity toEntity(){
+    public VoiceEntity toEntity() throws ParseException {
         return VoiceEntity.builder()
                 .voiceNo(this.voiceNo)
                 .interviewEntity(this.interviewDto.toEntity())

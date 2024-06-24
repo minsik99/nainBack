@@ -25,7 +25,7 @@ public class InterviewService {
         InterviewEntity interviewEntity = new InterviewEntity();
         MemberEntity memberEntity = new MemberEntity();
         memberEntity.setMemberNo(memberNo);
-        interviewEntity.setMember(memberEntity);
+        interviewEntity.setMemberEntity(memberEntity);
         InterviewEntity interview = interviewRepository.save(interviewEntity);
         return interview.toDto().getItvNo();
     }

@@ -32,7 +32,7 @@ public class InterviewEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="MEMBER_NO")
-    private MemberEntity member;
+    private MemberEntity memberEntity;
 
 
     @Column(name="title", nullable = false)
@@ -64,7 +64,7 @@ public class InterviewEntity {
     public InterviewDto toDto(){
         return InterviewDto.builder()
                 .itvNo(this.itvNo)
-                .memberNo(this.member.getMemberNo())
+                .memberNo(this.memberEntity.getMemberNo())
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)

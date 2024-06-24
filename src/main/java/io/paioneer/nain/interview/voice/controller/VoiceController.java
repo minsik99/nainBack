@@ -22,9 +22,6 @@ import java.util.Map;
 @RequestMapping("/voice")
 @CrossOrigin
 public class VoiceController {
-    private final VoiceDto voiceDto;
-    private final VoiceSentenceDto voiceSentenceDto;
-    private final QuestionDto questionDto;
 
     private final VoiceService voiceService;
     private final VoiceSentenceService voiceSentenceService;
