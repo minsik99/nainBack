@@ -83,9 +83,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String refresh  = jwtUtil.generateToken(username,"refresh",refreshExpiredMs);
         log.info(access, refresh);
         Optional<MemberEntity> memberEntityOptional = memberService.findByMemberEmail(username);
+        Long memberNo = 0L;
         if(memberEntityOptional.isPresent()){
             MemberEntity memberEntity = memberEntityOptional.get();
-
+            memberNo = memberEntity.getMemberNo();
             RefreshToken refreshToken = RefreshToken.builder()
                     .id(UUID.randomUUID())
                     .status("activated")
@@ -104,13 +105,18 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 클라이언트가 Authorization 헤더를 읽을 수 있도록, 해당 헤더를 노출시킵니다.
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
 
+
         // 여기서 부터 사용자 정보를 응답 바디에 추가하는 코드입니다.
         // 사용자의 권한이나 추가 정보를 JSON 형태로 변환하여 응답 바디에 포함시킬 수 있습니다.
         boolean admin = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
+
         Map<String, Object> responseBody = new HashMap<>();
         responseBody.put("username", username);
         responseBody.put("isAdmin", admin);
         responseBody.put("refresh",refresh);
+        responseBody.put("memberNo", memberNo);
+        log.info(memberNo.toString());
+
 
         // ObjectMapper를 사용하여 Map을 JSON 문자열로 변환합니다.
         String responseBodyJson = new ObjectMapper().writeValueAsString(responseBody);

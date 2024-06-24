@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -73,8 +74,11 @@ public class CustomLogoutHandler implements LogoutHandler {
 
                 }
 
-                Optional<RefreshToken> refresh = refreshService.findByMemberNo(member.getMemberNo());
-                refresh.ifPresent(refreshToken -> refreshService.deleteByRefresh(refreshToken.getTokenValue()));
+                List<RefreshToken> refresh = refreshService.findMemberNo(member.getMemberNo());
+                if(refresh != null && refresh.size() > 0) {
+                    refreshService.deleteByRefresh(refresh.get(0).getTokenValue());
+                }
+
             }
         }
 
