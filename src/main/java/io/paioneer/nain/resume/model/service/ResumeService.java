@@ -19,14 +19,16 @@ import java.util.stream.Collectors;
 public class ResumeService {
     private final ResumeRepository resumeRepository;
 
+    // 내 이력서 조회 (list)
     public List<ResumeDto> findResumesByMemberNo(Long memberNo) {
         return resumeRepository.findByMemberNo(memberNo).stream()
                 .map(ResumeEntity::toDto)
                 .collect(Collectors.toList());
     }
 
+    // 이력서 작성
     public ResumeDto createResume(ResumeDto resumeDto) {
-        resumeDto.setMemberNo(1L);  // 임시로 memberNo 값을 1로 설정
+        //resumeDto.setMemberNo(1L);  // 임시로 memberNo 값을 1로 설정
         ResumeEntity resumeEntity = resumeDto.toEntity();
         ResumeEntity savedResume = resumeRepository.save(resumeEntity);
         return savedResume.toDto();
@@ -38,7 +40,7 @@ public class ResumeService {
         resumeRepository.deleteById(resumeNo);
     }
 
-    // 이력서 찾기
+    // 이력서 상세 조회 (1개)
     public ResumeDto findResumeByNo(Long resumeNo) {
         ResumeEntity resumeEntity = resumeRepository.findById(resumeNo)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid resume ID"));
