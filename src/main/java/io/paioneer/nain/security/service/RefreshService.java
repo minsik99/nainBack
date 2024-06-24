@@ -5,6 +5,7 @@ import io.paioneer.nain.security.repository.RefreshRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -12,6 +13,8 @@ import java.util.UUID;
 @Transactional
 public class RefreshService {
     private final RefreshRepository refreshRepository;
+
+
 
     public RefreshService(RefreshRepository refreshRepository) {
         this.refreshRepository = refreshRepository;
@@ -33,7 +36,7 @@ public class RefreshService {
         refreshRepository.deleteByTokenValue(tokenValue);
     }
 
-    public Optional<RefreshToken> findByMemberNo(Long id) {
-        return refreshRepository.findByMemberNo(id);
+    public List<RefreshToken> findMemberNo(Long id) {
+        return refreshRepository.findMemberNo(id);
     }
 }

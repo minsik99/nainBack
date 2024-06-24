@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +19,6 @@ public interface RefreshRepository extends JpaRepository<RefreshToken, UUID> {
     void deleteByTokenValue(String refresh);
 
     @Query("SELECT r FROM RefreshToken r WHERE r.memberEntity.memberNo = :memberNo")
-    Optional<RefreshToken> findByMemberNo(@Param("memberNo") Long memberNo);
+    List<RefreshToken> findMemberNo(@Param("memberNo") Long memberNo);
 
 }
