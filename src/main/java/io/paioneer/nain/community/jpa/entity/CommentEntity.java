@@ -22,7 +22,7 @@ public class CommentEntity {
     private Long commentNo;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="MEMBER_NO", insertable = false, updatable = false)
+    @JoinColumn(name="MEMBER_NO", referencedColumnName = "MEMBER_NO")
     private MemberEntity memberEntity;
 
 //    @ManyToOne(fetch=FetchType.LAZY)

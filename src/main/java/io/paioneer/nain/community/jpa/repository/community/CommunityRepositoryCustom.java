@@ -10,10 +10,9 @@ public interface CommunityRepositoryCustom{
     ArrayList<CommunityEntity> searchTitle(String keyword, Pageable pageable, OrderSpecifier entityPath);
     ArrayList<CommunityEntity> searchWriter(String keyword, Pageable pageable, OrderSpecifier entityPath);
     ArrayList<CommunityEntity> searchContent(String keyword, Pageable pageable, OrderSpecifier entityPath);
-    ArrayList<CommunityEntity> findListAll(Pageable pageable, OrderSpecifier entityPath);
     long countMyList(Long memberNo, OrderSpecifier entityPath);
-    long searchTitleCount(String keyword, Pageable pageable, OrderSpecifier entityPath);
-    long searchWriterCount(String keyword, Pageable pageable, OrderSpecifier entityPath);
-    long searchContentCount(String keyword, Pageable pageable, OrderSpecifier entityPath);
+    long searchTitleCount(String keyword, Pageable pageable);
+    long searchWriterCount(String keyword, Pageable pageable);
+    long searchContentCount(String keyword, Pageable pageable);
     Long findLastNo();
 }
