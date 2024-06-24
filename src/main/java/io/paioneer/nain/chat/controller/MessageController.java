@@ -1,5 +1,6 @@
 package io.paioneer.nain.chat.controller;
 
+import io.paioneer.nain.chat.model.dto.ChatRoomDto;
 import io.paioneer.nain.chat.model.dto.MessageDto;
 import io.paioneer.nain.chat.model.service.MessageService;
 import io.paioneer.nain.security.jwt.util.JWTUtil;
@@ -26,13 +27,12 @@ public class MessageController {
     @Value("${flask.server.url}")
     private String flaskServerUrl;
 
-    @PostMapping("/send")
-    public ResponseEntity<?> saveMessage(HttpServletRequest request, @RequestBody MessageDto messageDto) {
+    @PostMapping("/rooms/{roomId}/send")
+    public ResponseEntity<?> saveMessage(HttpServletRequest request, @PathVariable Long roomId, @RequestBody MessageDto messageDto) {
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo = jwtUtil.getMemberNoFromToken(token);
         messageDto.setMemberNo(memberNo);
-
-        messageDto.setChatRoomNo(1L);
+        messageDto.setChatRoomNo(roomId);
 
         log.info("Received message: " + messageDto.toString());
 
@@ -44,9 +44,15 @@ public class MessageController {
         return ResponseEntity.ok().build();
     }
 
-    @GetMapping("/messages")
-    public ResponseEntity<List<MessageDto>> getAllMessages() {
-        List<MessageDto> messages = messageService.getAllMessages();
+    @GetMapping("/rooms/{roomId}/messages")
+    public ResponseEntity<List<MessageDto>> getAllMessages(@PathVariable Long roomId) {
+        List<MessageDto> messages = messageService.getMessagesByRoomId(roomId);
         return ResponseEntity.ok(messages);
+    }
+
+    @GetMapping("/rooms")
+    public ResponseEntity<List<ChatRoomDto>> getAllRooms() {
+        List<ChatRoomDto> rooms = messageService.getAllRooms();
+        return ResponseEntity.ok(rooms);
     }
 }
