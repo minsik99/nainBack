@@ -65,6 +65,7 @@ public class MemberService {
         memberRepository.findById(memberDto.getMemberNo());
     }
 
+
 }
 
 
