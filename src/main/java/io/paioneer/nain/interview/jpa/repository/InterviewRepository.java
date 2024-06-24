@@ -11,6 +11,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface InterviewRepository extends JpaRepository<InterviewEntity, Long> , InterviewRepositoryCustom{
-    @Query("select i from InterviewEntity i where i.member.memberNo = :memberNo")
+    @Query("select i from InterviewEntity i where i.memberEntity.memberNo = :memberNo")
     Page<InterviewEntity> findAllByMemberNo(Long memberNo, Pageable pageable);
 }

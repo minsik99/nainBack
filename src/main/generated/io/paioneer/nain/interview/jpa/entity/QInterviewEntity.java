@@ -26,7 +26,7 @@ public class QInterviewEntity extends EntityPathBase<InterviewEntity> {
 
     public final NumberPath<Long> itvNo = createNumber("itvNo", Long.class);
 
-    public final io.paioneer.nain.member.jpa.entity.QMemberEntity member;
+    public final io.paioneer.nain.member.jpa.entity.QMemberEntity memberEntity;
 
     public final StringPath title = createString("title");
 
@@ -54,7 +54,7 @@ public class QInterviewEntity extends EntityPathBase<InterviewEntity> {
 
     public QInterviewEntity(Class<? extends InterviewEntity> type, PathMetadata metadata, PathInits inits) {
         super(type, metadata, inits);
-        this.member = inits.isInitialized("member") ? new io.paioneer.nain.member.jpa.entity.QMemberEntity(forProperty("member")) : null;
+        this.memberEntity = inits.isInitialized("memberEntity") ? new io.paioneer.nain.member.jpa.entity.QMemberEntity(forProperty("memberEntity")) : null;
     }
 
 }

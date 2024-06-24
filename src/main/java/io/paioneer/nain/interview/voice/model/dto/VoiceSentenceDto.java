@@ -8,6 +8,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.text.ParseException;
+
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,7 +23,7 @@ public class VoiceSentenceDto {
     private float positive;
     private float negative;
 
-    public VoiceSentenceEntity toEntity(){
+    public VoiceSentenceEntity toEntity() throws ParseException {
         return VoiceSentenceEntity.builder()
                 .vsNO(this.vsNO)
                 .voiceEntity(this.voiceDto.toEntity())
