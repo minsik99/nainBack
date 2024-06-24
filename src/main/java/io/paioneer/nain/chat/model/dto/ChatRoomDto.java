@@ -35,4 +35,13 @@ public class ChatRoomDto {
         }
         return chatRoomEntity;
     }
+
+    public static ChatRoomDto fromEntity(ChatRoomEntity chatRoomEntity) {
+        return ChatRoomDto.builder()
+                .chatRoomNo(chatRoomEntity.getChatRoomNo())
+                .name(chatRoomEntity.getName())
+                .chatRoomDate(chatRoomEntity.getChatRoomDate())
+                .memberNo(chatRoomEntity.getMemberEntity() != null ? chatRoomEntity.getMemberEntity().getMemberNo() : null)
+                .build();
+    }
 }

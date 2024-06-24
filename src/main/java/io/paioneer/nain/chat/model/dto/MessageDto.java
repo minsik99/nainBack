@@ -31,4 +31,14 @@ public class MessageDto {
                 .member(member)
                 .build();
     }
+
+    public static MessageDto fromEntity(MessageEntity messageEntity) {
+        return MessageDto.builder()
+                .messageNo(messageEntity.getMessageNo())
+                .chatRoomNo(messageEntity.getChatRoom().getChatRoomNo())
+                .memberNo(messageEntity.getMember().getMemberNo())
+                .messageText(messageEntity.getMessageText())
+                .messageDate(messageEntity.getMessageDate())
+                .build();
+    }
 }
