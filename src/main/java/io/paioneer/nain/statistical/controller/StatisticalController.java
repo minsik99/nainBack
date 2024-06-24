@@ -1,17 +1,13 @@
 package io.paioneer.nain.statistical.controller;
 
-import io.paioneer.nain.common.Span;
+import io.paioneer.nain.statistical.model.dto.*;
 import io.paioneer.nain.statistical.model.service.StatisticalService;
-import io.paioneer.nain.subscribe.model.dto.YearlySubscribePaymentDto;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDate;
 import java.util.List;
-import java.util.function.Function;
 
 @CrossOrigin
 @RestController
@@ -20,46 +16,46 @@ import java.util.function.Function;
 public class StatisticalController {
     private final StatisticalService statisticalService;
 
-    private ResponseEntity<Long> getStatistical(Function<Span, Long> spanFunction, LocalDate begin, LocalDate end) {
-        Span span = new Span(begin, end);
-        try {
-            long result = spanFunction.apply(span);
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+    //연매출 통계
+    @GetMapping("/payamount/yearly")
+    public ResponseEntity<List<YearlySubscribePaymentDto>> yearlyTotalPayAmount(){
+        List<YearlySubscribePaymentDto> yearlyPayAmountDto = statisticalService.selectYearlyTotalPayAmount();
+        return ResponseEntity.status(HttpStatus.OK).body(yearlyPayAmountDto);
     }
 
-    //매출 통계
-    @GetMapping("/yeartotalpayamount")
-    public ResponseEntity<?> totalPayAmount(){
-        List<YearlySubscribePaymentDto> dto = statisticalService.selectYearTotalPayAmount();
-        return ResponseEntity.status(HttpStatus.OK).body(dto);
+    //월매출 통계
+    @GetMapping("/payamount/monthly")
+    public ResponseEntity<List<MonthlySubscribePaymentDto>> monthlyTotalPayment(){
+        List<MonthlySubscribePaymentDto> monthlyPayAmountDto = statisticalService.selectMonthlyTotalPayAmount();
+        return ResponseEntity.status(HttpStatus.OK).body(monthlyPayAmountDto);
+    }
+
+    //현재구독자 통계
+    @GetMapping("/count/subscriptionratio")
+    public ResponseEntity<List<SubscriptionRatioDto>> SubscriptionRatioDto(){
+        List<SubscriptionRatioDto> subscriptionRatioDto = statisticalService.selectSubscriptionRatioDto();
+        return ResponseEntity.status(HttpStatus.OK).body(subscriptionRatioDto);
+
     }
 
     //신규구독자 통계
-    @GetMapping("/newSubscribeCount")
-    public ResponseEntity<Long> newSubscribeCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
-        return getStatistical(statisticalService::selectNewSubscribeCount, begin, end);
+    @GetMapping("/count/newsubscribe")
+    public ResponseEntity<List<NewSubscribeDto>> newSubscribe(){
+        List<NewSubscribeDto> newSubscribeDto = statisticalService.selectNewSubscribeDto();
+        return ResponseEntity.status(HttpStatus.OK).body(newSubscribeDto);
     }
 
-//    //방문자수 통계
-//    @GetMapping("/visitorCount")
-//    public ResponseEntity<Long> visitorCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
-//        return getStatistical(statisticalService::selectVisitorCount, begin, end);
-//    }
-
-    //가입자 통계
-    @GetMapping("/signupCount")
-    public ResponseEntity<Long> signupCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
-        return getStatistical(statisticalService::selectSignupCount, begin, end);
+    // 일 가입자 수
+    @GetMapping("/count/newmember")
+    public ResponseEntity<List<NewMemberDto>> newMember(){
+        List<NewMemberDto> newMemberDto = statisticalService.newMemberDto();
+        return ResponseEntity.status(HttpStatus.OK).body(newMemberDto);
     }
 
-    //탈퇴자 통계
-    @GetMapping("/withdrawalCount")
-    public ResponseEntity<Long> withdrawalCount(@RequestParam("begin") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate begin,@RequestParam("end") @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate end){
-        return getStatistical(statisticalService::selectWithdrawalCount, begin, end);
+    // 일 탈퇴자 수
+    @GetMapping("/count/withdrawal")
+    public ResponseEntity<List<WithdrawalDto>> withdrawal(){
+        List<WithdrawalDto> withdrawalDto = statisticalService.withdrawalDto();
+        return ResponseEntity.status(HttpStatus.OK).body(withdrawalDto);
     }
-
-
 }

@@ -12,9 +12,9 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
-
 
 @Service
 public class MemberService {
@@ -28,20 +28,22 @@ public class MemberService {
     }
 
     @Transactional
-    public MemberEntity signUpMember(InputMember inputMember) {
-        memberRepository.findByMemberEmail(inputMember.getMemberEmail())
+    public MemberEntity signUpMember(MemberEntity memberEntity) {
+        memberRepository.findByMemberEmail(memberEntity.getMemberEmail())
                 .ifPresent(u -> {
                     throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "이메일이 이미 사용중입니다.");
                 });
-        return memberRepository.save(createMember(inputMember));
+        return memberRepository.save(createMember(memberEntity));
     }
 
-    public MemberEntity createMember(InputMember member) {
-        String encodedPassword = bCryptPasswordEncoder.encode(member.getMemberPwd());
+    public MemberEntity createMember(MemberEntity memberEntity) {
+        String encodedPassword = bCryptPasswordEncoder.encode(memberEntity.getMemberPwd());
         return MemberEntity.builder()
-
-                .memberEmail(member.getMemberEmail())
+                .memberNo(memberEntity.getMemberNo())
+                .memberEmail(memberEntity.getMemberEmail())
                 .memberPwd(encodedPassword)
+                .memberName(memberEntity.getMemberName())
+                .loginType(memberEntity.getLoginType() != null ? memberEntity.getLoginType() : "local")
                 .admin(false)
                 .build();
     }
@@ -51,11 +53,18 @@ public class MemberService {
         return memberRepository.findByMemberEmail(username);
     }
 
-
-
+    @Transactional
     public MemberDto findById(Long memberNo) {
         return memberRepository.findById(memberNo).get().toDto();
     }
+
+
+
+    @Transactional
+    public void updateMemberInfo(MemberDto memberDto) {
+        memberRepository.findById(memberDto.getMemberNo());
+    }
+
 }
 
 

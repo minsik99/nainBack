@@ -15,6 +15,7 @@ import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
@@ -59,7 +60,8 @@ public class CustomLogoutHandler implements LogoutHandler {
 
                 // 카카오 로그아웃 처리
                 if ("kakao".equals(member.getLoginType())) {
-                    String kakaoAccessToken = member.toString(); // 저장된 카카오 액세스 토큰 사용
+                    String kakaoAccessToken = member.getSnsAccessToken(); // 저장된 카카오 액세스 토큰 사용
+                    log.info("Kakao access token: {}", kakaoAccessToken);
                     String kakaoLogoutUrl = "https://kapi.kakao.com/v1/user/logout";
                     HttpHeaders headers = new HttpHeaders();
                     headers.set("Authorization", "Bearer " + kakaoAccessToken);
@@ -67,11 +69,16 @@ public class CustomLogoutHandler implements LogoutHandler {
                     HttpEntity<String> kakaoRequestEntity = new HttpEntity<>(headers);
                     RestTemplate restTemplate = new RestTemplate();
                     ResponseEntity<String> kakaoResponse = restTemplate.exchange(kakaoLogoutUrl, HttpMethod.POST, kakaoRequestEntity, String.class);
-                    log.info("Kakao logout response = {}", kakaoResponse.getBody());
+                        log.info("Kakao logout response = {}", kakaoResponse.getBody());
+
+
                 }
 
-                Optional<RefreshToken> refresh = refreshService.findByMemberNo(member.getMemberNo());
-                refresh.ifPresent(refreshToken -> refreshService.deleteByRefresh(refreshToken.getTokenValue()));
+                List<RefreshToken> refresh = refreshService.findMemberNo(member.getMemberNo());
+                if(refresh != null && refresh.size() > 0) {
+                    refreshService.deleteByRefresh(refresh.get(0).getTokenValue());
+                }
+
             }
         }
 

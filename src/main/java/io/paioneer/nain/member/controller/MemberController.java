@@ -30,13 +30,13 @@ public class MemberController {
         this.memberRepository = memberRepository;
     }
 
-    @PostMapping("/member")
-    public ResponseEntity<?> signUpMember(@RequestBody InputMember member){
-        MemberEntity newMember = memberService.signUpMember(member);
+    @PostMapping("/member/signup")
+    public ResponseEntity<?> signUpMember(@RequestBody MemberEntity memberEntity){
+        MemberEntity newMember = memberService.signUpMember(memberEntity);
         return ResponseEntity.ok(newMember);
     }
 
-    @GetMapping("/mypage")
+    @GetMapping("/member/")
     public ResponseEntity<MemberDto> selectMemberById(HttpServletRequest request){
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         //JWTUtill 클래스를 사용하여 토큰에서 회원 번호를 추출
@@ -45,6 +45,13 @@ public class MemberController {
         MemberDto memberDto = memberService.findById(memberNo);
         // 조회된 회원정보를 반환
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
+    }
+
+    //내 정보 수정 -------------------------------------------------------------
+    @PutMapping("/updatemember")
+    public ResponseEntity<Void> updateMemberInfo(@RequestBody MemberDto memberDto){
+        memberService.updateMemberInfo(memberDto);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
 

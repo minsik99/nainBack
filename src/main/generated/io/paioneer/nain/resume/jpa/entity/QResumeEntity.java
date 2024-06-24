@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -18,17 +17,21 @@ public class QResumeEntity extends EntityPathBase<ResumeEntity> {
 
     private static final long serialVersionUID = 85318482L;
 
-    private static final PathInits INITS = PathInits.DIRECT2;
-
     public static final QResumeEntity resumeEntity = new QResumeEntity("resumeEntity");
 
     public final StringPath bookMarked = createString("bookMarked");
 
+    public final DateTimePath<java.util.Date> createDate = createDateTime("createDate", java.util.Date.class);
+
+    public final DateTimePath<java.util.Date> deleteDate = createDateTime("deleteDate", java.util.Date.class);
+
     public final StringPath email = createString("email");
+
+    public final StringPath introduction = createString("introduction");
 
     public final StringPath jobCategory = createString("jobCategory");
 
-    public final io.paioneer.nain.member.jpa.entity.QMemberEntity memberEntity;
+    public final NumberPath<Long> memberNo = createNumber("memberNo", Long.class);
 
     public final DateTimePath<java.util.Date> modificationDate = createDateTime("modificationDate", java.util.Date.class);
 
@@ -41,24 +44,15 @@ public class QResumeEntity extends EntityPathBase<ResumeEntity> {
     public final StringPath title = createString("title");
 
     public QResumeEntity(String variable) {
-        this(ResumeEntity.class, forVariable(variable), INITS);
+        super(ResumeEntity.class, forVariable(variable));
     }
 
     public QResumeEntity(Path<? extends ResumeEntity> path) {
-        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+        super(path.getType(), path.getMetadata());
     }
 
     public QResumeEntity(PathMetadata metadata) {
-        this(metadata, PathInits.getFor(metadata, INITS));
-    }
-
-    public QResumeEntity(PathMetadata metadata, PathInits inits) {
-        this(ResumeEntity.class, metadata, inits);
-    }
-
-    public QResumeEntity(Class<? extends ResumeEntity> type, PathMetadata metadata, PathInits inits) {
-        super(type, metadata, inits);
-        this.memberEntity = inits.isInitialized("memberEntity") ? new io.paioneer.nain.member.jpa.entity.QMemberEntity(forProperty("memberEntity")) : null;
+        super(ResumeEntity.class, metadata);
     }
 
 }

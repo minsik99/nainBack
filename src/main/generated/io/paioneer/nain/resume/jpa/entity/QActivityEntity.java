@@ -7,7 +7,6 @@ import com.querydsl.core.types.dsl.*;
 import com.querydsl.core.types.PathMetadata;
 import javax.annotation.processing.Generated;
 import com.querydsl.core.types.Path;
-import com.querydsl.core.types.dsl.PathInits;
 
 
 /**
@@ -17,8 +16,6 @@ import com.querydsl.core.types.dsl.PathInits;
 public class QActivityEntity extends EntityPathBase<ActivityEntity> {
 
     private static final long serialVersionUID = 926557236L;
-
-    private static final PathInits INITS = PathInits.DIRECT2;
 
     public static final QActivityEntity activityEntity = new QActivityEntity("activityEntity");
 
@@ -32,29 +29,20 @@ public class QActivityEntity extends EntityPathBase<ActivityEntity> {
 
     public final StringPath organizer = createString("organizer");
 
-    public final QResumeEntity resumeEntity;
+    public final NumberPath<Long> resumeNo = createNumber("resumeNo", Long.class);
 
     public final DateTimePath<java.util.Date> startDate = createDateTime("startDate", java.util.Date.class);
 
     public QActivityEntity(String variable) {
-        this(ActivityEntity.class, forVariable(variable), INITS);
+        super(ActivityEntity.class, forVariable(variable));
     }
 
     public QActivityEntity(Path<? extends ActivityEntity> path) {
-        this(path.getType(), path.getMetadata(), PathInits.getFor(path.getMetadata(), INITS));
+        super(path.getType(), path.getMetadata());
     }
 
     public QActivityEntity(PathMetadata metadata) {
-        this(metadata, PathInits.getFor(metadata, INITS));
-    }
-
-    public QActivityEntity(PathMetadata metadata, PathInits inits) {
-        this(ActivityEntity.class, metadata, inits);
-    }
-
-    public QActivityEntity(Class<? extends ActivityEntity> type, PathMetadata metadata, PathInits inits) {
-        super(type, metadata, inits);
-        this.resumeEntity = inits.isInitialized("resumeEntity") ? new QResumeEntity(forProperty("resumeEntity"), inits.get("resumeEntity")) : null;
+        super(ActivityEntity.class, metadata);
     }
 
 }

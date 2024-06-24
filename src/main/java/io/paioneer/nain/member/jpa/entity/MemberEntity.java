@@ -38,7 +38,7 @@ public class MemberEntity {
     @Column(name="SUBSCRIBE_YN")
     private String subscribeYN;         //회원 구독여부
 
-    @Column(name="ADMIN")
+    @Column(name="ADMIN", nullable = false)
     private Boolean admin;               //관리자
 
     @Column(name="PAYMENT_DATE")

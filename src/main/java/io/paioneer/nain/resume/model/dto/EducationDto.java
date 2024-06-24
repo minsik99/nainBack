@@ -1,46 +1,42 @@
 package io.paioneer.nain.resume.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.paioneer.nain.resume.jpa.entity.EducationEntity;
-import io.paioneer.nain.resume.jpa.entity.ResumeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import org.springframework.stereotype.Component;
 
 import java.util.Date;
 
 @Builder
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@Component
+@NoArgsConstructor
 public class EducationDto {
     private Long educationNo;
-    private Long resumeNo; // *entity 연결 유의
-    private String educationCurrent;
+    private Long resumeNo;
+    private String schoolName;
+    private String current;
     private String major;
-    private String educationDegree;
-    private Long score;
+    private String degree;
+    private Float score;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM")
     private Date startDate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM")
     private Date endDate;
 
-    public EducationEntity toEntity(){
-        EducationEntity educationEntity = EducationEntity.builder()
+    public EducationEntity toEntity() {
+        return EducationEntity.builder()
                 .educationNo(this.educationNo)
-                .educationCurrent(this.educationCurrent)
+                .resumeNo(this.resumeNo)
+                .schoolName(this.schoolName)
+                .current(this.current)
                 .major(this.major)
-                .educationDegree(this.educationDegree)
+                .degree(this.degree)
                 .score(this.score)
                 .startDate(this.startDate)
                 .endDate(this.endDate)
                 .build();
-
-        if (this.resumeNo != null) {
-            ResumeEntity resumeEntity = new ResumeEntity();
-            resumeEntity.setResumeNo(this.resumeNo);
-            educationEntity.setResumeEntity(resumeEntity);
-        }
-        return educationEntity;
     }
 }

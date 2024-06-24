@@ -1,11 +1,12 @@
 package io.paioneer.nain.community.jpa.repository.community;
 
+import com.querydsl.core.types.OrderSpecifier;
+import com.querydsl.core.types.dsl.PathBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.paioneer.nain.community.jpa.entity.CommunityEntity;
 import io.paioneer.nain.community.jpa.entity.QCommunityEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
@@ -21,27 +22,31 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //삭제된 글 이외 전체 목록 조회
     @Override
-    public ArrayList<CommunityEntity> findListAll(Pageable pageable){
+    public ArrayList<CommunityEntity> findListAll(Pageable pageable, OrderSpecifier entityPath){
         return  (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
                 .where(communityEntity.deletedDate.isNull())
+                .orderBy(entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
     }
 
+    // 내 글 목록
     @Override
-    public long countMyList(Long memberNo) {
+    public long countMyList(Long memberNo, OrderSpecifier entityPath) {
         return queryFactory
                 .select(communityEntity.count())
                 .from(communityEntity)
                 .where(communityEntity.memberEntity.memberNo.eq(memberNo)
                         .and(communityEntity.deletedDate.isNull()))
+                .orderBy(entityPath)
                 .fetchOne();
     }
 
+    //제목 검색 개수
     @Override
-    public long searchTitleCount(String keyword, Pageable pageable) {
+    public long searchTitleCount(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return queryFactory
                 .select(communityEntity.count())
                 .from(communityEntity)
@@ -52,8 +57,9 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .fetchOne();
     }
 
+    //작성자 검색 개수
     @Override
-    public long searchWriterCount(String keyword, Pageable pageable) {
+    public long searchWriterCount(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return queryFactory
                 .select(communityEntity.count())
                 .from(communityEntity)
@@ -64,8 +70,9 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .fetchOne();
     }
 
+    //내용 검색 개수
     @Override
-    public long searchContentCount(String keyword, Pageable pageable) {
+    public long searchContentCount(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return queryFactory
                 .select(communityEntity.count())
                 .from(communityEntity)
@@ -84,26 +91,14 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
                 .fetchOne();
     }
 
-    //내 글 목록 조회
-    @Override
-    public ArrayList<CommunityEntity> findMyList(Long memberNo, Pageable pageable) {
-        return (ArrayList<CommunityEntity>) queryFactory
-                .selectFrom(communityEntity)
-                .where(communityEntity.memberEntity.memberNo.eq(memberNo)
-                .and(communityEntity.deletedDate.isNull()))
-                .offset(pageable.getOffset())
-                .limit(pageable.getPageSize())
-                .fetch();
-    }
-
     //제목 검색 목록 조회
     @Override
-    public ArrayList<CommunityEntity> searchTitle(String keyword, Pageable pageable) {
+    public ArrayList<CommunityEntity> searchTitle(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.title.like("%" + keyword + "%")
+                .where(communityEntity.title.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(communityEntity.deletedDate.isNull()))
-                .orderBy()
+                .orderBy(entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -111,11 +106,12 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //작성자 검색 목록 조회
     @Override
-    public ArrayList<CommunityEntity> searchWriter(String keyword, Pageable pageable) {
+    public ArrayList<CommunityEntity> searchWriter(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.memberEntity.memberNickName.like("%" + keyword + "%")
+                .where(communityEntity.memberEntity.memberNickName.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(communityEntity.deletedDate.isNull()))
+                .orderBy(entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -123,11 +119,12 @@ public class CommunityRepositoryImpl implements CommunityRepositoryCustom {
 
     //내용 검색 목록 조회
     @Override
-    public ArrayList<CommunityEntity> searchContent(String keyword, Pageable pageable) {
+    public ArrayList<CommunityEntity> searchContent(String keyword, Pageable pageable, OrderSpecifier entityPath) {
         return (ArrayList<CommunityEntity>) queryFactory
                 .selectFrom(communityEntity)
-                .where(communityEntity.content.like("%" + keyword + "%")
+                .where(communityEntity.content.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(communityEntity.deletedDate.isNull()))
+                .orderBy(entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
