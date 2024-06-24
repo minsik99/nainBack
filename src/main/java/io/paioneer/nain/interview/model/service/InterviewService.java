@@ -20,10 +20,11 @@ import java.util.List;
 public class InterviewService {
     private final InterviewRepository interviewRepository;
 
-    public void insertInterview(Long memberNo) {
+    public Long insertInterview(Long memberNo) {
         InterviewEntity interviewEntity = new InterviewEntity();
         interviewEntity.getMember().setMemberNo(memberNo);
-        interviewRepository.save(interviewEntity);
+        InterviewEntity interview = interviewRepository.save(interviewEntity);
+        return interview.toDto().getItvNo();
     }
 
     public Page<InterviewDto> selectInterviewList(Long memberNo, Pageable pageable) {
