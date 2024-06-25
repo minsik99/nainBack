@@ -18,7 +18,7 @@ import java.util.Date;
 public class EducationEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "education_no_seq")
-    @SequenceGenerator(name = "education_no_seq", sequenceName = "EDUCATION_NO_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "education_no_seq", sequenceName = "SEQ_EDUCATION_NO", allocationSize = 1)
     @Column(name = "EDUCATION_NO", nullable = false)
     private Long educationNo;  // 학력 번호
 
