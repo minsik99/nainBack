@@ -23,7 +23,7 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .selectFrom(commentEntity)
                 .where(commentEntity.communityNo.eq(communityNo)
                 .and(commentEntity.deletedDate.isNull()))
-                .orderBy(commentEntity.commentDate.desc())
+                .orderBy(commentEntity.commentNo.asc())
                 .fetch();
     }
 
