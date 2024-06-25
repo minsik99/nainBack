@@ -18,7 +18,8 @@ import java.util.Date;
 public class ChatRoomEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "chat_room_seq_generator")
+    @SequenceGenerator(name = "chat_room_seq_generator", sequenceName = "SEQ_CHAT_ROOMS_NO", allocationSize = 1)
     @Column(name = "CHATROOM_NO")
     private Long chatRoomNo;
 
