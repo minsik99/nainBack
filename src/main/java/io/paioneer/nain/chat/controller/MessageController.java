@@ -2,6 +2,7 @@ package io.paioneer.nain.chat.controller;
 
 import io.paioneer.nain.chat.model.dto.ChatRoomDto;
 import io.paioneer.nain.chat.model.dto.MessageDto;
+import io.paioneer.nain.chat.model.service.ChatRoomService;
 import io.paioneer.nain.chat.model.service.MessageService;
 import io.paioneer.nain.security.jwt.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,10 +23,20 @@ public class MessageController {
 
     private final MessageService messageService;
     private final RestTemplate restTemplate;
+    private final ChatRoomService chatRoomService;
     private final JWTUtil jwtUtil;
 
     @Value("${flask.server.url}")
     private String flaskServerUrl;
+
+    @PostMapping("/rooms")
+    public ResponseEntity<ChatRoomDto> createRoom(HttpServletRequest request, @RequestBody ChatRoomDto chatRoomDto) {
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo = jwtUtil.getMemberNoFromToken(token);
+        chatRoomDto.setMemberNo(memberNo);
+        ChatRoomDto createdRoom = chatRoomService.createChatRoom(chatRoomDto);
+        return ResponseEntity.ok(createdRoom);
+    }
 
     @PostMapping("/rooms/{roomId}/send")
     public ResponseEntity<?> saveMessage(HttpServletRequest request, @PathVariable Long roomId, @RequestBody MessageDto messageDto) {
