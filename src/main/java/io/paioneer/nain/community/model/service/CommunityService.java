@@ -45,7 +45,7 @@ public class CommunityService {
     }
 
     //등록
-    public void insertCommunity(CommunityDto communityDto) {
+    public Long insertCommunity(CommunityDto communityDto) {
         if(communityRepository.findLastNo() == null) {
             communityDto.setCommunityNo(1L);
         }else{
@@ -53,6 +53,7 @@ public class CommunityService {
         }
         communityDto.setReadCount(0L);
         communityRepository.save(communityDto.toEntity());
+        return communityDto.getCommunityNo();
     }
 
     //수정

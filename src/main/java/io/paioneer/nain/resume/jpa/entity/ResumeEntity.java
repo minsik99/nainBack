@@ -18,7 +18,7 @@ import java.util.Date;
 public class ResumeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "resume_no_seq")
-    @SequenceGenerator(name = "resume_no_seq", sequenceName = "RESUME_NO_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "resume_no_seq", sequenceName = "SEQ_RESUME_NO", allocationSize = 1)
     @Column(name="RESUME_NO", nullable = false)
     private Long resumeNo;  // 이력서 번호
 

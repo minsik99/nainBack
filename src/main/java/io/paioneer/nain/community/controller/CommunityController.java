@@ -121,12 +121,22 @@ public class CommunityController {
 
 
     //상세보기 ------------------------------------------------------------------------------------------------------------------------------------------------------
-    @GetMapping("/detail")
-    public ResponseEntity<CommunityDto> selectCommunityDetail(@RequestParam(name="communityNo") Long communityNo){
+    @GetMapping("/detail/{communityNo}")
+    public ResponseEntity<Map> selectCommunityDetail(@PathVariable(name="communityNo") Long communityNo){
         log.info("/community/detail{}", communityNo);
         CommunityDto communityDto = communityService.selectOne(communityNo);
         log.info(communityDto.toString());
-        return new ResponseEntity<>(communityDto, HttpStatus.OK);
+
+        log.info("댓글 목록_communityNo : {}", communityNo);
+        ArrayList<CommentDto> list = commentService.selectList(communityNo);
+        for(CommentDto comment : list){
+            log.info(comment.getMemberDto().toString());
+        }
+
+        Map result = new HashMap();
+        result.put("communityDto", communityDto);
+        result.put("list", list);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     //파일 불러오기
@@ -209,7 +219,7 @@ public class CommunityController {
 
     //게시글 등록
     @PostMapping
-    public ResponseEntity<Void> insertCommunity(HttpServletRequest request, @RequestBody CommunityDto community) throws IOException {
+    public ResponseEntity<Long> insertCommunity(HttpServletRequest request, @RequestBody CommunityDto community) throws IOException {
         log.info("게시글 등록 : /community/{}", community);
 
         String token = request.getHeader("Authorization").substring("Bearer ".length());
@@ -224,9 +234,9 @@ public class CommunityController {
         community.setMemberDto(loginMember);
         community.setCommunityDate(TimeCalculate());
         log.info("등록 처리된 게시글 정보: {} ", community);
-        communityService.insertCommunity(community);
+        Long communityNo = communityService.insertCommunity(community);
 
-        return new ResponseEntity<>(HttpStatus.CREATED);
+        return new ResponseEntity<>(communityNo, HttpStatus.CREATED);
     }
 
 
@@ -287,17 +297,6 @@ public class CommunityController {
 
 
     //댓글 ---------------------------------------------------------------------------------------------------------------------------------------
-    //상세보기_commentDto
-    @GetMapping("/comment")
-    public ResponseEntity<ArrayList<CommentDto>> selectCommentList(@RequestParam(name="communityNo") Long communityNo){
-        log.info("댓글 목록_communityNo : {}", communityNo);
-        ArrayList<CommentDto> list = commentService.selectList(communityNo);
-        for(CommentDto comment : list){
-            log.info(comment.getCommentNo().toString());
-        }
-        return new ResponseEntity<>(list, HttpStatus.OK);
-    }
-
     //댓글 등록
     @PostMapping("/comment")
     public ResponseEntity<Void> insertComment(HttpServletRequest request, @RequestBody CommentDto commentDto){
@@ -331,7 +330,7 @@ public class CommunityController {
         }
 
         commentDto.setMemberDto(loginMember);
-        commentDto.setModifiedDate(TimeCalculate());
+        commentDto.setModifiedDate(new Date());
         commentService.updateComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -340,7 +339,7 @@ public class CommunityController {
     @PutMapping("/comment/del/{commentNo}")
     public ResponseEntity<Void> deleteComment(@PathVariable(name="commentNo") Long commentNo, @RequestBody CommentDto commentDto){
         log.info("/community/del/comment{}", commentDto);
-        commentDto.setDeletedDate(new Date());
+        commentDto.setDeletedDate(TimeCalculate());
         commentService.deleteComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }

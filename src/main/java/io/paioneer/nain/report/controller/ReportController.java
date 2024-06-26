@@ -1,10 +1,7 @@
 package io.paioneer.nain.report.controller;
 
 import io.paioneer.nain.member.model.service.MemberService;
-import io.paioneer.nain.report.model.dto.CommentReportDto;
-import io.paioneer.nain.report.model.dto.CommunityReportDto;
-import io.paioneer.nain.report.model.dto.RcommentDto;
-import io.paioneer.nain.report.model.dto.RcommunityDto;
+import io.paioneer.nain.report.model.dto.*;
 import io.paioneer.nain.report.model.service.ReportService;
 import io.paioneer.nain.security.jwt.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
@@ -60,6 +57,12 @@ public class ReportController {
     }
 
     //게시글 신고리스트 가져오기
+    @GetMapping("/communitycount")
+    public ResponseEntity<List<CommunityReportCountDto>> getCommunityReportCount(){
+        List<CommunityReportCountDto> communityReportCountDto = reportService.communityReportCount();
+        return ResponseEntity.status(HttpStatus.OK).body(communityReportCountDto);
+    }
+
     @GetMapping("/community")
     public ResponseEntity<List<CommunityReportDto>> getCommunityReport(){
         List<CommunityReportDto> communityReportDto = reportService.getCommunityReport();
@@ -73,4 +76,19 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.OK).body(commentReportDto);
     }
 
+    @PostMapping("/deletePost")
+    public ResponseEntity<Void> deletePost(@RequestBody DeletePostDto request) {
+        reportService.deletePost(request.getReportId(), request.getAdminId(), request.getCommunityNo());
+        return ResponseEntity.ok().build();
+    }
+
+    @PostMapping("/blockAccount")
+    public ResponseEntity<Void> blockAccount(@RequestBody BlockAccountDto request) {
+        reportService.blockAccount(
+                request.getReportId(),
+                request.getAdminId(),
+                request.getBlockReason()
+        );
+        return ResponseEntity.ok().build();
+    }
 }
