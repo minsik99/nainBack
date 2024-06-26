@@ -22,7 +22,7 @@ public class AdminManagerController {
 
     //관리자 조회
     @GetMapping("/adminlist")
-    public ResponseEntity<List<AdminListDto>> userList() {
+    public ResponseEntity<List<AdminListDto>> adminList() {
         List<AdminListDto> adminListDto = adminManagerService.adminList();
         return ResponseEntity.status(HttpStatus.OK).body(adminListDto);
     }

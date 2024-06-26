@@ -11,8 +11,8 @@ import org.springframework.stereotype.Component;
 @AllArgsConstructor
 @Builder
 @Component
-public class CommunityReportCountDto {
-    private Long communityNo;
+public class CommentReportCountDto {
+    private Long commentNo;
     private String reportType;
     private Long reportCount;
 }

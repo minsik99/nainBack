@@ -39,6 +39,7 @@ public class CommunityReportRepositoryImpl implements CommunityReportRepositoryC
                 .select(Projections.constructor(CommunityReportDto.class,
                         communityReportEntity.bReportNo,
                         communityReportEntity.reportDate,
+                        communityEntity.communityNo,
                         memberEntity.memberEmail,
                         memberEntity.memberName,
                         communityReportEntity.handledYN,
@@ -46,8 +47,7 @@ public class CommunityReportRepositoryImpl implements CommunityReportRepositoryC
                         communityEntity.content,
                         communityReportEntity.reportType,
                         communityReportEntity.handledDate,
-                        memberEntity.memberName,
-                        communityEntity.communityNo
+                        memberEntity.memberName
                 ))
                 .from(communityReportEntity)
                 .leftJoin(communityEntity).on(communityReportEntity.communityEntity.communityNo.eq(communityEntity.communityNo))

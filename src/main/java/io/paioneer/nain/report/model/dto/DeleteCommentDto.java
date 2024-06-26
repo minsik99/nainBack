@@ -7,12 +7,12 @@ import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 @Component
-public class CommunityReportCountDto {
-    private Long communityNo;
-    private String reportType;
-    private Long reportCount;
+public class DeleteCommentDto {
+    private Long reportId;
+    private Long adminId;
+    private Long commentNo;
 }

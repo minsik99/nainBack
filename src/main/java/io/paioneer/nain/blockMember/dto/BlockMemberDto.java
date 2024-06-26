@@ -12,9 +12,9 @@ import org.springframework.stereotype.Component;
 @Builder
 @Component
 public class BlockMemberDto {
-    private int blockNo;
-    private int memberNo;
-    private String BlockYN;
-    private String BlockComment;
-    private String BlockDate;
+    private Long blockNo;
+    private Long memberNo;
+    private String blockYN;
+    private String blockComment;
+    private String blockDate;
 }
