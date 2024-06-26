@@ -36,6 +36,7 @@ public class MemberService {
         return memberRepository.save(createMember(memberEntity));
     }
 
+    @Transactional
     public MemberEntity createMember(MemberEntity memberEntity) {
         String encodedPassword = bCryptPasswordEncoder.encode(memberEntity.getMemberPwd());
         return MemberEntity.builder()
@@ -43,6 +44,7 @@ public class MemberService {
                 .memberEmail(memberEntity.getMemberEmail())
                 .memberPwd(encodedPassword)
                 .memberName(memberEntity.getMemberName())
+                .memberNickName(memberEntity.getMemberName())
                 .loginType(memberEntity.getLoginType() != null ? memberEntity.getLoginType() : "local")
                 .admin(false)
                 .build();
@@ -55,7 +57,7 @@ public class MemberService {
 
     @Transactional
     public MemberDto findById(Long memberNo) {
-        return memberRepository.findById(memberNo).get().toDto();
+        return memberRepository.findByMemberNo(memberNo).get().toDto();
     }
 
 
@@ -66,6 +68,15 @@ public class MemberService {
     }
 
 
+    @Transactional
+    public boolean checkEmail(String email) {
+        return memberRepository.findByMemberEmail(email).isPresent();
+    }
+
+    @Transactional
+    public int emailCount(String memberEmail) {
+        return (int)memberRepository.emailCount(memberEmail);
+    }
 }
 
 
