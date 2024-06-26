@@ -16,7 +16,11 @@ import java.util.Date;
 @NoArgsConstructor
 @Table(name = "TB_SUBSCRIBE")
 public class SubscribeEntity {
+
+
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_PAY_NO")
+    @SequenceGenerator(name = "SEQ_PAY_NO", sequenceName = "SEQ_PAY_NO", allocationSize = 1)
     @Column(name = "PAY_NO", nullable = false)
     private int payNo;
 
