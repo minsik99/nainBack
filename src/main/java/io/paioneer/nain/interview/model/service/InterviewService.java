@@ -36,6 +36,11 @@ public class InterviewService {
         return interviewDto;
     }
 
+    public void deleteInterview(Long itvNo) {
+        log.info("Delete Interview : {}", itvNo);
+        interviewRepository.deleteById(itvNo);
+    }
+
 //    public List<InterviewDto> selectInterviewList() {
 //        return interviewRepository.findAll().toDto();
 //
