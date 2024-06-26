@@ -23,7 +23,7 @@ public class MessageController {
     private final RestTemplate restTemplate;
     private final JWTUtil jwtUtil;
 
-    @Value("${flask.server.url}")
+//    @Value("${flask.server.url}")
     private String flaskServerUrl;
 
     @PostMapping("/send")
