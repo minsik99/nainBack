@@ -23,8 +23,12 @@ public class RcommunityEntity {
     private Long bReportNo;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="MEMEBER_NO", referencedColumnName = "MEMBER_NO")
+    @JoinColumn(name="MEMBER_NO", referencedColumnName = "MEMBER_NO")
     private MemberEntity memberEntity;
+
+    @ManyToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="ADMIN_NO", referencedColumnName = "MEMBER_NO")
+    private MemberEntity adminEntity;
 
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="COMMUNITY_NO", referencedColumnName = "COMMUNITY_NO")
@@ -38,10 +42,6 @@ public class RcommunityEntity {
 
     @Column(name="HANDLED_YN")
     private String handledYN;
-
-    @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="ADMIN_NO", referencedColumnName = "MEMBER_NO")
-    private MemberEntity adminEntity;
 
     @Column(name="HANDLED_DATE")
     private Date handledDate;

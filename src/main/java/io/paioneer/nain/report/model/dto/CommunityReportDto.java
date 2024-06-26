@@ -13,6 +13,7 @@ import java.util.Date;
 public class CommunityReportDto {
     private Long communityReportId;
     private Date communityReportDate;
+    private Long communityNo;
     private String communityReportMemberEmail;
     private String communityReportMemberName;
     private String communityReportHandledYN;
@@ -21,5 +22,4 @@ public class CommunityReportDto {
     private String communityReportType;
     private Date communityReportHandledDate;
     private String communityReportAdminName;
-    private Long communityNo;
 }

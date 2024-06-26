@@ -1,6 +1,5 @@
 package io.paioneer.nain.manager.jpa.repository;
 
-import com.querydsl.core.types.EntityPath;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.paioneer.nain.manager.model.dto.AdminListDto;

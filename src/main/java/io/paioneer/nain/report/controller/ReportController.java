@@ -56,13 +56,14 @@ public class ReportController {
         }
     }
 
-    //게시글 신고리스트 가져오기
+    //게시글 신고 카운트 가져오기
     @GetMapping("/communitycount")
     public ResponseEntity<List<CommunityReportCountDto>> getCommunityReportCount(){
         List<CommunityReportCountDto> communityReportCountDto = reportService.communityReportCount();
         return ResponseEntity.status(HttpStatus.OK).body(communityReportCountDto);
     }
 
+    //게시글 신고리스트 가져오기
     @GetMapping("/community")
     public ResponseEntity<List<CommunityReportDto>> getCommunityReport(){
         List<CommunityReportDto> communityReportDto = reportService.getCommunityReport();
@@ -76,19 +77,46 @@ public class ReportController {
         return ResponseEntity.status(HttpStatus.OK).body(commentReportDto);
     }
 
-    @PostMapping("/deletePost")
+    @GetMapping("/commentcount")
+    public ResponseEntity<List<CommentReportCountDto>> getCommentReportCount(){
+        List<CommentReportCountDto> commentReportCountDto = reportService.getCommentReportCountDto();
+        return ResponseEntity.status(HttpStatus.OK).body(commentReportCountDto);
+    }
+
+    //게시글 삭제처리
+    @PostMapping("/community/delete")
     public ResponseEntity<Void> deletePost(@RequestBody DeletePostDto request) {
         reportService.deletePost(request.getReportId(), request.getAdminId(), request.getCommunityNo());
         return ResponseEntity.ok().build();
     }
 
-    @PostMapping("/blockAccount")
-    public ResponseEntity<Void> blockAccount(@RequestBody BlockAccountDto request) {
-        reportService.blockAccount(
+    //게시글 작성자 계정정지처리
+    @PostMapping("/community/blockaccount")
+    public ResponseEntity<Void> blockAccountCommunity(@RequestBody BlockAccountDto request) {
+        reportService.blockAccountCommunity(
                 request.getReportId(),
                 request.getAdminId(),
                 request.getBlockReason()
         );
         return ResponseEntity.ok().build();
     }
+
+    //댓글 삭제처리
+    @PostMapping("/comment/delete")
+    public ResponseEntity<Void> deleteComment(@RequestBody DeleteCommentDto request) {
+        reportService.deleteComment(request.getReportId(), request.getAdminId(), request.getCommentNo());
+        return ResponseEntity.ok().build();
+    }
+
+    //댓글 작성자 계정정지처리
+    @PostMapping("/comment/blockaccount")
+    public ResponseEntity<Void> blockAccountComment(@RequestBody BlockAccountDto request) {
+        reportService.blockAccountComment(
+                request.getReportId(),
+                request.getAdminId(),
+                request.getBlockReason()
+        );
+        return ResponseEntity.ok().build();
+    }
+
 }

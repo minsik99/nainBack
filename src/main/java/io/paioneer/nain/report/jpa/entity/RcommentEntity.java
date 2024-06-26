@@ -23,7 +23,7 @@ public class RcommentEntity {
     private Long cReportNo;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="MEMEBER_NO", referencedColumnName = "MEMBER_NO")
+    @JoinColumn(name="MEMBER_NO", referencedColumnName = "MEMBER_NO")
     private MemberEntity memberEntity;
 
     @ManyToOne(fetch=FetchType.LAZY)
