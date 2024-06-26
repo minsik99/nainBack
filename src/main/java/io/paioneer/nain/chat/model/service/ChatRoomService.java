@@ -4,30 +4,27 @@ import io.paioneer.nain.chat.jpa.repository.chatroom.ChatRoomRepository;
 import io.paioneer.nain.chat.model.dto.ChatRoomDto;
 import io.paioneer.nain.chat.jpa.entity.ChatRoomEntity;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
+import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
-import java.util.List;
-import java.util.stream.Collectors;
 
+@Transactional
+@RequiredArgsConstructor
 @Service
 public class ChatRoomService {
 
-    @Autowired
-    private ChatRoomRepository chatRoomRepository;
-
-    public List<ChatRoomDto> getAllChatRooms() {
-        List<ChatRoomEntity> chatRooms = chatRoomRepository.findAllByOrderByChatRoomDateDesc();
-        return chatRooms.stream().map(this::toDto).collect(Collectors.toList());
-    }
+    private final ChatRoomRepository chatRoomRepository;
 
     public ChatRoomDto createChatRoom(ChatRoomDto chatRoomDto) {
-        ChatRoomEntity chatRoom = toEntity(chatRoomDto);
-        chatRoom.setChatRoomDate(new Date());
-        chatRoom = chatRoomRepository.save(chatRoom);
-        return toDto(chatRoom);
+        ChatRoomEntity newChatRoom = toEntity(chatRoomDto);
+        newChatRoom.setChatRoomDate(new Date());
+        newChatRoom = chatRoomRepository.save(newChatRoom);
+        return toDto(newChatRoom);
     }
+
 
     private ChatRoomDto toDto(ChatRoomEntity chatRoom) {
         return ChatRoomDto.builder()
@@ -39,18 +36,11 @@ public class ChatRoomService {
     }
 
     private ChatRoomEntity toEntity(ChatRoomDto dto) {
-        ChatRoomEntity chatRoom = ChatRoomEntity.builder()
-                .chatRoomNo(dto.getChatRoomNo())
+        MemberEntity member = new MemberEntity();
+        member.setMemberNo(dto.getMemberNo());
+        return ChatRoomEntity.builder()
                 .name(dto.getName())
-                .chatRoomDate(dto.getChatRoomDate())
+                .memberEntity(member)
                 .build();
-
-        if (dto.getMemberNo() != null) {
-            MemberEntity member = new MemberEntity();
-            member.setMemberNo(dto.getMemberNo());
-            chatRoom.setMemberEntity(member);
-        }
-
-        return chatRoom;
     }
 }

@@ -18,7 +18,7 @@ import java.util.Date;
 public class ExperienceEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "experience_no_seq")
-    @SequenceGenerator(name = "experience_no_seq", sequenceName = "EXPERIENCE_NO_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "experience_no_seq", sequenceName = "SEQ_EXPERIENCE_NO", allocationSize = 1)
     @Column(name="EXPERIENCE_NO", nullable = false)
     private Long experienceNo;  // 경력 번호
 

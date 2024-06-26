@@ -22,20 +22,19 @@ import java.util.Optional;
 @Transactional
 @RequiredArgsConstructor
 public class CommunityService {
-    private final CommunityRepositoryImpl communityRepositoryImpl;
     private final CommunityRepository communityRepository;
 
 
 
-    //글 전체목록
-    public ArrayList<CommunityDto> selectList(Pageable pageable, OrderSpecifier entityPath) {
-        ArrayList<CommunityEntity> entities = communityRepository.findListAll(pageable, entityPath);
-        ArrayList<CommunityDto> list = new ArrayList<>();
-        for (CommunityEntity entity : entities) {
-            list.add(entity.toDto());
-        }
-        return list;
-    }
+//    //글 전체목록
+//    public ArrayList<CommunityDto> selectList(Pageable pageable, OrderSpecifier entityPath) {
+//        ArrayList<CommunityEntity> entities = communityRepository.findListAll(pageable, entityPath);
+//        ArrayList<CommunityDto> list = new ArrayList<>();
+//        for (CommunityEntity entity : entities) {
+//            list.add(entity.toDto());
+//        }
+//        return list;
+//    }
 
     //글 상세보기
     public CommunityDto selectOne(Long communityNo) {
@@ -46,7 +45,7 @@ public class CommunityService {
     }
 
     //등록
-    public void insertCommunity(CommunityDto communityDto) {
+    public Long insertCommunity(CommunityDto communityDto) {
         if(communityRepository.findLastNo() == null) {
             communityDto.setCommunityNo(1L);
         }else{
@@ -54,6 +53,7 @@ public class CommunityService {
         }
         communityDto.setReadCount(0L);
         communityRepository.save(communityDto.toEntity());
+        return communityDto.getCommunityNo();
     }
 
     //수정
@@ -76,6 +76,7 @@ public class CommunityService {
         ArrayList<CommunityEntity> entities;
         if (type.equals("title")) {
             entities = communityRepository.searchTitle(keyword, pageable, entityPath);
+            log.info("keyword : {}, pageable : {}, entityPath : {}", keyword, pageable.toString(), entityPath.toString());
         } else if (type.equals("writer")) {
             entities = communityRepository.searchWriter(keyword, pageable, entityPath);
         } else {
@@ -88,24 +89,20 @@ public class CommunityService {
         return list;
     }
 
-    //게시글 전체 개수 조회
-    public long countCommunity() {
-        return communityRepository.count();
-    }
-
     //내 글 목록 개수 조회
     public long countMyList(Long memberNo, OrderSpecifier entityPath) {
         return communityRepository.countMyList(memberNo, entityPath);
     }
 
-    public long countSearchList(String type, String keyword, Pageable pageable, OrderSpecifier entityPath) {
+    public long countSearchList(String type, String keyword, Pageable pageable) {
         long count;
         if (type.equals("title")) {
-            count = communityRepository.searchTitleCount(keyword, pageable, entityPath);
+            log.info("service 여기서 작동");
+            count = communityRepository.searchTitleCount(keyword, pageable);
         } else if (type.equals("writer")) {
-            count = communityRepository.searchWriterCount(keyword, pageable, entityPath);
+            count = communityRepository.searchWriterCount(keyword, pageable);
         } else {
-            count = communityRepository.searchContentCount(keyword, pageable, entityPath);
+            count = communityRepository.searchContentCount(keyword, pageable);
         }
         return count;
     }

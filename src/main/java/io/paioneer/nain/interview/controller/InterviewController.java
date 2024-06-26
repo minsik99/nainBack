@@ -24,15 +24,15 @@ public class InterviewController {
 
     private final InterviewService interviewService;
 
-    @PostMapping
+    @PostMapping("/{memberNo}")
     public ResponseEntity<Long> insertInterview(@PathVariable(name="memberNo") Long memberNo) {
         return new ResponseEntity<>(interviewService.insertInterview(memberNo), HttpStatus.OK);
     }
 
 
     @GetMapping("/list")
-    public ResponseEntity<Page<InterviewDto>> selectInterviewList(@RequestParam(name="page") int page, @RequestParam(name="size") int size
-    , @RequestParam(name="memberNo") String memberNo) {
+    public ResponseEntity<Page<InterviewDto>> selectInterviewList(@RequestParam(name="page") int page,
+                                                                  @RequestParam(name="size") int size, @RequestParam(name="memberNo") String memberNo) {
         Pageable pageable = PageRequest.of(page, size);
         Page<InterviewDto> interview = interviewService.selectInterviewList(Long.parseLong(memberNo), pageable);
         return new ResponseEntity<>(interview, HttpStatus.OK);

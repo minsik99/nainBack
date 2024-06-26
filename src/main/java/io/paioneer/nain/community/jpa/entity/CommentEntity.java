@@ -18,11 +18,13 @@ import java.util.Date;
 @Table(name = "TB_CB_COMMENT")
 public class CommentEntity {
     @Id
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COM_NO")
+//    @SequenceGenerator(name = "SEQ_COM_NO", sequenceName = "SEQ_COM_NO", allocationSize = 1)
     @Column(name="COMMENT_NO", nullable=false)
     private Long commentNo;
 
     @ManyToOne(fetch=FetchType.LAZY)
-    @JoinColumn(name="MEMBER_NO", insertable = false, updatable = false)
+    @JoinColumn(name="MEMBER_NO", referencedColumnName = "MEMBER_NO")
     private MemberEntity memberEntity;
 
 //    @ManyToOne(fetch=FetchType.LAZY)

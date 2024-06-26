@@ -23,8 +23,16 @@ public class CommentRepositoryImpl implements CommentRepositoryCustom {
                 .selectFrom(commentEntity)
                 .where(commentEntity.communityNo.eq(communityNo)
                 .and(commentEntity.deletedDate.isNull()))
-                .orderBy(commentEntity.commentDate.desc())
+                .orderBy(commentEntity.commentNo.asc())
                 .fetch();
+    }
+
+    @Override
+    public Long getLastCommentNo() {
+        return queryFactory
+                .select(commentEntity.commentNo.max())
+                .from(commentEntity)
+                .fetchOne();
     }
 
 }

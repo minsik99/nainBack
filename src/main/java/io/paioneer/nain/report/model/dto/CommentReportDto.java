@@ -21,6 +21,5 @@ public class CommentReportDto {
     private Date commentReportHandledDate;
     private String commentReportAdminName;
 
-
 }
 

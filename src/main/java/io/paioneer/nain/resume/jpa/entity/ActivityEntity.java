@@ -18,7 +18,7 @@ import java.util.Date;
 public class ActivityEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "activity_no_seq")
-    @SequenceGenerator(name = "activity_no_seq", sequenceName = "ACTIVITY_NO_SEQ", allocationSize = 1)
+    @SequenceGenerator(name = "activity_no_seq", sequenceName = "SEQ_ACTIVITY_NO", allocationSize = 1)
     @Column(name="ACTIVITY_NO", nullable = false)
     private Long activityNo; // 활동 번호
 

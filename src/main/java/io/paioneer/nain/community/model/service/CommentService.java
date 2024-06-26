@@ -22,22 +22,44 @@ public class CommentService {
     //댓글 목록 조회
     public ArrayList<CommentDto> selectList(Long communityNo) {
         List<CommentEntity> commentEntities =  commentRepository.findList(communityNo);
+        for(CommentEntity comment : commentEntities){
+            log.info("순서 " + comment.getCommentNo().toString());
+        }
         ArrayList<CommentDto> list = new ArrayList<>();
-        for (CommentEntity commentEntity : commentEntities) {
-            list.add(commentEntity.toDto());
+        Long parentNo = 0L;
+        for(int i = 0; i < commentEntities.size(); i++) {
+            // 원댓글이면
+            if(commentEntities.get(i).getParentCommentNo() == null) {
+                //원댓글 번호
+                parentNo = commentEntities.get(i).getCommentNo();
+                // 원댓글 저장
+                list.add(commentEntities.get(i).toDto());
+
+                // 뒷 값들 중 자식 댓글들을 저장
+                for(int j = i + 1; j < commentEntities.size(); j++) {
+                    if(commentEntities.get(j).getParentCommentNo() == parentNo) {
+                        list.add(commentEntities.get(j).toDto());
+                    }
+                }
+            }
+
         }
         return list;
     }
 
     //댓글 입력
     public void insertComment(CommentDto commentDto) {
+        if(commentRepository.getLastCommentNo() == null) {
+            commentDto.setCommentNo(1L);
+        }else{
+            commentDto.setCommentNo(commentRepository.getLastCommentNo() + 1);
+        }
         commentRepository.save(commentDto.toEntity());
     }
 
     //댓글 수정
     public void updateComment(CommentDto commentDto) {
         commentRepository.save(commentDto.toEntity());
-
     }
 
     //삭제컬럼 값추가
