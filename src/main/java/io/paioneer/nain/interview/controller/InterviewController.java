@@ -38,4 +38,11 @@ public class InterviewController {
         return new ResponseEntity<>(interview, HttpStatus.OK);
     }
 
+    @DeleteMapping("/list")
+    public ResponseEntity<?> deleteInterview(@RequestParam(name="itvNo") Long itvNo){
+        log.info(itvNo.toString());
+        interviewService.deleteInterview(itvNo);
+        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+    }
+
 }
