@@ -125,13 +125,8 @@ public class CommunityController {
     public ResponseEntity<Map> selectCommunityDetail(@PathVariable(name="communityNo") Long communityNo){
         log.info("/community/detail{}", communityNo);
         CommunityDto communityDto = communityService.selectOne(communityNo);
-        log.info(communityDto.toString());
 
-        log.info("댓글 목록_communityNo : {}", communityNo);
         ArrayList<CommentDto> list = commentService.selectList(communityNo);
-        for(CommentDto comment : list){
-            log.info(comment.getMemberDto().toString());
-        }
 
         Map result = new HashMap();
         result.put("communityDto", communityDto);
@@ -330,23 +325,34 @@ public class CommunityController {
         }
 
         commentDto.setMemberDto(loginMember);
-        commentDto.setModifiedDate(new Date());
+        commentDto.setModifiedDate(TimeCalculate());
         commentService.updateComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     //댓글 삭제값 추가
     @PutMapping("/comment/del/{commentNo}")
-    public ResponseEntity<Void> deleteComment(@PathVariable(name="commentNo") Long commentNo, @RequestBody CommentDto commentDto){
+    public ResponseEntity<Void> deleteComment(HttpServletRequest request, @PathVariable(name="commentNo") Long commentNo, @RequestBody CommentDto commentDto){
         log.info("/community/del/comment{}", commentDto);
-        commentDto.setDeletedDate(TimeCalculate());
-        commentService.deleteComment(commentDto);
-        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo = jwtUtil.getMemberNoFromToken(token);
+
+        MemberDto loginMember = memberService.findById(memberNo);
+
+        if(commentDto.getWriter().equals(loginMember.getMemberNickName())) {
+            commentDto.setMemberDto(loginMember);
+            commentDto.setDeletedDate(TimeCalculate());
+            log.info(commentDto.toString());
+            commentService.deleteComment(commentDto);
+            return new ResponseEntity<>(HttpStatus.OK);
+        }else {
+            return new ResponseEntity<Void>(HttpStatus.BAD_REQUEST);
+        }
     }
 
     //댓글 DB 데이터 삭제
     @DeleteMapping("/comment/terminate/{commentNo}")
-    public ResponseEntity<Void> terminateComment(@RequestBody Long commentNo){
+    public ResponseEntity<Void> terminateComment(@PathVariable Long commentNo){
         log.info("/community/terminate/comment{}", commentNo);
         commentService.terminateComment(commentNo);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
