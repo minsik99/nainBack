@@ -34,7 +34,7 @@ public class InterviewController {
 
     //itvNo 생성을 위한 title, memberNo(memberDto) insert
     //질문 목록 (10개)
-    @PostMapping
+    @GetMapping
     public ResponseEntity<Map<String, Object>> insertInterview(@RequestParam(name="memberNo") Long memberNo,
                                                                @RequestParam(name="title") String title, @RequestParam(name="category") String category) {
 
