@@ -34,7 +34,8 @@ public class InterviewDto {
 
     private int voiceScore;
 
-    private Date itvDate; // Date 대신 String 타입으로 변경
+    private Date itvDate;
+    private String itvDateInfo; // Date 대신 String 타입으로 변경
 
     public InterviewEntity toEntity(){
         return InterviewEntity.builder()
