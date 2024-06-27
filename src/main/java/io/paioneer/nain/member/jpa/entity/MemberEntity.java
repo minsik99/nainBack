@@ -85,6 +85,7 @@ public class MemberEntity {
                 .signUpDate(this.signUpDate)
                 .withDrawalDate(this.withDrawalDate)
                 .memberUpdate(this.memberUpdate)
+                .loginType(this.loginType)
                 .build();
 
     }

@@ -22,10 +22,11 @@ public class MemberRepositoryImpl implements MemberRepositoryCustom{
 
     @Override
     public long emailCount(String memberEmail) {
+        log.info(memberEmail);
         return jpaQueryFactory
                 .select(memberEntity.count())
                 .from(memberEntity)
-                .where(memberEntity.memberEmail.eq(memberEmail))
+                .where(memberEntity.memberEmail.eq(memberEmail.trim()))
                 .fetchOne();
 //        log.info(String.valueOf(count));
 
