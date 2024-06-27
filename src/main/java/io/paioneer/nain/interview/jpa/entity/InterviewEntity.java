@@ -12,7 +12,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import java.time.LocalDateTime;
@@ -52,17 +55,22 @@ public class InterviewEntity {
     protected void onCreate() {
         this.videoScore = 1;
         this.voiceScore = 1;
-        itvDate = new Date();
+        LocalDateTime localdateTime = LocalDateTime.now();
+        ZoneId zoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime seoulTime = localdateTime.atZone(zoneId);
+        this.itvDate = Date.from(seoulTime.toInstant());
     }
 
     public InterviewDto toDto(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String itvDateInfo = dateFormat.format(this.itvDate);
         return InterviewDto.builder()
                 .itvNo(this.itvNo)
                 .memberNo(this.memberEntity.getMemberNo())
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)
-                .itvDate(this.itvDate) // 포맷팅된 문자열 사용
+                .itvDateInfo(itvDateInfo) // 포맷팅된 문자열 사용
                 .build();
     }
 
