@@ -27,7 +27,7 @@ public class NoticeDto {
     private String noticeFile;
     private String noticeMfile;
     private String noticeContent;
-    private int noticeReadCount;
+    private Long noticeReadCount;
     private Date noticeImportent;
 
     public NoticeEntity toEntity(){

@@ -13,11 +13,13 @@ public interface NoticeRepositoryCustom {
 
     ArrayList<NoticeEntity> findBySearchNoticeTitle(String keyword, Pageable pageable);
 
-    Long countByNoticeTitle(String keyword);
+    long countByNoticeTitle(String keyword);
 
-    Long countByNoticeContent(String keyword);
+    long countByNoticeContent(String keyword);
 
-    Long countByNoticeWriter(String keyword, Pageable pageable);
+    long countByNoticeWriter(String keyword, Pageable pageable);
+
+    Long findLastNo();
 
 
 }

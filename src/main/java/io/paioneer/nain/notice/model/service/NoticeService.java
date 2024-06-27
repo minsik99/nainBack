@@ -42,18 +42,21 @@ public class NoticeService {
     }
 
     //등록
-    public void insertNotice(NoticeDto noticeDto) {
+    public Long insertNotice(NoticeDto noticeDto) {
 
+        if(noticeRepository.findLastNo() == null) {
+            noticeDto.setNoticeNo(1L);
+        }else{
+            noticeDto.setNoticeNo(noticeRepository.findLastNo() + 1);
+        }
+        noticeDto.setNoticeReadCount(0L);
         noticeRepository.save(noticeDto.toEntity());
+        return noticeDto.getNoticeNo();
     }
 
     //수정
     public void updateNotice(NoticeDto noticeDto) {
-        NoticeEntity noticeEntity = noticeRepository.findById(noticeDto.getNoticeNo()).get();
-        noticeEntity.setNoticeTitle(noticeDto.getNoticeTitle());
-        noticeEntity.setNoticeContent(noticeDto.getNoticeContent());
-        noticeEntity.setNoticeDate(noticeDto.getNoticeDate());
-        noticeRepository.save(noticeEntity);
+        noticeRepository.save(noticeDto.toEntity());
     }
 
     //삭제

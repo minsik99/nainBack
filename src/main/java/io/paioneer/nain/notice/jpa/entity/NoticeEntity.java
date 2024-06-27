@@ -19,20 +19,20 @@ import java.util.Date;
 public class NoticeEntity {
 
     @Id     //JPA 가 객체를 관리할 때 식별할 기본키 지정하는 어노테이션임
-    @GeneratedValue(strategy = GenerationType.IDENTITY)  //primary key 지정하는 어노테이션
-    @Column(name = "NOTICE_NO")
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)  //primary key 지정하는 어노테이션
+    @Column(name = "NOTICE_NO",nullable = false)
     private Long noticeNo;
 
     @Column(name = "NOTICE_TITLE", nullable = false, length = 50)
     private String noticeTitle;
 
-    @Column(name = "NOTICE_DATE", nullable = false)
+    @Column(name = "NOTICE_DATE")
     private Date noticeDate;
 
-    @Column(name = "NOTICE_MODIFY", nullable = false)
+    @Column(name = "NOTICE_MODIFY")
     private Date noticeModify;
 
-    @Column(name = "NOTICE_DELETE", nullable = false)
+    @Column(name = "NOTICE_DELETE")
     private Date noticeDelete;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -49,7 +49,7 @@ public class NoticeEntity {
     private String noticeContent;
 
     @Column(name = "NOTICE_READCOUNT", nullable = false)
-    private int noticeReadCount;
+    private Long noticeReadCount;
 
     @Column(name = "NOTICE_IMPORTENT", nullable = false)
     private Date noticeImportent;
@@ -57,6 +57,7 @@ public class NoticeEntity {
     public NoticeDto toDto(){
         return NoticeDto.builder()
                 .noticeNo(noticeNo)
+                .memberDto(memberEntity.toDto())
                 .noticeTitle(noticeTitle)
                 .noticeWriter(memberEntity.getMemberNickName())
                 .noticeDate(noticeDate)

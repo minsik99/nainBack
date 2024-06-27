@@ -5,11 +5,13 @@ import io.paioneer.nain.notice.jpa.entity.NoticeEntity;
 import io.paioneer.nain.notice.jpa.entity.QNoticeEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
 
+@Slf4j
 @Repository
 @RequiredArgsConstructor
 public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
@@ -53,7 +55,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
 
     //제목 검색 목록 갯수 조회용
     @Override
-    public Long countByNoticeTitle(String keyword) {
+    public long countByNoticeTitle(String keyword) {
         return queryFactory
                 .selectFrom(notice) //selelct * from notice
                 .where(notice.noticeTitle.like("%" + keyword + "%"))
@@ -62,7 +64,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
 
     //내용 검색 목록 갯수 조회용
     @Override
-    public Long countByNoticeContent(String keyword) {
+    public long countByNoticeContent(String keyword) {
         return queryFactory
                 .selectFrom(notice) //selelct * from notice
                 .where(notice.noticeContent.like("%" + keyword + "%"))
@@ -71,7 +73,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
 
     //작성자 검색 목록 갯수 조회용
     @Override
-    public Long countByNoticeWriter(String keyword, Pageable pageable) {
+    public long countByNoticeWriter(String keyword, Pageable pageable) {
         return queryFactory
                 .select(notice.count())
                 .from(notice)
@@ -79,6 +81,14 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
                         .and(notice.noticeDelete.isNull()))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
+                .fetchOne();
+    }
+
+    @Override
+    public Long findLastNo() {
+        return queryFactory
+                .select(notice.noticeNo.max())
+                .from(notice)
                 .fetchOne();
     }
 

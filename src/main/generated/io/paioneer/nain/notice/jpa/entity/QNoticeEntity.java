@@ -40,7 +40,7 @@ public class QNoticeEntity extends EntityPathBase<NoticeEntity> {
 
     public final NumberPath<Long> noticeNo = createNumber("noticeNo", Long.class);
 
-    public final NumberPath<Integer> noticeReadCount = createNumber("noticeReadCount", Integer.class);
+    public final NumberPath<Long> noticeReadCount = createNumber("noticeReadCount", Long.class);
 
     public final StringPath noticeTitle = createString("noticeTitle");
 

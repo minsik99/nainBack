@@ -53,12 +53,12 @@ public class NoticeController {
 //        };
 //    };
 //
-//    private static Date TimeCalculate(){
-//        LocalDateTime localdateTime = LocalDateTime.now();
-//        ZoneId zoneId = ZoneId.of("Asia/Seoul");
-//        ZonedDateTime seoulTime = localdateTime.atZone(zoneId);
-//        return Date.from(seoulTime.toInstant());
-//    }
+    private static Date TimeCalculate(){
+        LocalDateTime localdateTime = LocalDateTime.now();
+        ZoneId zoneId = ZoneId.of("Asia/Seoul");
+        ZonedDateTime seoulTime = localdateTime.atZone(zoneId);
+        return Date.from(seoulTime.toInstant());
+    }
 
     //전체 목록 출력
     @GetMapping("/list")
@@ -100,7 +100,7 @@ public class NoticeController {
 
     //파일 불러오기
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadFile(@RequestParam(name = "fileName") String fileName) {
+    public ResponseEntity<Resource> downloadNoticeFile(@RequestParam(name = "fileName") String fileName) {
         try {
             log.info("파일명 : {} ", fileName);
             Path resourcePath = Paths.get("src/main/resources/upload");
@@ -123,7 +123,7 @@ public class NoticeController {
 
     //등록
     @PostMapping
-    public ResponseEntity<Void> insertNotice(HttpServletRequest request, @RequestBody NoticeDto noticeDto) throws IOException{
+    public ResponseEntity<Long> insertNotice(HttpServletRequest request, @RequestBody NoticeDto noticeDto) throws IOException{
         log.info("insertNotice : " + noticeDto);
 
         String token = request.getHeader("Authorization").substring("Bearer ".length());
@@ -134,13 +134,17 @@ public class NoticeController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
 
-        noticeService.insertNotice(noticeDto);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        noticeDto.setMemberDto(loginMember);
+        noticeDto.setNoticeDate(TimeCalculate());
+        log.info("등록 처리된 게시글 정보: {} ", noticeDto);
+        Long noticeNo = noticeService.insertNotice(noticeDto);
+
+        return new ResponseEntity<>(noticeNo, HttpStatus.CREATED);
     }
 
     // 파일 등록
     @PostMapping("/file")
-    public ResponseEntity<String> insertFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
+    public ResponseEntity<String> insertNoticeFile(HttpServletRequest request, @RequestParam("file") MultipartFile file) throws IOException {
         log.info("파일 등록 : /notice/{}", file);
 
         if(file != null && !file.isEmpty()) {
@@ -161,16 +165,27 @@ public class NoticeController {
 
 
     //수정
-    @PutMapping("/{noticeNo}")
-    public ResponseEntity<Void> updateNotice(
+    @PutMapping("/modify/{noticeNo}")
+    public ResponseEntity<Void> updateNotice(HttpServletRequest request,
             @PathVariable("noticeNo") Long noticeNo, @RequestBody NoticeDto noticeDto){
         log.info("updateNotice : " + noticeNo);
+
+        String token = request.getHeader("Authorization").substring("Bearer ".length());
+        Long memberNo =  jwtUtil.getMemberNoFromToken(token);
+
+        MemberDto loginMember = memberService.findById(memberNo);
+        if(loginMember == null){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+
+        noticeDto.setMemberDto(loginMember);
+        noticeDto.setNoticeModify(TimeCalculate());
         noticeService.updateNotice(noticeDto);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     //삭제
-    @DeleteMapping("/{noticeNo}")
+    @DeleteMapping("/delete/{noticeNo}")
     public ResponseEntity<Void> deleteNotice(HttpServletRequest request, @PathVariable("noticeNo") Long noticeNo){
         log.info("deleteNotice : " + noticeNo);
 
@@ -184,7 +199,7 @@ public class NoticeController {
             return new ResponseEntity<>(HttpStatus.OK);
         }
 
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
 
     //제목 검색
