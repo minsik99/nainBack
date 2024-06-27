@@ -17,7 +17,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Slf4j
@@ -31,23 +33,30 @@ public class InterviewController {
     private final MemberService memberService;
 
     //itvNo 생성을 위한 title, memberNo(memberDto) insert
+    //질문 목록 (10개)
     @PostMapping
-    public ResponseEntity<Long> insertInterview(@RequestParam(name="memberNo") Long memberNo, @RequestParam(name="title") String title) {
+    public ResponseEntity<Map<String, Object>> insertInterview(@RequestParam(name="memberNo") Long memberNo,
+                                                               @RequestParam(name="title") String title, @RequestParam(name="category") String category) {
 
         MemberDto loginMember = memberService.findById(memberNo);
         InterviewDto interviewDto = new InterviewDto();
         interviewDto.setTitle(title);
         interviewDto.setMemberNo(memberNo);
         interviewDto.setMemberDto(loginMember);
-        return new ResponseEntity<>(interviewService.insertInterview(interviewDto), HttpStatus.OK);
+        Map result = new HashMap();
+        result.put("itvNo", interviewService.insertInterview(interviewDto));
+
+        ArrayList list = interviewService.getRandomQuestion(category);
+        result.put("question", list);
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     //면접 기록 목록 조회
     @GetMapping("/list")
-    public ResponseEntity<Page<InterviewEntity>> selectInterviewList(@RequestParam(name="page") int page,
+    public ResponseEntity<Page<InterviewDto>> selectInterviewList(@RequestParam(name="page") int page,
                                                                   @RequestParam(name="size") int size, @RequestParam(name="memberNo") String memberNo) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<InterviewEntity> interview = interviewService.selectInterviewList(Long.parseLong(memberNo), pageable);
+        Page<InterviewDto> interview = interviewService.selectInterviewList(Long.parseLong(memberNo), pageable);
         return new ResponseEntity<>(interview, HttpStatus.OK);
     }
 
@@ -59,12 +68,4 @@ public class InterviewController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
-
-    //면접 질문 출력
-    @GetMapping("/question")
-    public ResponseEntity<?> selectQuestion(){
-        ArrayList list = interviewService.getRandomQuestion();
-        log.info(list.toString());
-        return new ResponseEntity<>(list, HttpStatus.OK);
-    }
 }
