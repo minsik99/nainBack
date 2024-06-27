@@ -5,6 +5,7 @@ import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
 import io.paioneer.nain.common.FileNameChange;
 import io.paioneer.nain.common.Paging;
+import io.paioneer.nain.common.TimeFormater;
 import io.paioneer.nain.community.jpa.entity.CommunityEntity;
 import io.paioneer.nain.community.model.dto.CommentDto;
 import io.paioneer.nain.community.model.dto.CommunityDto;
@@ -48,8 +49,6 @@ public class CommunityController {
     private final CommunityService communityService;
     private final CommentService commentService;
 
-    private final CommunityDto communityDto;
-    private final CommentDto commentDto;
     private final MemberService memberService;
 
     private final JWTUtil jwtUtil;
@@ -65,12 +64,6 @@ public class CommunityController {
         };
     };
 
-    private static Date TimeCalculate(){
-        LocalDateTime localdateTime = LocalDateTime.now();
-        ZoneId zoneId = ZoneId.of("Asia/Seoul");
-        ZonedDateTime seoulTime = localdateTime.atZone(zoneId);
-        return Date.from(seoulTime.toInstant());
-    }
     //-------------------------- 목록 조회 -----------------------------------------------------------------------------------------------------
 //    //전체 목록
 //    @GetMapping("/list")
@@ -227,7 +220,7 @@ public class CommunityController {
 
 
         community.setMemberDto(loginMember);
-        community.setCommunityDate(TimeCalculate());
+        community.setCommunityDate(TimeFormater.TimeCalculate());
         log.info("등록 처리된 게시글 정보: {} ", community);
         Long communityNo = communityService.insertCommunity(community);
 
@@ -249,7 +242,7 @@ public class CommunityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         communityDto.setMemberDto(loginMember);
-        communityDto.setModifiedDate(TimeCalculate());
+        communityDto.setModifiedDate(TimeFormater.TimeCalculate());
         communityService.updateCommunity(communityDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -266,7 +259,7 @@ public class CommunityController {
 
         if(communityDto.getWriter().equals(loginMember.getMemberNickName())) {
             communityDto.setMemberDto(loginMember);
-            communityDto.setDeletedDate(TimeCalculate());
+            communityDto.setDeletedDate(TimeFormater.TimeCalculate());
             log.info(communityDto.toString());
             communityService.deleteCommunity(communityDto);
             return new ResponseEntity<>(HttpStatus.OK);
@@ -305,7 +298,7 @@ public class CommunityController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         commentDto.setMemberDto(loginMember);
-        commentDto.setCommentDate(TimeCalculate());
+        commentDto.setCommentDate(TimeFormater.TimeCalculate());
         log.info("입력 데이터 최종: {}", commentDto);
         commentService.insertComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
@@ -325,7 +318,7 @@ public class CommunityController {
         }
 
         commentDto.setMemberDto(loginMember);
-        commentDto.setModifiedDate(TimeCalculate());
+        commentDto.setModifiedDate(TimeFormater.TimeCalculate());
         commentService.updateComment(commentDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -341,7 +334,7 @@ public class CommunityController {
 
         if(commentDto.getWriter().equals(loginMember.getMemberNickName())) {
             commentDto.setMemberDto(loginMember);
-            commentDto.setDeletedDate(TimeCalculate());
+            commentDto.setDeletedDate(TimeFormater.TimeCalculate());
             log.info(commentDto.toString());
             commentService.deleteComment(commentDto);
             return new ResponseEntity<>(HttpStatus.OK);

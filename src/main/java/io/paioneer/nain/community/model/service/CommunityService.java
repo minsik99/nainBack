@@ -35,7 +35,9 @@ public class CommunityService {
 //        }
 //        return list;
 //    }
-
+    public CommunityDto getCommunity(Long communityNo){
+        return communityRepository.findById(communityNo).get().toDto();
+    }
     //글 상세보기
     public CommunityDto selectOne(Long communityNo) {
         CommunityDto communityDto = communityRepository.findById(communityNo).get().toDto();
