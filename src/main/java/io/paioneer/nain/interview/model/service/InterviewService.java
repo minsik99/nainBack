@@ -2,6 +2,7 @@ package io.paioneer.nain.interview.model.service;
 
 
 import io.paioneer.nain.interview.jpa.entity.InterviewEntity;
+import io.paioneer.nain.interview.jpa.entity.QuestionEntity;
 import io.paioneer.nain.interview.jpa.repository.InterviewRepository;
 import io.paioneer.nain.interview.model.dto.InterviewDto;
 import io.paioneer.nain.interview.model.dto.QuestionDto;
@@ -25,19 +26,13 @@ public class InterviewService {
     private final InterviewRepository interviewRepository;
 
     public Long insertInterview(InterviewDto interviewdto) {
-        InterviewEntity interview = null;
-        try {
-            interview = interviewRepository.save(interviewdto.toEntity());
-        } catch (ParseException e) {
-            throw new RuntimeException(e);
-        }
+        InterviewEntity interview = interviewRepository.save(interviewdto.toEntity());
         return interview.toDto().getItvNo();
     }
 
-    public Page<InterviewDto> selectInterviewList(Long memberNo, Pageable pageable) {
+    public Page<InterviewEntity> selectInterviewList(Long memberNo, Pageable pageable) {
         Page<InterviewEntity> interviewEntity = interviewRepository.findAllByMemberNo(memberNo, pageable);
-        Page<InterviewDto> interviewDto = interviewEntity.map(InterviewDto::new);
-        return interviewDto;
+        return interviewEntity;
     }
 
     public void deleteInterview(Long itvNo) {
@@ -47,12 +42,19 @@ public class InterviewService {
 
     public ArrayList<QuestionDto> getRandomQuestion() {
         ArrayList<String> typeList  = new ArrayList();
-        typeList.add("기술1");
+        typeList.add("자기소개");
+        typeList.add("성격");
+        typeList.add("지원동기");
+        typeList.add("기술"); // 4개
+        typeList.add("경험"); // 2개
+        typeList.add("포부");
 
+        ArrayList<QuestionEntity> questions  = interviewRepository.selectRanQuestion(typeList);
         ArrayList<QuestionDto> list  = new ArrayList();
-        for(String type : typeList){
-            list.add(interviewRepository.selectRanQuestion(type).toDto());
+        for(QuestionEntity questionEntity : questions){
+            list.add(questionEntity.toDto());
         }
+
         return list;
     }
 

@@ -9,9 +9,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public interface InterviewRepositoryCustom {
 
-    QuestionEntity selectRanQuestion(String type);
+    ArrayList<QuestionEntity> selectRanQuestion(ArrayList typeList);
 }
