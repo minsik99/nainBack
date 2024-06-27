@@ -22,7 +22,7 @@ public class AcceptedKeywordService {
     private AcceptedKeywordRepository repository;
 
     public List<AcceptedKeywordDto> getKeywordsByCategory(String jobCategory) {
-        List<AcceptedKeywordEntity> entities = repository.findByJobCategory(jobCategory);
+        List<AcceptedKeywordEntity> entities = repository.findTop10ByJobCategoryOrderByFrequencyDesc(jobCategory);
         return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
