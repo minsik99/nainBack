@@ -19,6 +19,8 @@ import java.util.Date;
 @Table(name = "TB_BOARD_REPORT")
 public class RcommunityEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_B_REPORT_NO")
+    @SequenceGenerator(name = "SEQ_B_REPORT_NO", sequenceName = "SEQ_B_REPORT_NO", allocationSize = 1)
     @Column(name="B_REPORT_NO", nullable = false)
     private Long bReportNo;
 

@@ -1,6 +1,7 @@
 package io.paioneer.nain.interview.jpa.entity;
 
 
+import io.paioneer.nain.common.TimeFormater;
 import io.paioneer.nain.community.model.dto.CommentDto;
 import io.paioneer.nain.interview.model.dto.InterviewDto;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
@@ -55,10 +56,7 @@ public class InterviewEntity {
     protected void onCreate() {
         this.videoScore = 1;
         this.voiceScore = 1;
-        LocalDateTime localdateTime = LocalDateTime.now();
-        ZoneId zoneId = ZoneId.of("Asia/Seoul");
-        ZonedDateTime seoulTime = localdateTime.atZone(zoneId);
-        this.itvDate = Date.from(seoulTime.toInstant());
+        this.itvDate = TimeFormater.TimeCalculate();
     }
 
     public InterviewDto toDto(){

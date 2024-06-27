@@ -1,5 +1,6 @@
 package io.paioneer.nain.report.jpa.entity;
 
+import io.paioneer.nain.common.TimeFormater;
 import io.paioneer.nain.community.jpa.entity.CommentEntity;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.report.model.dto.RcommentDto;
@@ -19,6 +20,8 @@ import java.util.Date;
 @Table(name = "TB_COMMENT_REPORT")
 public class RcommentEntity {
     @Id
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_C_REPORT_NO")
+    @SequenceGenerator(name = "SEQ_C_REPORT_NO", sequenceName = "SEQ_C_REPORT_NO", allocationSize = 1)
     @Column(name="C_REPORT_NO", nullable = false)
     private Long cReportNo;
 
@@ -45,6 +48,7 @@ public class RcommentEntity {
 
     @Column(name="HANDLED_DATE")
     private Date handledDate;
+
 
     public RcommentDto toDto(){
         return RcommentDto.builder()

@@ -1,5 +1,8 @@
 package io.paioneer.nain.report.controller;
 
+import io.paioneer.nain.common.TimeFormater;
+import io.paioneer.nain.community.model.service.CommentService;
+import io.paioneer.nain.community.model.service.CommunityService;
 import io.paioneer.nain.member.model.service.MemberService;
 import io.paioneer.nain.report.model.dto.*;
 import io.paioneer.nain.report.model.service.ReportService;
@@ -24,19 +27,25 @@ public class ReportController {
     private final JWTUtil jwtUtil;
 
     private final MemberService memberService;
+    private final CommunityService communityService;
+    private final CommentService commentService;
 
     //글 신고
     @PostMapping("/community")
     public ResponseEntity<Void> reportCommunity(HttpServletRequest request, @RequestBody RcommunityDto rcommunityDto){
+        log.info(rcommunityDto.toString());
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
 
-        rcommunityDto.setReporter(memberService.findById(memberNo).getMemberNickName());
-        rcommunityDto.setReportDate(new Date());
+        rcommunityDto.setCommunityDto(communityService.getCommunity(rcommunityDto.getCommunityNo()));
+        rcommunityDto.setMemberDto(memberService.findById(memberNo));
+        rcommunityDto.setReportDate(TimeFormater.TimeCalculate());
+        log.info("입력될 신고값 {}",rcommunityDto.toString());
         try{
             reportService.insertBReport(rcommunityDto);
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
         }catch(Exception e){
+            log.info(e.getMessage());
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
@@ -44,14 +53,18 @@ public class ReportController {
     //댓글 신고
     @PostMapping("/comment")
     public ResponseEntity<Void> reportComment(HttpServletRequest request, @RequestBody RcommentDto rcommentDto){
+        log.info(rcommentDto.toString());
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
-        rcommentDto.setReporter(memberService.findById(memberNo).getMemberNickName());
-        rcommentDto.setReportDate(new Date());
+        rcommentDto.setCommentDto(commentService.getComment(rcommentDto.getCommentNo()));
+        rcommentDto.setMemberDto(memberService.findById(memberNo));
+        rcommentDto.setReportDate(TimeFormater.TimeCalculate());
+        log.info("입력될 신고값 {}",rcommentDto.toString());
         try{
             reportService.insertCReport(rcommentDto);
             return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
         }catch(Exception e){
+            log.info(e.getMessage());
             return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

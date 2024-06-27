@@ -19,6 +19,10 @@ import java.util.List;
 public class CommentService {
     private final CommentRepository commentRepository;
 
+    public CommentDto getComment(Long commentNo) {
+        return commentRepository.findById(commentNo).get().toDto();
+    }
+
     //댓글 목록 조회
     public ArrayList<CommentDto> selectList(Long communityNo) {
         List<CommentEntity> commentEntities =  commentRepository.findList(communityNo);
