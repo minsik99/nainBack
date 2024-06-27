@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+
+@Slf4j
 @Service
 public class MemberService {
 
@@ -63,8 +65,13 @@ public class MemberService {
 
 
     @Transactional
-    public void updateMemberInfo(MemberDto memberDto) {
-        memberRepository.findById(memberDto.getMemberNo());
+    public void updateMemberInfo(Long memberNo, MemberDto memberDto) {
+        log.info("Updating member info: " + memberDto);
+        MemberDto member = memberRepository.findById(memberNo).get().toDto();
+        member.setMemberPwd(memberDto.getMemberPwd());
+        member.setMemberName(memberDto.getMemberName());
+        member.setMemberNickName(memberDto.getMemberNickName());
+        memberRepository.save(member.toEntity());
     }
 
 

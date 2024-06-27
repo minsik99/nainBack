@@ -30,7 +30,9 @@ public class MemberDto {
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDateTime signUpDate;       //회원 가입일
     private LocalDateTime withDrawalDate;        //회원 탈퇴일
-    private LocalDateTime memberUpdate;          //회원 정보수정일
+    private LocalDateTime memberUpdate;        //회원 정보수정일
+    private String loginType;
+
 
     public MemberEntity toEntity() {
         return MemberEntity.builder()
@@ -46,6 +48,7 @@ public class MemberDto {
                 .signUpDate(this.signUpDate)
                 .withDrawalDate(this.withDrawalDate)
                 .memberUpdate(this.memberUpdate)
+                .loginType(this.loginType)
                 .build();
     }
 

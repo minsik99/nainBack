@@ -14,6 +14,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.util.Map;
 
 @RestController
@@ -42,21 +44,27 @@ public class MemberController {
     }
 
     @PostMapping("/member/checkemail")
-    public ResponseEntity<?> checkEmail(@RequestBody String memberEmail){
-        log.info(memberEmail);
-        String msg;
+    public ResponseEntity<?> checkEmail(@RequestBody String memberEmail) {
+        try {
+            String decodedEmail = URLDecoder.decode(memberEmail, "UTF-8");
 
-        long count = memberService.emailCount(memberEmail);
-        log.info("email count : " + count);
+            log.info("Decoded email: " + decodedEmail);
 
-        if(count > 0){
-            log.info("있다.");
-            msg = "Email already exiss";
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(msg);
-        }else{
-            log.info("없다.");
-            msg = "Valid email";
-            return ResponseEntity.status(HttpStatus.OK).body(msg);
+            long count = memberService.emailCount(decodedEmail.substring(0, decodedEmail.length() - 1));
+            log.info("email count : " + count);
+
+            String msg;
+            if (count > 0) {
+                log.info("있다.");
+                msg = "Email already exists";
+                return ResponseEntity.status(HttpStatus.OK).body(msg);
+            } else {
+                log.info("없다.");
+                msg = "Valid email";
+                return ResponseEntity.status(HttpStatus.OK).body(msg);
+            }
+        } catch (UnsupportedEncodingException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error decoding email");
         }
     }
 
@@ -71,9 +79,11 @@ public class MemberController {
     }
 
     //내 정보 수정 -------------------------------------------------------------
-    @PutMapping("/updateMyinfo")
-    public ResponseEntity<?> updateMemberInfo(@RequestBody MemberDto memberDto){
-        memberService.updateMemberInfo(memberDto);
+    @PutMapping("/updateMyinfo/{memberNo}")
+    public ResponseEntity<Void> updateMemberInfo(@PathVariable Long memberNo, @RequestBody MemberDto memberDto){
+        log.info("Received update request: " + memberDto);
+
+        memberService.updateMemberInfo(memberNo, memberDto);
         return new ResponseEntity<Void>(HttpStatus.OK);
     }
 
