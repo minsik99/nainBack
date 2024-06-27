@@ -2,10 +2,13 @@ package io.paioneer.nain.report.model.service;
 
 import io.paioneer.nain.blockMember.entity.BlockMemberEntity;
 import io.paioneer.nain.blockMember.jpa.BlockMemberRepository;
+import io.paioneer.nain.community.jpa.entity.CommentEntity;
 import io.paioneer.nain.community.jpa.entity.CommunityEntity;
+import io.paioneer.nain.community.jpa.repository.comment.CommentRepository;
 import io.paioneer.nain.community.jpa.repository.community.CommunityRepository;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.member.jpa.repository.MemberRepository;
+import io.paioneer.nain.report.jpa.entity.RcommentEntity;
 import io.paioneer.nain.report.jpa.entity.RcommunityEntity;
 import io.paioneer.nain.report.jpa.repository.CommentReportRepository;
 import io.paioneer.nain.report.jpa.repository.CommunityReportRepository;
@@ -24,20 +27,21 @@ import java.util.*;
 @Transactional
 @RequiredArgsConstructor
 public class ReportService {
-    private final RcommunityRepository RcommunityRepository;
-    private final RcommentRepository RcommentRepository;
+    private final RcommunityRepository rcommunityRepository;
+    private final RcommentRepository rcommentRepository;
     private final CommunityReportRepository communityReportRepository;
     private final CommentReportRepository commentReportRepository;
     private final MemberRepository memberRepository;
     private final CommunityRepository communityRepository;
+    private final CommentRepository commentRepository;
     private final BlockMemberRepository blockMemberRepository;
 
     public void insertBReport(RcommunityDto rcommunityDto) {
-        RcommunityRepository.save(rcommunityDto.toEntity());
+        rcommunityRepository.save(rcommunityDto.toEntity());
     }
 
     public void insertCReport(RcommentDto rcommentDto) {
-        RcommentRepository.save(rcommentDto.toEntity());
+        rcommentRepository.save(rcommentDto.toEntity());
     }
 
     public List<CommunityReportCountDto> communityReportCount() {
@@ -59,13 +63,26 @@ public class ReportService {
         return new ArrayList<>(uniqueReports.values());
     }
 
-
     public List<CommentReportDto> getCommentReport() {
-        return commentReportRepository.getCommentReport();
+        List<CommentReportDto> allReports = commentReportRepository.getCommentReport();
+        Map<Long, CommentReportDto> uniqueReports = new LinkedHashMap<>();
+        for (CommentReportDto report : allReports) {
+            Long commentNo = report.getCommentNo();
+            if (!uniqueReports.containsKey(commentNo) ||
+                    report.getCommentReportDate().after(uniqueReports.get(commentNo).getCommentReportDate())){
+                uniqueReports.put(commentNo, report);
+            }
+        }
+        return new ArrayList<>(uniqueReports.values());
+    }
+
+    public List<CommentReportCountDto> getCommentReportCountDto() {
+        log.info("getCommentReportCountDto");
+        return commentReportRepository.getCommentReportCount();
     }
 
     public void deletePost(Long reportId, Long adminId, Long communityNo) {
-        RcommunityEntity rcommunityEntity = RcommunityRepository.findById(reportId)
+        RcommunityEntity rcommunityEntity = rcommunityRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
         MemberEntity memberEntity = memberRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
@@ -81,22 +98,74 @@ public class ReportService {
         communityRepository.save(communityEntity);
     }
 
-    public void blockAccount(Long reportId, Long adminId, String blockReason) {
-        RcommunityEntity rcommunityEntity = RcommunityRepository.findById(reportId)
+
+    public void blockAccountCommunity(Long reportId, Long adminId, String blockReason) {
+        log.info("blockAccountCommunity 시작 - reportId: {}, adminId: {}, blockReason: {}", reportId, adminId, blockReason);
+
+        try {
+            RcommunityEntity rcommunityEntity = rcommunityRepository.findById(reportId)
+                    .orElseThrow(() -> new RuntimeException("Report not found"));
+            log.info("rcommunityEntity 조회 성공 - reportId: {}", reportId);
+
+            MemberEntity adminEntity = memberRepository.findById(adminId)
+                    .orElseThrow(() -> new RuntimeException("Admin not found"));
+            log.info("adminEntity 조회 성공 - adminId: {}", adminId);
+
+            rcommunityEntity.setHandledYN("Y");
+            rcommunityEntity.setAdminEntity(adminEntity);
+            rcommunityEntity.setHandledDate(new Date());
+            communityReportRepository.save(rcommunityEntity);
+            log.info("rcommunityEntity 저장 성공");
+
+            BlockMemberEntity blockMemberEntity = new BlockMemberEntity();
+            blockMemberEntity.setMemberNo2(rcommunityEntity.getMemberEntity());
+            blockMemberEntity.setBlockYN("Y");
+            blockMemberEntity.setBlockComment(blockReason);
+            blockMemberEntity.setBlockDate(new Date());
+            log.info("blockMemberEntity 생성 완료");
+
+            blockMemberRepository.save(blockMemberEntity);
+            log.info("blockMemberEntity 저장 성공");
+        } catch (Exception e) {
+            log.error("blockAccountCommunity 처리 중 오류 발생", e);
+            throw e;
+        }
+    }
+
+    public void deleteComment(Long reportId, Long adminId, Long commentNo) {
+        RcommentEntity rcommentEntity = rcommentRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+        MemberEntity memberEntity = memberRepository.findById(adminId)
+                .orElseThrow(() -> new RuntimeException("Admin not found"));
+        CommentEntity commentEntity = commentRepository.findById(commentNo)
+                .orElseThrow(() -> new RuntimeException("Community not found"));
+
+        rcommentEntity.setHandledYN("Y");
+        rcommentEntity.setAdminEntity(memberEntity); // adminEntity를 memberEntity로 설정
+        rcommentEntity.setHandledDate(new Date()); // 처리 날짜 설정
+        commentReportRepository.save(rcommentEntity);
+
+        commentEntity.setDeletedDate(new Date()); // 삭제 날짜 설정
+        commentRepository.save(commentEntity);
+    }
+
+    public void blockAccountComment(Long reportId, Long adminId, String blockReason) {
+        RcommentEntity rcommentEntity = rcommentRepository.findById(reportId)
                 .orElseThrow(() -> new RuntimeException("Report not found"));
         MemberEntity adminEntity = memberRepository.findById(adminId)
                 .orElseThrow(() -> new RuntimeException("Admin not found"));
 
-        rcommunityEntity.setHandledYN("Y");
-        rcommunityEntity.setAdminEntity(adminEntity); // adminEntity를 memberEntity로 설정
-        rcommunityEntity.setHandledDate(new Date()); // 처리 날짜 설정
-        communityReportRepository.save(rcommunityEntity);
+        rcommentEntity.setHandledYN("Y");
+        rcommentEntity.setAdminEntity(adminEntity); // adminEntity를 memberEntity로 설정
+        rcommentEntity.setHandledDate(new Date()); // 처리 날짜 설정
+        commentReportRepository.save(rcommentEntity);
 
         BlockMemberEntity blockMemberEntity = new BlockMemberEntity();
-        blockMemberEntity.setMemberNo2(rcommunityEntity.getMemberEntity()); // memberEntity 설정
+        blockMemberEntity.setMemberNo2(rcommentEntity.getMemberEntity()); // memberEntity 설정
         blockMemberEntity.setBlockYN("Y");
         blockMemberEntity.setBlockComment(blockReason);
         blockMemberEntity.setBlockDate(new Date());
+
         blockMemberRepository.save(blockMemberEntity);
     }
 }

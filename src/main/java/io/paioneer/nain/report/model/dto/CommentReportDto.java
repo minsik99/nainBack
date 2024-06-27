@@ -13,6 +13,7 @@ import java.util.Date;
 public class CommentReportDto {
     private Long commentReportId;
     private Date commentReportDate;
+    private Long commentNo;
     private String commentReportMemberEmail;
     private String commentReportMemberName;
     private String commentReportHandledYN;
@@ -20,6 +21,5 @@ public class CommentReportDto {
     private String commentReportType;
     private Date commentReportHandledDate;
     private String commentReportAdminName;
-
 }
 

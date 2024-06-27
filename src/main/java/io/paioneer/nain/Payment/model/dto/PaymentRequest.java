@@ -1,18 +1,19 @@
-package io.paioneer.nain.report.model.dto;
+package io.paioneer.nain.Payment.model.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.springframework.stereotype.Component;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 @Component
-public class CommunityReportCountDto {
-    private Long communityNo;
-    private String reportType;
-    private Long reportCount;
+public class PaymentRequest {
+    private String orderId;
+    private String amount;
+    private String orderName;
+    private String successUrl;
+    private String failUrl;
 }

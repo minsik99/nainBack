@@ -9,8 +9,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
-    Optional<MemberEntity> findByMemberEmail(String MemberEmail);
+public interface MemberRepository extends JpaRepository<MemberEntity, Long>, MemberRepositoryCustom {
+
 
     Optional<MemberEntity> findByMemberEmailAndLoginType(String MemberEmail, String loginType);
 
@@ -19,4 +19,7 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long> {
     List<MemberEntity> findByMemberNameContaining(String MemberName);
 
     List<MemberEntity> findByMemberEmailIn(List<String> admin);
+
+
+    Optional<MemberEntity> findByMemberEmail(String userEmail);
 }

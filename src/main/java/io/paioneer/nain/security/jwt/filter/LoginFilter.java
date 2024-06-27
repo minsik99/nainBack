@@ -116,6 +116,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("refresh",refresh);
         responseBody.put("memberNo", memberNo);
         log.info(memberNo.toString());
+        log.info("Admin: " + admin);
 
 
         // ObjectMapper를 사용하여 Map을 JSON 문자열로 변환합니다.

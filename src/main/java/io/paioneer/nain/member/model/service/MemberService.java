@@ -16,6 +16,8 @@ import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 
+
+@Slf4j
 @Service
 public class MemberService {
 
@@ -36,6 +38,7 @@ public class MemberService {
         return memberRepository.save(createMember(memberEntity));
     }
 
+    @Transactional
     public MemberEntity createMember(MemberEntity memberEntity) {
         String encodedPassword = bCryptPasswordEncoder.encode(memberEntity.getMemberPwd());
         return MemberEntity.builder()
@@ -43,6 +46,7 @@ public class MemberService {
                 .memberEmail(memberEntity.getMemberEmail())
                 .memberPwd(encodedPassword)
                 .memberName(memberEntity.getMemberName())
+                .memberNickName(memberEntity.getMemberName())
                 .loginType(memberEntity.getLoginType() != null ? memberEntity.getLoginType() : "local")
                 .admin(false)
                 .build();
@@ -55,17 +59,31 @@ public class MemberService {
 
     @Transactional
     public MemberDto findById(Long memberNo) {
-        return memberRepository.findById(memberNo).get().toDto();
+        return memberRepository.findByMemberNo(memberNo).get().toDto();
     }
 
 
 
     @Transactional
-    public void updateMemberInfo(MemberDto memberDto) {
-        memberRepository.findById(memberDto.getMemberNo());
+    public void updateMemberInfo(Long memberNo, MemberDto memberDto) {
+        log.info("Updating member info: " + memberDto);
+        MemberDto member = memberRepository.findById(memberNo).get().toDto();
+        member.setMemberPwd(memberDto.getMemberPwd());
+        member.setMemberName(memberDto.getMemberName());
+        member.setMemberNickName(memberDto.getMemberNickName());
+        memberRepository.save(member.toEntity());
     }
 
 
+    @Transactional
+    public boolean checkEmail(String email) {
+        return memberRepository.findByMemberEmail(email).isPresent();
+    }
+
+    @Transactional
+    public int emailCount(String memberEmail) {
+        return (int)memberRepository.emailCount(memberEmail);
+    }
 }
 
 

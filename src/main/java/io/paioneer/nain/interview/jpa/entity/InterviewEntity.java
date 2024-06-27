@@ -1,6 +1,7 @@
 package io.paioneer.nain.interview.jpa.entity;
 
 
+import io.paioneer.nain.common.TimeFormater;
 import io.paioneer.nain.community.model.dto.CommentDto;
 import io.paioneer.nain.interview.model.dto.InterviewDto;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
@@ -12,7 +13,10 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.Date;
 
 import java.time.LocalDateTime;
@@ -48,32 +52,24 @@ public class InterviewEntity {
     @Column(name="ITV_DATE", nullable = false)
     private Date itvDate;
 
-    @Column(name="URL", nullable = false)
-    private String url;
-
-
     @PrePersist
     protected void onCreate() {
         this.videoScore = 1;
         this.voiceScore = 1;
-        this.url = "url";
-        this.title = "title";
-        itvDate = new Date();
+        this.itvDate = TimeFormater.TimeCalculate();
     }
 
     public InterviewDto toDto(){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String itvDateInfo = dateFormat.format(this.itvDate);
         return InterviewDto.builder()
                 .itvNo(this.itvNo)
                 .memberNo(this.memberEntity.getMemberNo())
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)
-                .itvDate(formatDate(this.itvDate)) // 포맷팅된 문자열 사용
+                .itvDateInfo(itvDateInfo) // 포맷팅된 문자열 사용
                 .build();
     }
 
-    private String formatDate(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        return dateFormat.format(date);
-    }
 }

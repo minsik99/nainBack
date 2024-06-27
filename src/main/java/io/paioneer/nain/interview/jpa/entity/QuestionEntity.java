@@ -17,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Table(name = "TB_INTERVIEW_QUESTION")
 public class QuestionEntity {
+
     @Id
     @Column(name="Q_NO", nullable = false)
     private Long qNo;
