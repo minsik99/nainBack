@@ -10,11 +10,12 @@ import io.paioneer.nain.interview.jpa.entity.QuestionEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.jdbc.object.SqlQuery;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Slf4j
 @Repository
@@ -26,7 +27,7 @@ public class InterviewRepositoryImpl implements InterviewRepositoryCustom {
     private QQuestionEntity questionEntity = QQuestionEntity.questionEntity;
 
     @Override
-    public ArrayList<QuestionEntity> selectRanQuestion(ArrayList typeList) {
+    public ArrayList<QuestionEntity> selectRanQuestion(ArrayList typeList, String category) {
 
         ArrayList<QuestionEntity> questions = new ArrayList<>();
         for(Object type : typeList) {
@@ -35,20 +36,15 @@ public class InterviewRepositoryImpl implements InterviewRepositoryCustom {
                     .from(questionEntity)
                     .where(questionEntity.qType.eq(String.valueOf(type)))
                     .fetchOne();
-            ArrayList numList = new ArrayList();
-            for(int i = 0; i < 4; i++){
+
+            LinkedHashSet<Integer> numSet = new LinkedHashSet<>();
+            while(numSet.size() < 5){
                 int num = (int) ((Math.random() * count) + 1);
-                if (i == 0) {
-                    numList.add(num);
-                } else {
-                    if (numList.get(i - 1) != numList.get(i)) {
-                        numList.add(num);
-                    }
-                }
+                numSet.add(num);
             }
+            ArrayList numList = new ArrayList(numSet);
 
-
-            if(String.valueOf(type) == "기술") {
+            if(String.valueOf(type).equals(category)) {
                 for (int i = 0; i < 4; i++) {
                     questions.add(queryFactory
                             .selectFrom(questionEntity)
@@ -56,7 +52,7 @@ public class InterviewRepositoryImpl implements InterviewRepositoryCustom {
                                     .and(Expressions.booleanTemplate("ROWNUM = {0}", numList.get(i))))
                             .fetchOne());
                 }
-            }else if(String.valueOf(type) == "경험"){
+            }else if(String.valueOf(type).equals("경험")){
                     for(int i = 0; i < 2; i++){
                         questions.add(queryFactory
                                 .selectFrom(questionEntity)

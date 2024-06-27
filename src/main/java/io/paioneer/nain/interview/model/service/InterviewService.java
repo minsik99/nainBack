@@ -11,12 +11,14 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -30,9 +32,13 @@ public class InterviewService {
         return interview.toDto().getItvNo();
     }
 
-    public Page<InterviewEntity> selectInterviewList(Long memberNo, Pageable pageable) {
+    public Page<InterviewDto> selectInterviewList(Long memberNo, Pageable pageable) {
         Page<InterviewEntity> interviewEntity = interviewRepository.findAllByMemberNo(memberNo, pageable);
-        return interviewEntity;
+        List<InterviewDto> interviewDto = interviewEntity.stream()
+                .map(InterviewEntity::toDto)
+                .collect(Collectors.toList());
+
+        return new PageImpl<>(interviewDto, pageable, interviewEntity.getTotalElements());
     }
 
     public void deleteInterview(Long itvNo) {
@@ -40,18 +46,18 @@ public class InterviewService {
         interviewRepository.deleteById(itvNo);
     }
 
-    public ArrayList<QuestionDto> getRandomQuestion() {
-        ArrayList<String> typeList  = new ArrayList();
+    public ArrayList<QuestionDto> getRandomQuestion(String category) {
+        ArrayList<String> typeList = new ArrayList();
         typeList.add("자기소개");
         typeList.add("성격");
         typeList.add("지원동기");
-        typeList.add("기술"); // 4개
+        typeList.add(category); // 기술질문 4개
         typeList.add("경험"); // 2개
         typeList.add("포부");
 
-        ArrayList<QuestionEntity> questions  = interviewRepository.selectRanQuestion(typeList);
-        ArrayList<QuestionDto> list  = new ArrayList();
-        for(QuestionEntity questionEntity : questions){
+        ArrayList<QuestionEntity> questions = interviewRepository.selectRanQuestion(typeList, category);
+        ArrayList<QuestionDto> list = new ArrayList();
+        for (QuestionEntity questionEntity : questions) {
             list.add(questionEntity.toDto());
         }
 

@@ -14,5 +14,5 @@ import java.util.List;
 
 public interface InterviewRepositoryCustom {
 
-    ArrayList<QuestionEntity> selectRanQuestion(ArrayList typeList);
+    ArrayList<QuestionEntity> selectRanQuestion(ArrayList typeList, String category);
 }
