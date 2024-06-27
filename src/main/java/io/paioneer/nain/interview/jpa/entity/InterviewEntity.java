@@ -48,16 +48,10 @@ public class InterviewEntity {
     @Column(name="ITV_DATE", nullable = false)
     private Date itvDate;
 
-    @Column(name="URL", nullable = false)
-    private String url;
-
-
     @PrePersist
     protected void onCreate() {
         this.videoScore = 1;
         this.voiceScore = 1;
-        this.url = "url";
-        this.title = "title";
         itvDate = new Date();
     }
 
@@ -68,12 +62,8 @@ public class InterviewEntity {
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)
-                .itvDate(formatDate(this.itvDate)) // 포맷팅된 문자열 사용
+                .itvDate(this.itvDate) // 포맷팅된 문자열 사용
                 .build();
     }
 
-    private String formatDate(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        return dateFormat.format(date);
-    }
 }

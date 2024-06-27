@@ -1,5 +1,6 @@
 package io.paioneer.nain.interview.controller;
 
+import io.paioneer.nain.interview.jpa.entity.InterviewEntity;
 import io.paioneer.nain.interview.model.dto.InterviewDto;
 import io.paioneer.nain.interview.model.service.InterviewService;
 import io.paioneer.nain.member.model.dto.MemberDto;
@@ -43,10 +44,10 @@ public class InterviewController {
 
     //면접 기록 목록 조회
     @GetMapping("/list")
-    public ResponseEntity<Page<InterviewDto>> selectInterviewList(@RequestParam(name="page") int page,
+    public ResponseEntity<Page<InterviewEntity>> selectInterviewList(@RequestParam(name="page") int page,
                                                                   @RequestParam(name="size") int size, @RequestParam(name="memberNo") String memberNo) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<InterviewDto> interview = interviewService.selectInterviewList(Long.parseLong(memberNo), pageable);
+        Page<InterviewEntity> interview = interviewService.selectInterviewList(Long.parseLong(memberNo), pageable);
         return new ResponseEntity<>(interview, HttpStatus.OK);
     }
 

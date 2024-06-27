@@ -34,31 +34,16 @@ public class InterviewDto {
 
     private int voiceScore;
 
-    private String itvDate; // Date 대신 String 타입으로 변경
+    private Date itvDate; // Date 대신 String 타입으로 변경
 
-    public InterviewDto(InterviewEntity entity) {
-        this.itvNo = entity.getItvNo();
-        this.memberNo = entity.getMemberEntity().getMemberNo();
-        this.title = entity.getTitle();
-        this.videoScore = entity.getVideoScore();
-        this.voiceScore = entity.getVoiceScore();
-        this.itvDate = formatDate(entity.getItvDate());
-    }
-
-    private String formatDate(Date date) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        return dateFormat.format(date);
-    }
-
-    public InterviewEntity toEntity() throws ParseException {
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    public InterviewEntity toEntity(){
         return InterviewEntity.builder()
                 .itvNo(this.itvNo)
                 .memberEntity(this.memberDto.toEntity())
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)
-                .itvDate(dateFormat.parse(this.itvDate))
+                .itvDate(this.itvDate)
                 .build();
     }
 }
