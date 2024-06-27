@@ -2,6 +2,8 @@ package io.paioneer.nain.interview.controller;
 
 import io.paioneer.nain.interview.model.dto.InterviewDto;
 import io.paioneer.nain.interview.model.service.InterviewService;
+import io.paioneer.nain.member.model.dto.MemberDto;
+import io.paioneer.nain.member.model.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -12,6 +14,8 @@ import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.text.ParseException;
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -23,13 +27,21 @@ import java.util.List;
 public class InterviewController {
 
     private final InterviewService interviewService;
+    private final MemberService memberService;
 
-    @PostMapping("/{memberNo}")
-    public ResponseEntity<Long> insertInterview(@PathVariable(name="memberNo") Long memberNo) {
-        return new ResponseEntity<>(interviewService.insertInterview(memberNo), HttpStatus.OK);
+    //itvNo 생성을 위한 title, memberNo(memberDto) insert
+    @PostMapping
+    public ResponseEntity<Long> insertInterview(@RequestParam(name="memberNo") Long memberNo, @RequestParam(name="title") String title) {
+
+        MemberDto loginMember = memberService.findById(memberNo);
+        InterviewDto interviewDto = new InterviewDto();
+        interviewDto.setTitle(title);
+        interviewDto.setMemberNo(memberNo);
+        interviewDto.setMemberDto(loginMember);
+        return new ResponseEntity<>(interviewService.insertInterview(interviewDto), HttpStatus.OK);
     }
 
-
+    //면접 기록 목록 조회
     @GetMapping("/list")
     public ResponseEntity<Page<InterviewDto>> selectInterviewList(@RequestParam(name="page") int page,
                                                                   @RequestParam(name="size") int size, @RequestParam(name="memberNo") String memberNo) {
@@ -38,6 +50,7 @@ public class InterviewController {
         return new ResponseEntity<>(interview, HttpStatus.OK);
     }
 
+    //면접 기록 삭제
     @DeleteMapping("/list")
     public ResponseEntity<?> deleteInterview(@RequestParam(name="itvNo") Long itvNo){
         log.info(itvNo.toString());
@@ -45,4 +58,12 @@ public class InterviewController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 
+
+    //면접 질문 출력
+    @GetMapping("/question")
+    public ResponseEntity<?> selectQuestion(){
+        ArrayList list = interviewService.getRandomQuestion();
+        log.info(list.toString());
+        return new ResponseEntity<>(list, HttpStatus.OK);
+    }
 }
