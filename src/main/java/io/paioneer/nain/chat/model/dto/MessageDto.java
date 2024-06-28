@@ -1,5 +1,6 @@
 package io.paioneer.nain.chat.model.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.paioneer.nain.chat.jpa.entity.ChatRoomEntity;
 import io.paioneer.nain.chat.jpa.entity.MessageEntity;
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
@@ -20,7 +21,10 @@ public class MessageDto {
     private Long messageNo;
     private Long chatRoomNo;
     private Long memberNo;
+    private String nickname;
     private String messageText;
+
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSXXX", timezone = "UTC")
     private Date messageDate;
 
     public MessageEntity toEntity(ChatRoomEntity chatRoom, MemberEntity member) {
@@ -37,6 +41,7 @@ public class MessageDto {
                 .messageNo(messageEntity.getMessageNo())
                 .chatRoomNo(messageEntity.getChatRoom().getChatRoomNo())
                 .memberNo(messageEntity.getMember().getMemberNo())
+                .nickname(messageEntity.getMember().getMemberNickName())
                 .messageText(messageEntity.getMessageText())
                 .messageDate(messageEntity.getMessageDate())
                 .build();

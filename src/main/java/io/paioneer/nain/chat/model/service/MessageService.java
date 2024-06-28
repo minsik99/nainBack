@@ -11,6 +11,7 @@ import io.paioneer.nain.member.jpa.repository.MemberRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -38,7 +39,7 @@ public class MessageService {
     }
 
     public List<MessageDto> getMessagesByRoomId(Long roomId) {
-        List<MessageEntity> messages = messageRepository.findByChatRoom_ChatRoomNo(roomId);
+        List<MessageEntity> messages = messageRepository.findByChatRoom_ChatRoomNo(roomId, Sort.by(Sort.Direction.ASC, "messageDate"));
         return messages.stream()
                        .map(MessageDto::fromEntity)
                        .collect(Collectors.toList());

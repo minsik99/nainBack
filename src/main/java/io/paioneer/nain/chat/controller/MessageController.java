@@ -4,6 +4,8 @@ import io.paioneer.nain.chat.model.dto.ChatRoomDto;
 import io.paioneer.nain.chat.model.dto.MessageDto;
 import io.paioneer.nain.chat.model.service.ChatRoomService;
 import io.paioneer.nain.chat.model.service.MessageService;
+import io.paioneer.nain.member.model.dto.MemberDto;
+import io.paioneer.nain.member.model.service.MemberService;
 import io.paioneer.nain.security.jwt.util.JWTUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -13,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Slf4j
@@ -24,6 +28,7 @@ public class MessageController {
     private final MessageService messageService;
     private final RestTemplate restTemplate;
     private final ChatRoomService chatRoomService;
+    private final MemberService memberService;
     private final JWTUtil jwtUtil;
 
     @Value("${flask.server.url}")
@@ -44,11 +49,13 @@ public class MessageController {
         Long memberNo = jwtUtil.getMemberNoFromToken(token);
         messageDto.setMemberNo(memberNo);
         messageDto.setChatRoomNo(roomId);
-
-        log.info("Received message: " + messageDto.toString());
+        messageDto.setMessageDate(new Date());
+        MemberDto loginMember = memberService.findById(memberNo);
+        messageDto.setNickname(loginMember.getMemberNickName());
 
         messageService.saveMessage(messageDto);
 
+        log.info("Received message: " + messageDto);
         // Flask 서버로 메시지 전달
         restTemplate.postForEntity(flaskServerUrl + "/publish", messageDto, Void.class);
 
