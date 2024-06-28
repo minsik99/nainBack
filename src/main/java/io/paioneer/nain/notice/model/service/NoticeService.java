@@ -1,5 +1,6 @@
 package io.paioneer.nain.notice.model.service;
 
+import com.querydsl.core.types.OrderSpecifier;
 import io.paioneer.nain.notice.jpa.entity.NoticeEntity;
 import io.paioneer.nain.notice.jpa.repository.NoticeRepository;
 import io.paioneer.nain.notice.jpa.repository.NoticeRepositoryImpl;
@@ -12,7 +13,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -21,7 +25,9 @@ import java.util.List;
 public class NoticeService {
     private final NoticeRepository noticeRepository;
 
-    private final NoticeRepositoryImpl noticeRepositoryImpl;
+
+    //게시글 전체 갯수 조회
+    public long countNotice() { return noticeRepository.count(); }
 
     //전체 목록 출력
     public ArrayList<NoticeDto> selectNoticeList(Pageable pageable) {
@@ -31,6 +37,10 @@ public class NoticeService {
             list.add(entity.toDto());
         }
         return list;
+    }
+
+    public NoticeDto getNotice(Long noticeNo) {
+        return noticeRepository.findById(noticeNo).get().toDto();
     }
 
     // 글상세보기
@@ -59,64 +69,81 @@ public class NoticeService {
         noticeRepository.save(noticeDto.toEntity());
     }
 
+    //삭제(숨김)
+    public void hiddenNotice(NoticeDto noticeDto) {
+        noticeRepository.save(noticeDto.toEntity());
+    }
+
     //삭제
     public void deleteNotice(Long noticeNo) {
         noticeRepository.deleteById(noticeNo);
     }
 
 
-    //제목 검색
-    public List<NoticeDto> selectSearchNoticeTitle(String keyword, Pageable pageable) {
+//    //검색
+//    public Map<String, Object> selectSearchNotice(String keyword, Pageable pageable, String type) {
+//        List<NoticeDto> result;
+//        switch (type) {
+//            case "noticeTitle":
+//                result = noticeRepository.findBySearchNoticeTitle(keyword, pageable)
+//                        .stream()
+//                        .map(NoticeEntity::toDto)
+//                        .collect(Collectors.toList());
+//                break;
+//            case "noticeContent":
+//                result = noticeRepository.findBySearchNoticeContent(keyword, pageable)
+//                        .stream()
+//                        .map(NoticeEntity::toDto)
+//                        .collect(Collectors.toList());
+//                break;
+//            case "noticeWriter":
+//                result = noticeRepository.findBySearchNoticeWriter(keyword, pageable)
+//                        .stream()
+//                        .map(NoticeEntity::toDto)
+//                        .collect(Collectors.toList());
+//                break;
+//            default:
+//                throw new IllegalArgumentException("Invalid search type: " + type);
+//        }
+//
+//        Map<String, Object> response = new HashMap<>();
+//        response.put("data", result);
+//        response.put("page", pageable.getPageNumber() + 1);
+//        response.put("limit", pageable.getPageSize());
+//
+//        return response;
+//    }
 
-        ArrayList<NoticeEntity> lists = noticeRepository.findBySearchNoticeTitle(keyword, pageable);
+    //검색 목록 조회
+    public ArrayList<NoticeDto> selectSearchNotice(String type, String keyword, Pageable pageable, OrderSpecifier entityPath) {
+        ArrayList<NoticeEntity> entities;
+        if (type.equals("noticeContent")) {
+            entities = noticeRepository.findBySearchNoticeContent(keyword, pageable, entityPath);
+            log.info("keyword : {}, pageable : {}, entityPath : {}", keyword, pageable.toString(), entityPath.toString());
+        } else if (type.equals("noticeWriter")) {
+            entities = noticeRepository.findBySearchNoticeWriter(keyword, pageable, entityPath);
+        } else {
+            entities = noticeRepository.findBySearchNoticeTitle(keyword, pageable, entityPath);
+        }
         ArrayList<NoticeDto> list = new ArrayList<>();
-        for (NoticeEntity entity : lists) {
-            list.add(entity.toDto());
+        for (NoticeEntity noticeEntity : entities) {
+            list.add(noticeEntity.toDto());
         }
         return list;
     }
 
-    //내용 검색
-    public List<NoticeDto> selectSearchNoticeContent(String keyword, Pageable pageable) {
-
-        ArrayList<NoticeEntity> lists = noticeRepository.findBySearchNoticeContent(keyword, pageable);
-        ArrayList<NoticeDto> list = new ArrayList<>();
-
-        for (NoticeEntity entity : lists) {
-            list.add(entity.toDto());
+    //검색 목록 개수 조회
+    public long countSearchNotice(String type, String keyword, Pageable pageable) {
+        long count;
+        if (type.equals("noticeTitle")) {
+            log.info("service");
+            count = noticeRepository.countByNoticeTitle(keyword, pageable);
+        } else if (type.equals("writer")) {
+            count = noticeRepository.countByNoticeWriter(keyword, pageable);
+        } else {
+            count = noticeRepository.countByNoticeContent(keyword, pageable);
         }
-
-        return list;
+        return count;
     }
-
-    //작성자 검색
-    public List<NoticeDto> selectSearchNoticeWriter(String keyword, Pageable pageable) {
-
-        ArrayList<NoticeEntity> lists = noticeRepository.findBySearchNoticeWriter(keyword, pageable);
-        ArrayList<NoticeDto> list = new ArrayList<>();
-
-        for (NoticeEntity entity : lists) {
-            list.add(entity.toDto());
-        }
-        return list;
-    }
-
-    //제목 검색 목록 갯수 조회용
-    public Long getSearchNoticeTitleCount(String keyword)  {
-        return noticeRepository.countByNoticeTitle(keyword);
-    }
-
-    //내용 검색 목록 갯수 조회용
-    public Long getSearchNoticeContentCount(String keyword) {
-        return noticeRepository.countByNoticeContent(keyword);
-    }
-
-    //작성자 검색 목록 갯수 조회용
-    public Long getSearchNoticeWriterCount(String keyword, Pageable pageable) {
-        return noticeRepository.countByNoticeWriter(keyword, pageable);
-    }
-    
-    //게시글 전체 갯수 조회
-    public long countNotice() { return noticeRepository.count(); }
 }
 
