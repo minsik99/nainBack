@@ -20,7 +20,6 @@ public class InterviewRepositoryImpl implements InterviewRepositoryCustom {
     private final EntityManager entityManager;
     private QInterviewEntity interviewEntity = QInterviewEntity.interviewEntity;
     private QQuestionEntity questionEntity = QQuestionEntity.questionEntity;
-    private QAnalysisEntity analysisEntity = QAnalysisEntity.analysisEntity;
 
     @Override
     public ArrayList<QuestionEntity> selectRanQuestion(ArrayList typeList, String category) {
