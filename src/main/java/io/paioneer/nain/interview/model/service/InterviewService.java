@@ -1,7 +1,5 @@
 package io.paioneer.nain.interview.model.service;
 
-
-import io.paioneer.nain.interview.jpa.entity.AnalysisEntity;
 import io.paioneer.nain.interview.jpa.entity.InterviewEntity;
 import io.paioneer.nain.interview.jpa.entity.QuestionEntity;
 import io.paioneer.nain.interview.jpa.repository.InterviewRepository;
