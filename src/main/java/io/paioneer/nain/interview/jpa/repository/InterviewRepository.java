@@ -13,4 +13,19 @@ import org.springframework.stereotype.Repository;
 public interface InterviewRepository extends JpaRepository<InterviewEntity, Long> , InterviewRepositoryCustom{
     @Query("select i from InterviewEntity i where i.memberEntity.memberNo = :memberNo")
     Page<InterviewEntity> findAllByMemberNo(Long memberNo, Pageable pageable);
+
+    @Query("SELECT COUNT(s) FROM InterviewEntity s WHERE s.videoScore < :score AND s.voiceScore < :score")
+    int countScoresLowerThan(@Param("score") int score);
+
+    @Query("SELECT COUNT(s) FROM InterviewEntity s WHERE s.videoScore > :score AND s.voiceScore > :score")
+    int countScoresHigherThan(@Param("score") int score);
+
+    @Query("SELECT COUNT(s) FROM InterviewEntity s")
+    int countTotalScores();
+
+
+
+
+
+
 }
