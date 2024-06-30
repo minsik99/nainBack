@@ -2,14 +2,13 @@ package io.paioneer.nain.interview.jpa.repository;
 
 import com.querydsl.core.types.dsl.Expressions;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import io.paioneer.nain.interview.jpa.entity.InterviewEntity;
-import io.paioneer.nain.interview.jpa.entity.QInterviewEntity;
-import io.paioneer.nain.interview.jpa.entity.QQuestionEntity;
-import io.paioneer.nain.interview.jpa.entity.QuestionEntity;
+import io.paioneer.nain.interview.jpa.entity.*;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
 
@@ -58,4 +57,15 @@ public class InterviewRepositoryImpl implements InterviewRepositoryCustom {
         }
         return questions;
     }
+
+    @Override
+    public InterviewEntity findByItvNo(Long itvNo) {
+        return queryFactory.selectFrom(interviewEntity)
+                .where(interviewEntity.itvNo.eq(itvNo))
+                .fetchOne();
+    }
+
+
+
+
 }
