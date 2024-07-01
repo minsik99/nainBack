@@ -8,9 +8,12 @@ import io.paioneer.nain.report.jpa.entity.QRcommunityEntity;
 import io.paioneer.nain.report.model.dto.CommunityReportCountDto;
 import io.paioneer.nain.report.model.dto.CommunityReportDto;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+
 
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 public class CommunityReportRepositoryImpl implements CommunityReportRepositoryCustom {
 
@@ -18,6 +21,7 @@ public class CommunityReportRepositoryImpl implements CommunityReportRepositoryC
     QRcommunityEntity communityReportEntity = QRcommunityEntity.rcommunityEntity;
     QCommunityEntity communityEntity = QCommunityEntity.communityEntity;
     QMemberEntity memberEntity = QMemberEntity.memberEntity;
+    QMemberEntity adminEntity = new QMemberEntity("adminEntity");
 
     @Override
     public List<CommunityReportCountDto> getCommunityReportCount() {
@@ -47,12 +51,15 @@ public class CommunityReportRepositoryImpl implements CommunityReportRepositoryC
                         communityEntity.content,
                         communityReportEntity.reportType,
                         communityReportEntity.handledDate,
-                        memberEntity.memberName
+                        adminEntity.memberName,
+                        memberEntity.memberNo
                 ))
                 .from(communityReportEntity)
                 .leftJoin(communityEntity).on(communityReportEntity.communityEntity.communityNo.eq(communityEntity.communityNo))
                 .leftJoin(memberEntity).on(communityEntity.memberEntity.memberNo.eq(memberEntity.memberNo))
+                .leftJoin(adminEntity).on(communityReportEntity.adminEntity.memberNo.eq(adminEntity.memberNo)) // 조인 추가
                 .orderBy(communityReportEntity.communityEntity.communityNo.asc(), communityReportEntity.reportDate.desc())
                 .fetch();
     }
+
 }

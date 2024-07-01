@@ -22,4 +22,5 @@ public class CommunityReportDto {
     private String communityReportType;
     private Date communityReportHandledDate;
     private String communityReportAdminName;
+    private Long MemberNo;
 }
