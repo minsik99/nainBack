@@ -168,4 +168,24 @@ public class ReportService {
 
         blockMemberRepository.save(blockMemberEntity);
     }
+
+    public boolean alreadyReported(Long memberNo, Long communityNo) {
+        boolean history = false;
+        int count = rcommunityRepository.reportHistoryCount(memberNo, communityNo);
+        if(count > 0){
+            history = true;
+        }
+        log.info("history t/f {}, {}", count, history);
+        return history;
+    }
+
+    public boolean alreadyReportedComment(Long memberNo, Long commentNo) {
+        boolean history = false;
+        int count = rcommentRepository.reportCommentHistoryCount(memberNo, commentNo);
+        if(count > 0){
+            history = true;
+        }
+        log.info("history t/f {}, {}", count, history);
+        return history;
+    }
 }
