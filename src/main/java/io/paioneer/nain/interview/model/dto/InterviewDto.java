@@ -30,7 +30,7 @@ public class InterviewDto {
 
     private String title;
 
-    private int videoScore;
+    private double videoScore;
 
     private int voiceScore;
 
@@ -38,9 +38,10 @@ public class InterviewDto {
     private String itvDateInfo; // Date 대신 String 타입으로 변경
 
     public InterviewEntity toEntity(){
+        MemberEntity memberEntity = (this.memberDto != null) ? this.memberDto.toEntity() : null;
         return InterviewEntity.builder()
                 .itvNo(this.itvNo)
-                .memberEntity(this.memberDto.toEntity())
+                .memberEntity(memberEntity)
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)

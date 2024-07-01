@@ -33,40 +33,55 @@ public class ReportController {
 
     //글 신고
     @PostMapping("/community")
-    public ResponseEntity<Void> reportCommunity(HttpServletRequest request, @RequestBody RcommunityDto rcommunityDto){
+    public ResponseEntity<String> reportCommunity(HttpServletRequest request, @RequestBody RcommunityDto rcommunityDto){
         log.info(rcommunityDto.toString());
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
-
-        rcommunityDto.setCommunityDto(communityService.getCommunity(rcommunityDto.getCommunityNo()));
-        rcommunityDto.setMemberDto(memberService.findById(memberNo));
-        rcommunityDto.setReportDate(TimeFormater.TimeCalculate());
-        log.info("입력될 신고값 {}",rcommunityDto.toString());
+        String msg = null;
         try{
-            reportService.insertBReport(rcommunityDto);
-            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            if(!reportService.alreadyReported(memberNo, rcommunityDto.getCommunityNo())) {
+                rcommunityDto.setCommunityDto(communityService.getCommunity(rcommunityDto.getCommunityNo()));
+                rcommunityDto.setMemberDto(memberService.findById(memberNo));
+                rcommunityDto.setReportDate(TimeFormater.TimeCalculate());
+                log.info("입력될 신고값 {}",rcommunityDto.toString());
+                msg = "정상 신고되었습니다.";
+                reportService.insertBReport(rcommunityDto);
+                return new ResponseEntity<>(msg, HttpStatus.OK);
+            }else{
+                msg = "이미 신고한 게시글입니다.";
+                return new ResponseEntity<>(msg, HttpStatus.OK);
+            }
         }catch(Exception e){
             log.info(e.getMessage());
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     //댓글 신고
     @PostMapping("/comment")
-    public ResponseEntity<Void> reportComment(HttpServletRequest request, @RequestBody RcommentDto rcommentDto){
+    public ResponseEntity<String> reportComment(HttpServletRequest request, @RequestBody RcommentDto rcommentDto){
         log.info(rcommentDto.toString());
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo =  jwtUtil.getMemberNoFromToken(token);
-        rcommentDto.setCommentDto(commentService.getComment(rcommentDto.getCommentNo()));
-        rcommentDto.setMemberDto(memberService.findById(memberNo));
-        rcommentDto.setReportDate(TimeFormater.TimeCalculate());
-        log.info("입력될 신고값 {}",rcommentDto.toString());
+        String msg = null;
         try{
-            reportService.insertCReport(rcommentDto);
-            return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
+            if(!reportService.alreadyReportedComment(memberNo, rcommentDto.getCommentNo())) {
+                rcommentDto.setCommentDto(commentService.getComment(rcommentDto.getCommentNo()));
+                rcommentDto.setMemberDto(memberService.findById(memberNo));
+                rcommentDto.setReportDate(TimeFormater.TimeCalculate());
+                log.info("입력될 신고값 {}",rcommentDto.toString());
+                reportService.insertCReport(rcommentDto);
+                msg = "정상 신고되었습니다.";
+                return new ResponseEntity<>(msg, HttpStatus.OK);
+            }else{
+                msg = "이미 신고한 댓글입니다.";
+                return new ResponseEntity<>(msg, HttpStatus.OK);
+            }
+
+
         }catch(Exception e){
             log.info(e.getMessage());
-            return new ResponseEntity<Void>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return new ResponseEntity<>(msg, HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
