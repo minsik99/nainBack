@@ -47,7 +47,7 @@ public class InterviewEntity {
     private double videoScore;
 
     @Column(name="VOICE_SCORE", nullable = false)
-    private int voiceScore;
+    private double voiceScore;
 
     @Column(name="ITV_DATE", nullable = false)
     private Date itvDate;

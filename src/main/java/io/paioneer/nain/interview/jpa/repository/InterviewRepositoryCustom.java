@@ -11,4 +11,6 @@ public interface InterviewRepositoryCustom {
     ArrayList<QuestionEntity> selectRanQuestion(ArrayList typeList, String category);
 
     InterviewEntity findByItvNo(Long itvNo);
+
+    Double getVoiceScore(Long itvNo);
 }

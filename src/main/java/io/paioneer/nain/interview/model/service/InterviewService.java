@@ -145,4 +145,22 @@ public class InterviewService {
         }
 
     }
+
+    public Double getVoiceScore(Long itvNo) {
+        return interviewRepository.getVoiceScore(itvNo);
+    }
+
+    public Double getTotalScore() {
+        double totalScore = 0.0;
+        List<InterviewEntity> interviews = interviewRepository.findAll();
+        long count = interviewRepository.count();
+        if (count == 0) {
+            return 0.0;
+        }
+        for (InterviewEntity interview : interviews) {
+            totalScore += interview.getVoiceScore();
+            totalScore += interview.getVideoScore();
+        }
+        return totalScore / count / 2;
+    }
 }
