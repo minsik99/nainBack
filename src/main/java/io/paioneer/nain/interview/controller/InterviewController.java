@@ -85,5 +85,16 @@ public class InterviewController {
 
         return new ResponseEntity<>(interviewService.getFinalAnalysis(score, percentile, emotionAnalysis, successRate), HttpStatus.OK);
     }
+    @GetMapping("/totalVoice")
+    public ResponseEntity<Double> getVoiceScore(@RequestParam(name="itvNo") Long itvNo){
+        log.info(itvNo.toString());
+        return new ResponseEntity<>(interviewService.getVoiceScore(itvNo) ,HttpStatus.OK);
+    }
+
+    @GetMapping("/score")
+    public ResponseEntity<Double> getTotalScore(){
+        return new ResponseEntity<>(interviewService.getTotalScore() ,HttpStatus.OK);
+    }
+
 
 }

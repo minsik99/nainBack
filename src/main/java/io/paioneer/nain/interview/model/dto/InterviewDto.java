@@ -32,7 +32,7 @@ public class InterviewDto {
 
     private double videoScore;
 
-    private int voiceScore;
+    private double voiceScore;
 
     private Date itvDate;
     private String itvDateInfo; // Date 대신 String 타입으로 변경
