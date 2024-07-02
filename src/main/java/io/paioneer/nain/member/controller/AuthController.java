@@ -2,6 +2,7 @@ package io.paioneer.nain.member.controller;
 
 import io.paioneer.nain.member.jpa.entity.MemberEntity;
 import io.paioneer.nain.member.jpa.repository.MemberRepository;
+import io.paioneer.nain.member.model.output.CustomMemberDetails;
 import io.paioneer.nain.member.model.service.MemberService;
 import io.paioneer.nain.security.jwt.util.JWTUtil;
 import io.paioneer.nain.security.model.entity.RefreshToken;
@@ -13,11 +14,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -91,7 +95,7 @@ public class AuthController {
             MemberEntity memberEntity = optionalMember.get();
             memberEntity.setSnsAccessToken(accessToken);
             memberRepository.save(memberEntity);
-
+            String subscribeYN = memberEntity.getSubscribeYN();
             // JWT 토큰 칼급
             Long accessExpiredMs = 600000L;
             String accessTokenJwt = jwtUtil.generateToken(email, "access", accessExpiredMs);

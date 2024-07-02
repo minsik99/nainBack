@@ -56,6 +56,7 @@ public class SecurityConfig {
                 // HTTP 요청에 대한 접근 권한을 설정합니다.
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(HttpMethod.GET, "/staticstical/**", "/report/**", "/usermanager/**", "/adminmanager/**").hasRole("ADMIN")
+                        .requestMatchers("/interview/**", "/video/**").hasRole("SUBSCRIBE")
                         .requestMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN") // '/notice' 경로에 대한 POST 요청은 ADMIN 역할을 가진 사용자만 가능합니다.
                         .requestMatchers("/api/auth/member", "/login", "/notice", "/reissue", "/auth/kakao/callback","/auth/kakao/signup/callback","/file/view/*","/file/download/*", "/**").permitAll() // 해당 경로들은 인증 없이 접근 가능합니다.
                         .anyRequest().authenticated()

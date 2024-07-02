@@ -68,20 +68,28 @@ public class VideoController {
             log.info("Total Score: {}", totalScore);
             BigDecimal roundedScore = new BigDecimal(totalScore).setScale(2, RoundingMode.HALF_UP);
             double finalScore = roundedScore.doubleValue();
-            InterviewDto interviewDto = interviewService.selectInterview(itvNo);
-            log.info("finalScore: {}", finalScore);
-            interviewDto.setVideoScore(finalScore);
-            interviewDto.setItvDate(new Date());
-            log.info("controller memberDot{}", interviewDto);
-            interviewService.updateVideoScore(interviewDto);
-
-            return new ResponseEntity<>(totalScore, HttpStatus.OK);
+            return new ResponseEntity<>(finalScore, HttpStatus.OK);
         } catch (Exception e) {
             log.error("Error occurred while processing totalVideo request", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
+    @PostMapping("/updateTotalVideo")
+    public ResponseEntity<Double> getTotalVideo(@RequestParam(name="itvNo") Long itvNo, @RequestParam(name="finalScore") double finalScore) {
+        try {
+            InterviewDto interviewDto = interviewService.selectInterview(itvNo);
+            log.info("finalScore: {}", finalScore);
+            interviewDto.setVideoScore(finalScore);
+            interviewDto.setItvDate(new Date());
+            log.info("controller memberDot{}", interviewDto);
+            return new ResponseEntity<>(interviewService.updateVideoScore(interviewDto), HttpStatus.OK);
+        } catch (Exception e) {
+            log.error("Error occurred while update TotalVideo request", e);
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+    }
 
 
     private double calculateTotalScore(Map<String, Double> emotionAverages, Map<String, List<Double>> posEyeAnalysis) {
