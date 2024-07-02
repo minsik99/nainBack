@@ -20,6 +20,5 @@ public interface MemberRepository extends JpaRepository<MemberEntity, Long>, Mem
 
     List<MemberEntity> findByMemberEmailIn(List<String> admin);
 
-
     Optional<MemberEntity> findByMemberEmail(String userEmail);
 }
