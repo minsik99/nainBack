@@ -79,8 +79,9 @@ public class InterviewService {
         return interviewDto;
     }
 
-    public void updateVideoScore(InterviewDto interviewDto) {
+    public Double updateVideoScore(InterviewDto interviewDto) {
         interviewRepository.save(interviewDto.toEntity());
+        return interviewDto.getVideoScore();
     }
 
     public String getFinalAnalysis(int score, String percentile, String emotionAnalysis, int successRate) {

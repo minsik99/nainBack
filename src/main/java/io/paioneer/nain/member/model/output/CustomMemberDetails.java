@@ -30,7 +30,9 @@ public class CustomMemberDetails implements UserDetails {
         // 사용자의 admin 값에 따라 ROLE_ADMIN 또는 ROLE_MEMBER 권한을 부여합니다.
         if(this.memberEntity.getAdmin()){
             authorities.add(new SimpleGrantedAuthority("ROLE_ADMIN"));
-        }else {
+        } else if ("Y".equals(this.memberEntity.getSubscribeYN())) {
+            authorities.add(new SimpleGrantedAuthority("ROLE_SUBSCRIBE"));
+        } else {
             authorities.add(new SimpleGrantedAuthority("ROLE_MEMBER"));
         }
         return authorities;

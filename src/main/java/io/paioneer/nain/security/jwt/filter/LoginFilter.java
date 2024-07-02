@@ -17,16 +17,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 // Lombok의 @Slf4j 어노테이션을 사용하여 로깅을 간편하게 합니다.
 @Slf4j
@@ -108,6 +107,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 여기서 부터 사용자 정보를 응답 바디에 추가하는 코드입니다.
         // 사용자의 권한이나 추가 정보를 JSON 형태로 변환하여 응답 바디에 포함시킬 수 있습니다.
+
+
         boolean admin = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         Map<String, Object> responseBody = new HashMap<>();
@@ -115,6 +116,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("isAdmin", admin);
         responseBody.put("refresh",refresh);
         responseBody.put("memberNo", memberNo);
+
+        boolean subscribe = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUBSCRIBE"));
+        responseBody.put("subscribe", subscribe);
+        customMemberDetails.getAuthorities().forEach(authority -> {
+            log.info("Authority: " + authority.getAuthority());
+        });
+
+
+
         log.info(memberNo.toString());
         log.info("Admin: " + admin);
 
