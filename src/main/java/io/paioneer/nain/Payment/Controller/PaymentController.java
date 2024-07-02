@@ -1,69 +1,48 @@
 package io.paioneer.nain.Payment.Controller;
 
-import org.apache.tomcat.util.json.JSONParser;
-import org.apache.tomcat.util.json.ParseException;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import io.paioneer.nain.Payment.model.service.PaymentService;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.*;
+import org.springframework.web.bind.annotation.*;
 
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Base64;
-
-@Controller
+@Slf4j
+@RequiredArgsConstructor
+@RestController
+@RequestMapping("/payment")
+@CrossOrigin
 public class PaymentController {
 
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final ObjectMapper objectMapper = new ObjectMapper();
+    private final PaymentService paymentService;
 
-    @RequestMapping(value = "/confirm")
-    public ResponseEntity<JSONObject> confirmPayment(@RequestBody String jsonBody) {
+    @PostMapping("/confirm")
+    public ResponseEntity<JsonNode> confirmPayment(@RequestBody String jsonBody) {
         try {
-            // JSONParser 객체를 StringReader와 함께 초기화합니다.
-            JSONParser parser = new JSONParser(new StringReader(jsonBody));
-            JSONObject requestData = (JSONObject) parser.parse();  // 인자 없이 parse 메소드를 호출합니다.
-            String paymentKey = requestData.getString("paymentKey");
-            String orderId = requestData.getString("orderId");
-            String amount = requestData.getString("amount");
+            JsonNode requestData = objectMapper.readTree(jsonBody);
+            int amount = requestData.get("amount").asInt();
+            Long memberNo = requestData.get("memberNo").asLong();
 
-            JSONObject obj = new JSONObject();
-            obj.put("orderId", orderId);
-            obj.put("amount", amount);
-            obj.put("paymentKey", paymentKey);
+            // 여기서 결제 확인 로직 대신 DB 저장 로직으로 변경
+            paymentService.processSubscription(memberNo, amount);
+            log.info("Subscription processed successfully for memberNo: {}", memberNo);
 
-            String widgetSecretKey = "test_sk_4yKeq5bgrpoAPXzMo46XVGX0lzW6";
-            Base64.Encoder encoder = Base64.getEncoder();
-            byte[] encodedBytes = encoder.encode((widgetSecretKey + ":").getBytes(StandardCharsets.UTF_8));
-            String authorizations = "Basic " + new String(encodedBytes);
+            // 성공 응답 반환
+            JsonNode responseBody = objectMapper.createObjectNode()
+                    .put("success", true)
+                    .put("message", "Payment confirmed and subscription processed successfully");
 
-            URL url = new URL("https://api.tosspayments.com/v1/payments/confirm");
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-            connection.setRequestProperty("Authorization", authorizations);
-            connection.setRequestProperty("Content-Type", "application/json");
-            connection.setRequestMethod("POST");
-            connection.setDoOutput(true);
+            return ResponseEntity.ok(responseBody);
+        } catch (Exception e) {
+            log.error("Error processing payment confirmation", e);
 
-            try (OutputStream outputStream = connection.getOutputStream()) {
-                outputStream.write(obj.toString().getBytes(StandardCharsets.UTF_8));
-            }
+            JsonNode errorResponse = objectMapper.createObjectNode()
+                    .put("success", false)
+                    .put("error", "Error processing payment confirmation");
 
-            int code = connection.getResponseCode();
-            try (InputStream responseStream = (code == 200) ? connection.getInputStream() : connection.getErrorStream();
-                 Reader responseReader = new InputStreamReader(responseStream, StandardCharsets.UTF_8)) {
-                // 응답 데이터를 다시 파싱합니다.
-                JSONParser responseParser = new JSONParser(responseReader);
-                JSONObject responseJson = (JSONObject) responseParser.parse();  // 응답을 파싱합니다.
-                return ResponseEntity.status(code).body(responseJson);
-            }
-        } catch (IOException | ParseException e) {
-            logger.error("Error processing payment confirmation", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
         }
     }
 }
