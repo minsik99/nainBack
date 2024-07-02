@@ -7,11 +7,13 @@ import io.paioneer.nain.member.model.input.InputMember;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.hibernate.grammars.hql.HqlParser;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
@@ -63,14 +65,20 @@ public class MemberService {
     }
 
 
-
     @Transactional
     public void updateMemberInfo(Long memberNo, MemberDto memberDto) {
         log.info("Updating member info: " + memberDto);
         MemberDto member = memberRepository.findById(memberNo).get().toDto();
-        member.setMemberPwd(memberDto.getMemberPwd());
-        member.setMemberName(memberDto.getMemberName());
+        
+        //변경 할 패스워드 해싱해서 저장처리
+        if(memberDto.getMemberPwd() != null && !memberDto.getMemberPwd().isEmpty()) {
+            String encodedPassword = bCryptPasswordEncoder.encode(memberDto.getMemberPwd());
+            log.info(encodedPassword);
+            member.setMemberPwd(encodedPassword);
+        }
         member.setMemberNickName(memberDto.getMemberNickName());
+        member.setSubscribeYN(memberDto.getSubscribeYN());
+
         memberRepository.save(member.toEntity());
     }
 
@@ -84,6 +92,14 @@ public class MemberService {
     public int emailCount(String memberEmail) {
         return (int)memberRepository.emailCount(memberEmail);
     }
+
+    @Transactional
+    public void deleteMember(Long memberNo) {
+        MemberEntity memberEntity = memberRepository.findById(memberNo).get();
+        memberEntity.setWithDrawalDate(LocalDateTime.now());
+        memberRepository.save(memberEntity);
+    }
+
 }
 
 

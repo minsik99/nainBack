@@ -67,7 +67,6 @@ public class MemberEntity {
         this.signUpDate = LocalDateTime.now();
         this.paymentDate = LocalDateTime.now();
         this.expireDate = LocalDateTime.now();
-        this.withDrawalDate = LocalDateTime.now();
         this.memberUpdate = LocalDateTime.now();
     }
 
