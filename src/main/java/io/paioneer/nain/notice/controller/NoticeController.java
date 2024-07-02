@@ -2,6 +2,7 @@ package io.paioneer.nain.notice.controller;
 
 import com.querydsl.core.types.OrderSpecifier;
 import com.querydsl.core.types.dsl.PathBuilder;
+import io.micrometer.common.util.StringUtils;
 import io.paioneer.nain.common.FileNameChange;
 import io.paioneer.nain.common.Paging;
 import io.paioneer.nain.common.TimeFormater;
@@ -44,6 +45,8 @@ public class NoticeController {
     private final MemberService memberService;
 
     private final JWTUtil jwtUtil;
+    
+    
 
     //정렬순 설정
     private OrderSpecifier<?> getOrderSpecifier(String sort) {
@@ -55,6 +58,9 @@ public class NoticeController {
         };
     };
 
+
+
+    //시간 설정
     private static Date TimeCalculate(){
         LocalDateTime localdateTime = LocalDateTime.now();
         ZoneId zoneId = ZoneId.of("Asia/Seoul");
@@ -62,26 +68,47 @@ public class NoticeController {
         return Date.from(seoulTime.toInstant());
     }
 
-    //전체 목록 출력
     @GetMapping("/list")
-    public ResponseEntity<Map<String, Object>> selectNoticeList(@RequestParam(name = "page")int page,
-                                                           @RequestParam(name = "limit")int limit, @RequestParam(name = "sort", defaultValue ="noticeNo") String sort){
-
-        //페이지에 출력할 목록 조회해 옴 => 응답 처리
+    public ResponseEntity<Map<String, Object>> selectNoticeList(@RequestParam(name = "page") int page,
+                                                                @RequestParam(name = "limit") int limit,
+                                                                @RequestParam(name = "sort", defaultValue = "noticeNo") String sort) {
         log.info("/notice/list?page={}&limit={}&sort={}", page, limit, sort);
-        Pageable pageable = PageRequest.of(page - 1, limit, Sort.by(Sort.Direction.DESC, sort));
-        Paging pg = new Paging(noticeService.countNotice(), page, limit);
-        log.info(pg.toString());
-        pg.calculate();
-        log.info(pg.toString());
-        log.info(pageable.toString());
-        ArrayList<NoticeDto> list = noticeService.selectNoticeList(pageable);
-        log.info(list.toString());
-        Map<String, Object> result = new HashMap();
-        result.put("list", list);
-        result.put("pg", pg);
-        return new ResponseEntity<>(result, HttpStatus.OK);
 
+        // 전체 목록 조회
+        List<NoticeDto> allNotices = noticeService.selectNoticeList(PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, sort)));
+
+        // 삭제되지 않은 공지사항만 추출
+        List<NoticeDto> Notices = new ArrayList<>();
+        List<NoticeDto> importantNotices = new ArrayList<>();
+        for (NoticeDto notice : allNotices) {
+            if (notice.getNoticeDelete() == null) {
+                if (notice.getNoticeImportent() != null && notice.getNoticeImportent().after(new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000))) {
+                    importantNotices.add(0, notice); // 중요 공지사항을 맨 앞에 추가
+                } else {
+                    Notices.add(notice);
+                }
+            }
+        }
+
+        Notices.addAll(0, importantNotices); // 중요 공지사항을 맨 앞에 배치
+
+        // 페이징 처리
+        Paging pg = new Paging(Notices.size(), page, limit);
+        pg.calculate();
+        int start = (page - 1) * limit;
+        int end = Math.min(start + limit, Notices.size());
+        List<NoticeDto> pageList = new ArrayList<>(Notices.subList(start, end));
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("list", pageList);
+        result.put("pg", pg);
+
+        // 삭제된 공지사항이 있는 경우 예외 처리
+        if (allNotices.size() != Notices.size()) {
+            result.put("message", "삭제된 글입니다");
+        }
+
+        return new ResponseEntity<>(result, HttpStatus.OK);
     }
 
     //글 1개 상세보기
@@ -100,7 +127,7 @@ public class NoticeController {
         return new ResponseEntity<>(noticeDto, HttpStatus.OK);
     }
 
-    //파일 불러오기
+    //파일 다운로드
     @GetMapping("/download")
     public ResponseEntity<Resource> downloadNoticeFile(@RequestParam(name = "fileName") String fileName) {
         try {
@@ -223,7 +250,7 @@ public class NoticeController {
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
     
-//    //검색
+//    //검색결과
 //    @GetMapping("/search")
 //    public ResponseEntity<Map<String, Object>> selectSearchNotice(
 //            @RequestParam(name = "keyword") String keyword,
@@ -247,12 +274,24 @@ public class NoticeController {
 //        return new ResponseEntity<>(response, HttpStatus.OK);
 //    }
 
-    //검색결과 목록
+    //검색
     @GetMapping("/search")
     public ResponseEntity<Map> selectSearchNotice(
             @RequestParam(name="keyword") String keyword, @RequestParam(name="type") String type,
             @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="sort", defaultValue ="noticeNo") String sort){
         log.info("/notice/search : keyword: {}, type: {}, page : {}, sort : {}", keyword, type, page, sort);
+
+        // 검색어가 비어있는 경우
+        if (StringUtils.isBlank(keyword)) {
+            Map<String, Object> result = new HashMap<>();
+            result.put("list", Collections.emptyList());
+            Paging pg = new Paging(0, 1, limit);
+            pg.calculate();
+            result.put("pg", pg);
+            log.info("페이지 번호 : {}", pg.toString());
+            return new ResponseEntity<>(result, HttpStatus.OK);
+        }
+
         Pageable pageable = PageRequest.of(page - 1, limit);
         Paging pg = new Paging(noticeService.countSearchNotice(type, keyword, pageable), page, limit);
         pg.calculate();

@@ -1,17 +1,19 @@
 package io.paioneer.nain.notice.jpa.repository;
 
 import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import io.paioneer.nain.notice.jpa.entity.NoticeEntity;
 import io.paioneer.nain.notice.jpa.entity.QNoticeEntity;
 import jakarta.persistence.EntityManager;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Repository;
 
 import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Repository
@@ -62,6 +64,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
                 .fetch();
     }
 
+
     //제목 검색 목록 갯수 조회용
     @Override
     public long countByNoticeTitle(String keyword, Pageable pageable) {
@@ -93,6 +96,34 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
                 .where(notice.memberEntity.memberNickName.like("%" + keyword + "%")
                         .and(notice.noticeDelete.isNull()))
                 .fetchOne();
+    }
+
+    //삭제값 처리
+    @Override
+    public Page<NoticeEntity> findByNoticeDeleteIsNull(Pageable pageable) {
+        List<NoticeEntity> entities = queryFactory
+                .selectFrom(notice)
+                .where(notice.noticeDelete.isNull())
+                .orderBy(notice.noticeNo.desc())
+                .offset(pageable.getOffset())
+                .limit(pageable.getPageSize())
+                .fetch();
+
+        long count = queryFactory
+                .selectFrom(notice)
+                .where(notice.noticeDelete.isNull())
+                .fetchCount();
+
+        return new PageImpl<>(entities, pageable, count);
+    }
+
+    //삭제글 갯수 조회
+    @Override
+    public long countByNoticeDeleteIsNull() {
+        return queryFactory
+                .selectFrom(notice)
+                .where(notice.noticeDelete.isNull())
+                .fetchCount();
     }
     
     //마지막 번호 찾기

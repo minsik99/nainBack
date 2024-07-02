@@ -3,7 +3,6 @@ package io.paioneer.nain.notice.model.service;
 import com.querydsl.core.types.OrderSpecifier;
 import io.paioneer.nain.notice.jpa.entity.NoticeEntity;
 import io.paioneer.nain.notice.jpa.repository.NoticeRepository;
-import io.paioneer.nain.notice.jpa.repository.NoticeRepositoryImpl;
 import io.paioneer.nain.notice.model.dto.NoticeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,10 +12,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -29,15 +24,18 @@ public class NoticeService {
     //게시글 전체 갯수 조회
     public long countNotice() { return noticeRepository.count(); }
 
+
     //전체 목록 출력
     public ArrayList<NoticeDto> selectNoticeList(Pageable pageable) {
-        Page<NoticeEntity> entities = noticeRepository.findAll(pageable);
+        Page<NoticeEntity> entities = noticeRepository.findByNoticeDeleteIsNull(pageable);
         ArrayList<NoticeDto> list = new ArrayList<>();
         for (NoticeEntity entity : entities) {
             list.add(entity.toDto());
         }
         return list;
     }
+
+
 
     public NoticeDto getNotice(Long noticeNo) {
         return noticeRepository.findById(noticeNo).get().toDto();
@@ -145,5 +143,8 @@ public class NoticeService {
         }
         return count;
     }
+
+
+
 }
 
