@@ -18,6 +18,7 @@ import org.springframework.security.config.annotation.authentication.configurati
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -31,7 +32,8 @@ public class SecurityConfig {
     private final JWTUtil jwtUtil;
 
     // 생성자를 통한 의존성 주입으로, 필요한 서비스와 설정을 초기화합니다.
-    public SecurityConfig(MemberService memberService, RefreshService refreshService, AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil) {
+    public SecurityConfig(MemberService memberService, RefreshService refreshService, AuthenticationConfiguration authenticationConfiguration, JWTUtil jwtUtil
+                          ) {
         this.memberService = memberService;
         this.refreshService = refreshService;
         this.authenticationConfiguration = authenticationConfiguration;

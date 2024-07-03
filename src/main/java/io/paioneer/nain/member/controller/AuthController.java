@@ -181,7 +181,7 @@ public class AuthController {
             log.info("회원가입 성공: {}", email);
 
             // 카카오 로그아웃 처리
-            String logoutUrl = "https://kapi.kakao.com/v1/member/logout";
+            String logoutUrl = "https://kapi.kakao.com/v1/user/logout";
             HttpHeaders logoutHeaders = new HttpHeaders();
             logoutHeaders.set("Authorization", "Bearer " + accessToken);
 

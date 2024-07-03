@@ -12,11 +12,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.Date;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping("/api/auth")
@@ -26,12 +29,14 @@ public class MemberController {
     private final MemberService memberService;
     private final JWTUtil jWTUtil;
     private final MemberRepository memberRepository;
+    private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
     @Autowired
-    public MemberController(final MemberService memberService, JWTUtil jWTUtil, MemberRepository memberRepository) {
+    public MemberController(final MemberService memberService, JWTUtil jWTUtil, MemberRepository memberRepository, BCryptPasswordEncoder bCryptPasswordEncoder) {
         this.memberService = memberService;
         this.jWTUtil = jWTUtil;
         this.memberRepository = memberRepository;
+        this.bCryptPasswordEncoder = bCryptPasswordEncoder;
     }
 
     @PostMapping("/member/signup")
@@ -54,6 +59,7 @@ public class MemberController {
             log.info("email count : " + count);
 
             String msg;
+
             if (count > 0) {
                 log.info("있다.");
                 msg = "Email already exists";
@@ -78,19 +84,55 @@ public class MemberController {
         return new ResponseEntity<>(memberDto, HttpStatus.OK);
     }
 
+    //내 정보 페이지 확인(이메일)
+    @PostMapping("/member/myinfoLogin")
+    public ResponseEntity<String> selectMemberByEmail(@RequestParam(name = "memberNo") Long memberNo){
+        log.info(memberNo.toString());
+        MemberDto memberDto = memberService.findById(memberNo);
+        String memberEmail = memberDto.getMemberEmail();
+        log.info(memberDto.toString());
+        return new ResponseEntity<>(memberEmail, HttpStatus.OK);
+    }
+
+
+    //내 정보 페이지 입장 전 정보확인(패스워드)
+    @PostMapping("/member/myinfo/{memberNo}")
+    public ResponseEntity<?> selectmyinfoLogin(@PathVariable Long memberNo, @RequestBody String memberPwd) {
+        log.info("memberPwd" + memberPwd);
+        log.info("memberNo:" + memberNo.toString());
+        MemberDto memberDto = memberService.findById(memberNo);
+
+        String msg;
+        boolean result = bCryptPasswordEncoder.matches(memberPwd, memberDto.getMemberPwd());
+
+        if (result){
+            log.info("확인 코드" + memberPwd);
+            msg = "Success";
+            return ResponseEntity.status(HttpStatus.OK).body(msg);
+        }else{
+            msg = "Invalid password";
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(msg);
+        }
+    }
+
+
+
+
     //내 정보 수정 -------------------------------------------------------------
     @PutMapping("/updateMyinfo/{memberNo}")
     public ResponseEntity<Void> updateMemberInfo(@PathVariable Long memberNo, @RequestBody MemberDto memberDto){
         log.info("Received update request: " + memberDto);
 
         memberService.updateMemberInfo(memberNo, memberDto);
-        return new ResponseEntity<Void>(HttpStatus.OK);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 
+    //회원 탈퇴 ------------------------------------------------------------------------------------
+    @PutMapping("/deletemember/{memberNo}")
+    public ResponseEntity<Void> deleteMember(@PathVariable Long memberNo) {
+        log.info("Received delete request: ");
 
-
-
-
-
-
+        memberService.deleteMember(memberNo);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
