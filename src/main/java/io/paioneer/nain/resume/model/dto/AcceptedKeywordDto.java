@@ -19,6 +19,7 @@ import java.util.Date;
 public class AcceptedKeywordDto {
     private Long keywordNo; // 합격 키워드 번호
     private String jobCategory; // 직무 카테고리
+    private String keywordType; // 키워드 타입 ('직무', '년차')
     private String acceptKeyword; // 합격 키워드
     private Long frequency; // 사용빈도
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM")
@@ -28,6 +29,7 @@ public class AcceptedKeywordDto {
         return AcceptedKeywordEntity.builder()
                 .keywordNo(this.keywordNo)
                 .jobCategory(this.jobCategory)
+                .keywordType(this.keywordType)
                 .acceptKeyword(this.acceptKeyword)
                 .frequency(this.frequency)
                 .referenceDate(this.referenceDate)
