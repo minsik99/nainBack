@@ -11,7 +11,7 @@ COPY . /build
 RUN gradle build -x test --parallel
 
 # 애플리케이션 스테이지
-FROM openjdk:17.0-slim
+FROM openjdk:17-slim
 WORKDIR /app
 
 # 빌더 이미지에서 jar 파일만 복사
