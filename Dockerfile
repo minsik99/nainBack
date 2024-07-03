@@ -15,7 +15,7 @@ FROM openjdk:17-slim
 WORKDIR /app
 
 # 빌더 이미지에서 jar 파일만 복사
-COPY --from=builder /build/build/libs/*.jar app.jar
+COPY --from=builder /build/build/libs/*.war app.wae
 
 EXPOSE 9999
 
@@ -23,8 +23,8 @@ EXPOSE 9999
 USER nobody
 ENTRYPOINT [ \
    "java", \
-   "-jar", \
+   "-war", \
    "-Djava.security.egd=file:/dev/./urandom", \
    "-Dsun.net.inetaddr.ttl=0", \
-   "app.jar" \
+   "app.war" \
 ]
