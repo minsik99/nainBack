@@ -47,8 +47,8 @@ public class InterviewController {
         interviewDto.setMemberDto(loginMember);
         Map result = new HashMap();
         result.put("itvNo", interviewService.insertInterview(interviewDto));
-
         ArrayList list = interviewService.getRandomQuestion(category);
+        log.info(list.toString());
         result.put("question", list);
         return new ResponseEntity<>(result, HttpStatus.OK);
     }

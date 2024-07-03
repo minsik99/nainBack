@@ -20,8 +20,8 @@ import java.util.Date;
 @Table(name = "TB_COMMUNITY_BOARD")
 public class CommunityEntity {
     @Id
-//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COMMUNITY_NO")
-//    @SequenceGenerator(name = "SEQ_COMMUNITY_NO", sequenceName = "SEQ_COMMUNITY_NO", allocationSize = 1)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_COMMUNITY_NO")
+    @SequenceGenerator(name = "SEQ_COMMUNITY_NO", sequenceName = "SEQ_COMMUNITY_NO", allocationSize = 1)
     @Column(name="COMMUNITY_NO", nullable = false)
     private Long communityNo;
 
