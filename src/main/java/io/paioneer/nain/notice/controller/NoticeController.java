@@ -135,7 +135,7 @@ public class NoticeController {
     public ResponseEntity<Resource> downloadNoticeFile(@RequestParam(name = "fileName") String fileName) {
         try {
             log.info("파일명 : {} ", fileName);
-            Path resourcePath = Paths.get("src/main/resources/upload");
+            Path resourcePath = Paths.get("src/main/resources/notice");
             String savePath = resourcePath.toAbsolutePath().toString();
             log.info(savePath);
             String filePath = savePath + File.separator + fileName;
@@ -182,7 +182,7 @@ public class NoticeController {
         log.info("파일 등록 : /notice/{}", file);
 
         if(file != null && !file.isEmpty()) {
-            Path resourcePath = Paths.get("src/main/resources/upload");
+            Path resourcePath = Paths.get("src/main/resources/notice");
             String savePath = resourcePath.toAbsolutePath().toString();
             log.info(savePath);
             File uploadDir = new File(savePath);
@@ -190,6 +190,7 @@ public class NoticeController {
             String fileRename = FileNameChange.change(fileName, "yyyyMMddHHmmss");
             File saveFile = new File(uploadDir, fileRename);
             file.transferTo(saveFile);
+            log.info(fileRename);
             return new ResponseEntity<>(fileRename, HttpStatus.CREATED);
 
         }else{

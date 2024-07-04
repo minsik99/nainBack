@@ -92,9 +92,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         log.info(access, refresh);
         Optional<MemberEntity> memberEntityOptional = memberService.findByMemberEmail(username);
         Long memberNo = 0L;
+        String subscribeYN = null;
         if(memberEntityOptional.isPresent()){
             MemberEntity memberEntity = memberEntityOptional.get();
             memberNo = memberEntity.getMemberNo();
+            subscribeYN = memberEntity.getSubscribeYN();
             RefreshToken refreshToken = RefreshToken.builder()
                     .id(UUID.randomUUID())
                     .status("activated")
@@ -123,6 +125,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("isAdmin", admin);
         responseBody.put("refresh",refresh);
         responseBody.put("memberNo", memberNo);
+        responseBody.put("subscribeYN", subscribeYN);
 
         boolean subscribe = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUBSCRIBE"));
         responseBody.put("subscribe", subscribe);
