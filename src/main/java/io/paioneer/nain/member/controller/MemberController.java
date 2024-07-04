@@ -97,19 +97,25 @@ public class MemberController {
 
     //내 정보 페이지 입장 전 정보확인(패스워드)
     @PostMapping("/member/myinfo/{memberNo}")
-    public ResponseEntity<?> selectmyinfoLogin(@PathVariable Long memberNo, @RequestBody String memberPwd) {
-        log.info("memberPwd" + memberPwd);
+    public ResponseEntity<?> selectmyinfoLogin(@PathVariable Long memberNo, @RequestBody Map<String, String> inputPwd) {
+        log.info("memberPwd" + inputPwd.get("memberPwd"));
         log.info("memberNo:" + memberNo.toString());
         MemberDto memberDto = memberService.findById(memberNo);
+        log.info("memberDto {}", memberDto.toString());
 
         String msg;
-        boolean result = bCryptPasswordEncoder.matches(memberPwd, memberDto.getMemberPwd());
+
+        boolean result = bCryptPasswordEncoder.matches(inputPwd.get("memberPwd"), memberDto.getMemberPwd());
+        log.info("memberDto.getMemberPwd:::::::::::::" + memberDto.getMemberPwd());
+        log.info("memberPwd::::::::::::::" + inputPwd.get("memberPwd"));
+        log.info("result : " + result);
 
         if (result){
-            log.info("확인 코드" + memberPwd);
+            log.info("확인 코드" + inputPwd.get("memberPwd"));
             msg = "Success";
             return ResponseEntity.status(HttpStatus.OK).body(msg);
         }else{
+            log.info("실패" + inputPwd.get("memberPwd"));
             msg = "Invalid password";
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(msg);
         }

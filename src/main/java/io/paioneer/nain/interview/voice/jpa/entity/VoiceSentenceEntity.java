@@ -18,6 +18,8 @@ import lombok.NoArgsConstructor;
 public class VoiceSentenceEntity {
     @Id
     @Column(name="VS_NO", nullable = false)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "SEQ_VOICE_SENTENCE_NO")
+    @SequenceGenerator(name = "SEQ_VOICE_SENTENCE_NO", sequenceName = "SEQ_VOICE_SENTENCE_NO", allocationSize = 1)
     private Long vsNO;
 
     @ManyToOne(fetch=FetchType.LAZY)

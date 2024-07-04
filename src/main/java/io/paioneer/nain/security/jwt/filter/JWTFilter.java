@@ -33,7 +33,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
     // 필터의 주요 로직을 구현하는 메서드입니다.
     @Override
-    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
+    protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+            throws ServletException, IOException {
         // 요청에서 'Authorization' 헤더를 추출합니다.
         String authorization = request.getHeader("Authorization");
 
@@ -98,7 +99,8 @@ public class JWTFilter extends OncePerRequestFilter {
 
         // Spring Security의 Authentication 객체를 생성하고, SecurityContext에 설정합니다.
         // 이로써 해당 요청에 대한 사용자 인증이 완료됩니다.
-        Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails, null, customMemberDetails.getAuthorities());
+        Authentication authToken = new UsernamePasswordAuthenticationToken(customMemberDetails,
+                null, customMemberDetails.getAuthorities());
         SecurityContextHolder.getContext().setAuthentication(authToken);
 
         // 필터 체인을 계속 진행합니다.

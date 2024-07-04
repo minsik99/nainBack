@@ -43,6 +43,7 @@ public class ReissueController {
         try {
             if (jwtUtil.isTokenExpired(token)) {
                 // 리프레시 토큰이 만료되면 데이터베이스에서 삭제합니다.
+                log.info("Refresh token expired");
                 refreshService.deleteByRefresh(token);
                 return new ResponseEntity<>("refresh token expired", HttpStatus.BAD_REQUEST);
             }
@@ -54,9 +55,15 @@ public class ReissueController {
 
         // 리프레시 토큰이 맞는지 카테고리로 확인합니다.
         String category = jwtUtil.getCategoryFromToken(token);
-        if (!category.equals("refresh")) {
+        if (category.equals("access")) {
+            // 엑세스 토큰만 있을 경우 처리 로직
+            log.info("Refresh token update");
+            return handleAccessTokenOnly(token, response);
+        }
+        else if(!category.equals("refresh")) {
             return new ResponseEntity<>("invalid refresh token", HttpStatus.BAD_REQUEST);
         }
+
 
         // 토큰에서 사용자 이메일을 추출합니다.
         String username = jwtUtil.getUserEmailFromToken(token);
@@ -83,12 +90,17 @@ public class ReissueController {
         // 리프레시 토큰의 상태 검증
         RefreshToken refreshToken = refreshTokenOptional.get();
         if (!refreshToken.getStatus().equals("activated")) {
+            log.info("expired refresh token");
             return new ResponseEntity<>("refresh token invalid or expired", HttpStatus.BAD_REQUEST);
         }
 
+        // 리프레시 토큰의 상태를 "used"로 변경
+        refreshToken.setStatus("used");
+        refreshService.save(refreshToken);
+
         // 새로운 액세스 토큰 생성
         // 액세스 토큰의 유효 시간 (밀리초 단위)
-        Long accessExpiredMs = 600000L;
+        Long accessExpiredMs = 3600000L;
         String access = jwtUtil.generateToken(username, "access", accessExpiredMs);
 
         // 응답에 새로운 액세스 토큰 추가
@@ -100,4 +112,28 @@ public class ReissueController {
         // 성공적으로 새 토큰을 발급받았을 때의 응답
         return new ResponseEntity<>(HttpStatus.OK);
     }
+
+    private ResponseEntity<?> handleAccessTokenOnly(String token, HttpServletResponse response) {
+        // 엑세스 토큰에 대한 유효성 검사 및 처리 로직
+        try {
+            if (jwtUtil.isTokenExpired(token)) {
+                return new ResponseEntity<>("access token expired", HttpStatus.UNAUTHORIZED);
+            }
+        } catch (ExpiredJwtException e) {
+            return new ResponseEntity<>("access token expired", HttpStatus.UNAUTHORIZED);
+        }
+
+        String username = jwtUtil.getUserEmailFromToken(token);
+
+        Optional<MemberEntity> userOptional = memberService.findByMemberEmail(username);
+        if (userOptional.isEmpty()) {
+            return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+        }
+
+        // 엑세스 토큰이 유효하다면, 필요한 추가 처리를 진행
+        // 예: 사용자의 세션 갱신 또는 기타 액션
+
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
 }
+
