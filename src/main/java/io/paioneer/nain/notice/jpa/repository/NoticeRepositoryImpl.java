@@ -31,7 +31,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
                 .selectFrom(notice) //selelct * from notice
                 .where(notice.memberEntity.memberNickName.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(notice.noticeDelete.isNull()))
-                .orderBy(entityPath)
+                .orderBy(notice.noticeImportent.desc().nullsLast(), entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -44,7 +44,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
                 .selectFrom(notice) //selelct * from notice
                 .where(notice.noticeContent.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(notice.noticeDelete.isNull()))
-                .orderBy(entityPath)
+                .orderBy(notice.noticeImportent.desc().nullsLast(), entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -58,7 +58,7 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
                 .selectFrom(notice) //selelct * from notice
                 .where(notice.noticeTitle.lower().like("%" + keyword.toLowerCase() + "%")
                 .and(notice.noticeDelete.isNull()))
-                .orderBy(entityPath)
+                .orderBy(notice.noticeImportent.desc().nullsLast(), entityPath)
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();

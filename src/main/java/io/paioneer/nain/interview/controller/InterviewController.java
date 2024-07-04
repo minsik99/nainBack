@@ -3,6 +3,7 @@ package io.paioneer.nain.interview.controller;
 import io.paioneer.nain.interview.jpa.entity.InterviewEntity;
 import io.paioneer.nain.interview.model.dto.InterviewDto;
 import io.paioneer.nain.interview.model.service.InterviewService;
+import io.paioneer.nain.interview.video.model.service.VideoService;
 import io.paioneer.nain.member.model.dto.MemberDto;
 import io.paioneer.nain.member.model.service.MemberService;
 import lombok.RequiredArgsConstructor;
@@ -31,6 +32,7 @@ public class InterviewController {
 
     private final InterviewService interviewService;
     private final MemberService memberService;
+    private final VideoService videoService;
 
     //itvNo 생성을 위한 title, memberNo(memberDto) insert
     //질문 목록 (10개)
@@ -55,7 +57,9 @@ public class InterviewController {
     @GetMapping("/list")
     public ResponseEntity<Page<InterviewDto>> selectInterviewList(@RequestParam(name="page") int page,
                                                                   @RequestParam(name="size") int size, @RequestParam(name="memberNo") String memberNo) {
-        Pageable pageable = PageRequest.of(page, size);
+
+        log.info("page {}", page);
+        Pageable pageable = PageRequest.of(page - 1, size);
         Page<InterviewDto> interview = interviewService.selectInterviewList(Long.parseLong(memberNo), pageable);
         return new ResponseEntity<>(interview, HttpStatus.OK);
     }
@@ -67,5 +71,30 @@ public class InterviewController {
         interviewService.deleteInterview(itvNo);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
+    @GetMapping("/analysis")
+    public ResponseEntity<String> getAnalysis(@RequestParam int score, @RequestParam Long itvNo) {
+        String percentile = interviewService.getPercentile(score);
+        int successRate = interviewService.getSuccess(score);
+        Map<Integer, Double> avgScores = videoService.getAverageScores(itvNo);
+        double totalScore = avgScores.values().stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+        String emotionAnalysis = interviewService.getTotalAnalysis((int)totalScore, score);
+
+        return new ResponseEntity<>(interviewService.getFinalAnalysis(score, percentile, emotionAnalysis, successRate), HttpStatus.OK);
+    }
+    @GetMapping("/totalVoice")
+    public ResponseEntity<Double> getVoiceScore(@RequestParam(name="itvNo") Long itvNo){
+        log.info(itvNo.toString());
+        return new ResponseEntity<>(interviewService.getVoiceScore(itvNo) ,HttpStatus.OK);
+    }
+
+    @GetMapping("/score")
+    public ResponseEntity<Double> getTotalScore(){
+        return new ResponseEntity<>(interviewService.getTotalScore() ,HttpStatus.OK);
+    }
+
 
 }

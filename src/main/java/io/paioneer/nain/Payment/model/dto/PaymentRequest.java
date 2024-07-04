@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class PaymentRequest {
     private String orderId;
-    private String amount;
+    private Long amount;
     private String orderName;
     private String successUrl;
     private String failUrl;

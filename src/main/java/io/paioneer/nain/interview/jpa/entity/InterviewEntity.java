@@ -44,10 +44,10 @@ public class InterviewEntity {
 
 
     @Column(name="VIDEO_SCORE", nullable = false)
-    private int videoScore;
+    private double videoScore;
 
     @Column(name="VOICE_SCORE", nullable = false)
-    private int voiceScore;
+    private double voiceScore;
 
     @Column(name="ITV_DATE", nullable = false)
     private Date itvDate;
@@ -64,7 +64,8 @@ public class InterviewEntity {
         String itvDateInfo = dateFormat.format(this.itvDate);
         return InterviewDto.builder()
                 .itvNo(this.itvNo)
-                .memberNo(this.memberEntity.getMemberNo())
+                .memberDto(this.memberEntity != null ? this.memberEntity.toDto() : null)
+                .memberNo(this.memberEntity != null ? this.memberEntity.getMemberNo() : null)
                 .title(this.title)
                 .videoScore(this.videoScore)
                 .voiceScore(this.voiceScore)

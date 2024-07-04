@@ -30,9 +30,9 @@ public class QInterviewEntity extends EntityPathBase<InterviewEntity> {
 
     public final StringPath title = createString("title");
 
-    public final NumberPath<Integer> videoScore = createNumber("videoScore", Integer.class);
+    public final NumberPath<Double> videoScore = createNumber("videoScore", Double.class);
 
-    public final NumberPath<Integer> voiceScore = createNumber("voiceScore", Integer.class);
+    public final NumberPath<Double> voiceScore = createNumber("voiceScore", Double.class);
 
     public QInterviewEntity(String variable) {
         this(InterviewEntity.class, forVariable(variable), INITS);

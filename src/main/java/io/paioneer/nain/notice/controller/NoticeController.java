@@ -29,6 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -45,16 +46,16 @@ public class NoticeController {
     private final MemberService memberService;
 
     private final JWTUtil jwtUtil;
-    
-    
+
+
 
     //정렬순 설정
     private OrderSpecifier<?> getOrderSpecifier(String sort) {
         PathBuilder<NoticeEntity> entityPath = new PathBuilder<>(NoticeEntity.class, "noticeEntity");
         return switch (sort) {
-            case "oldest" -> entityPath.getString("noticeDate").asc();
+            case "oldest" -> entityPath.getString("noticeNo").asc();
             case "noticeReadCount" -> entityPath.getNumber("noticeReadCount", Long.class).desc();
-            default -> entityPath.getString("noticeDate").desc();
+            default -> entityPath.getString("noticeNo").desc();
         };
     };
 
@@ -68,48 +69,50 @@ public class NoticeController {
         return Date.from(seoulTime.toInstant());
     }
 
-    @GetMapping("/list")
-    public ResponseEntity<Map<String, Object>> selectNoticeList(@RequestParam(name = "page") int page,
-                                                                @RequestParam(name = "limit") int limit,
-                                                                @RequestParam(name = "sort", defaultValue = "noticeNo") String sort) {
-        log.info("/notice/list?page={}&limit={}&sort={}", page, limit, sort);
 
-        // 전체 목록 조회
-        List<NoticeDto> allNotices = noticeService.selectNoticeList(PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, sort)));
-
-        // 삭제되지 않은 공지사항만 추출
-        List<NoticeDto> Notices = new ArrayList<>();
-        List<NoticeDto> importantNotices = new ArrayList<>();
-        for (NoticeDto notice : allNotices) {
-            if (notice.getNoticeDelete() == null) {
-                if (notice.getNoticeImportent() != null && notice.getNoticeImportent().after(new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000))) {
-                    importantNotices.add(0, notice); // 중요 공지사항을 맨 앞에 추가
-                } else {
-                    Notices.add(notice);
-                }
-            }
-        }
-
-        Notices.addAll(0, importantNotices); // 중요 공지사항을 맨 앞에 배치
-
-        // 페이징 처리
-        Paging pg = new Paging(Notices.size(), page, limit);
-        pg.calculate();
-        int start = (page - 1) * limit;
-        int end = Math.min(start + limit, Notices.size());
-        List<NoticeDto> pageList = new ArrayList<>(Notices.subList(start, end));
-
-        Map<String, Object> result = new HashMap<>();
-        result.put("list", pageList);
-        result.put("pg", pg);
-
-        // 삭제된 공지사항이 있는 경우 예외 처리
-        if (allNotices.size() != Notices.size()) {
-            result.put("message", "삭제된 글입니다");
-        }
-
-        return new ResponseEntity<>(result, HttpStatus.OK);
-    }
+//    //전체 목록 조회
+//    @GetMapping("/list")
+//    public ResponseEntity<Map<String, Object>> selectNoticeList(@RequestParam(name = "page") int page,
+//                                                                @RequestParam(name = "limit") int limit,
+//                                                                @RequestParam(name = "sort", defaultValue = "noticeNo") String sort) {
+//        log.info("/notice/list?page={}&limit={}&sort={}", page, limit, sort);
+//
+//        List<NoticeDto> allNotices = noticeService.selectNoticeList(PageRequest.of(0, Integer.MAX_VALUE, Sort.by(Sort.Direction.DESC, sort)));
+//
+//        // 삭제되지 않은 공지사항만 추출
+//        List<NoticeDto> Notices = new ArrayList<>();
+//        List<NoticeDto> importantNotices = new ArrayList<>();
+//        for (NoticeDto notice : allNotices) {
+//            if (notice.getNoticeDelete() == null) {
+//                if (notice.getNoticeImportent() != null && notice.getNoticeImportent().after(new Date(System.currentTimeMillis() - 7 * 24 * 60 * 60 * 1000))) {
+//                    importantNotices.add(0, notice); // 중요 공지사항을 맨 위에 추가
+//                } else {
+//                    Notices.add(notice);
+//                }
+//            }
+//        }
+//
+//        importantNotices.sort((a, b) -> b.getNoticeImportent().compareTo(a.getNoticeImportent()));
+//        Notices.addAll(0, importantNotices); // 중요 공지사항을 맨 앞에 배치
+//
+//        // 페이징 처리
+//        Paging pg = new Paging(Notices.size(), page, limit);
+//        pg.calculate();
+//        int start = (page - 1) * limit;
+//        int end = Math.min(start + limit, Notices.size());
+//        List<NoticeDto> pageList = new ArrayList<>(Notices.subList(start, end));
+//
+//        Map<String, Object> result = new HashMap<>();
+//        result.put("list", pageList);
+//        result.put("pg", pg);
+//
+//        // 삭제된 공지사항이 있는 경우 예외 처리
+//        if (allNotices.size() != Notices.size()) {
+//            result.put("message", "삭제된 글입니다");
+//        }
+//
+//        return new ResponseEntity<>(result, HttpStatus.OK);
+//    }
 
     //글 1개 상세보기
     @GetMapping("/detail")
@@ -150,6 +153,7 @@ public class NoticeController {
         }
     }
 
+
     //등록
     @PostMapping
     public ResponseEntity<Long> insertNotice(HttpServletRequest request, @RequestBody NoticeDto noticeDto) throws IOException{
@@ -165,6 +169,7 @@ public class NoticeController {
 
         noticeDto.setMemberDto(loginMember);
         noticeDto.setNoticeDate(TimeCalculate());
+//        noticeDto.setNoticeImportent();
         log.info("등록 처리된 게시글 정보: {} ", noticeDto);
         Long noticeNo = noticeService.insertNotice(noticeDto);
 
@@ -209,6 +214,7 @@ public class NoticeController {
 
         noticeDto.setMemberDto(loginMember);
         noticeDto.setNoticeModify(TimeCalculate());
+//        noticeDto.setNoticeImportent();
         noticeService.updateNotice(noticeDto);
         return new ResponseEntity<Void>(HttpStatus.NO_CONTENT);
     }
@@ -282,15 +288,16 @@ public class NoticeController {
         log.info("/notice/search : keyword: {}, type: {}, page : {}, sort : {}", keyword, type, page, sort);
 
         // 검색어가 비어있는 경우
-        if (StringUtils.isBlank(keyword)) {
-            Map<String, Object> result = new HashMap<>();
-            result.put("list", Collections.emptyList());
-            Paging pg = new Paging(0, 1, limit);
-            pg.calculate();
-            result.put("pg", pg);
-            log.info("페이지 번호 : {}", pg.toString());
-            return new ResponseEntity<>(result, HttpStatus.OK);
-        }
+//        if (StringUtils.isBlank(keyword)) {
+//            Map<String, Object> result = new HashMap<>();
+//            result.put("list", Collections.emptyList());
+//            Paging pg = new Paging(0, 1, limit);
+//            pg.calculate();
+//            result.put("pg", pg);
+//            log.info("페이지 번호 : {}", pg.toString());
+//            return new ResponseEntity<>(result, HttpStatus.OK);
+//        }
+
 
         Pageable pageable = PageRequest.of(page - 1, limit);
         Paging pg = new Paging(noticeService.countSearchNotice(type, keyword, pageable), page, limit);

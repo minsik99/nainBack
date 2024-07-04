@@ -35,8 +35,6 @@ public class NoticeService {
         return list;
     }
 
-
-
     public NoticeDto getNotice(Long noticeNo) {
         return noticeRepository.findById(noticeNo).get().toDto();
     }
@@ -114,11 +112,12 @@ public class NoticeService {
 
     //검색 목록 조회
     public ArrayList<NoticeDto> selectSearchNotice(String type, String keyword, Pageable pageable, OrderSpecifier entityPath) {
+
         ArrayList<NoticeEntity> entities;
-        if (type.equals("noticeContent")) {
+        if (type.equals("title")) {
             entities = noticeRepository.findBySearchNoticeContent(keyword, pageable, entityPath);
             log.info("keyword : {}, pageable : {}, entityPath : {}", keyword, pageable.toString(), entityPath.toString());
-        } else if (type.equals("noticeWriter")) {
+        } else if (type.equals("writer")) {
             entities = noticeRepository.findBySearchNoticeWriter(keyword, pageable, entityPath);
         } else {
             entities = noticeRepository.findBySearchNoticeTitle(keyword, pageable, entityPath);
@@ -133,7 +132,7 @@ public class NoticeService {
     //검색 목록 개수 조회
     public long countSearchNotice(String type, String keyword, Pageable pageable) {
         long count;
-        if (type.equals("noticeTitle")) {
+        if (type.equals("title")) {
             log.info("service");
             count = noticeRepository.countByNoticeTitle(keyword, pageable);
         } else if (type.equals("writer")) {

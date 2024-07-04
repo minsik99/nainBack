@@ -17,16 +17,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 // Lombok의 @Slf4j 어노테이션을 사용하여 로깅을 간편하게 합니다.
 @Slf4j
@@ -47,6 +48,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         this.refreshService = refreshService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
+
         refreshExpiredMs = 86400000L;
         accessExpiredMs = 600000L;
     }
@@ -59,6 +61,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             // 사용자 이름과 비밀번호를 기반으로 AuthenticationToken을 생성합니다. 이 토큰은 사용자가 제공한 이메일과 비밀번호를 담고 있으며, 이후 인증 과정에서 사용됩니다.
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     loginData.getMemberEmail(), loginData.getMemberPwd());
+            log.info("로그인데이터 이메일 {} ", loginData.getMemberEmail());
+
+            Optional<MemberEntity> member = memberService.findByMemberEmail(loginData.getMemberEmail());
+            boolean exist = member.isPresent();
+            if (exist && member.get().getWithDrawalDate() != null) {
+                log.info("탈퇴일 확인: {}", member.get().getWithDrawalDate());
+                throw new DisabledException("Disabled Account");
+            }
             // AuthenticationManager를 사용하여 실제 인증을 수행합니다. 이 과정에서 사용자의 이메일과 비밀번호가 검증됩니다.
             return authenticationManager.authenticate(authToken);
         } catch (AuthenticationException e) {
@@ -68,6 +78,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             throw new RuntimeException(e);
         }
     }
+
+
 
     // 로그인 성공 시 실행되는 메소드입니다. 인증된 사용자 정보를 바탕으로 JWT를 생성하고, 이를 응답 헤더에 추가합니다.
     @Override
@@ -108,6 +120,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // 여기서 부터 사용자 정보를 응답 바디에 추가하는 코드입니다.
         // 사용자의 권한이나 추가 정보를 JSON 형태로 변환하여 응답 바디에 포함시킬 수 있습니다.
+
+
         boolean admin = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
         Map<String, Object> responseBody = new HashMap<>();
@@ -115,6 +129,15 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("isAdmin", admin);
         responseBody.put("refresh",refresh);
         responseBody.put("memberNo", memberNo);
+
+        boolean subscribe = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUBSCRIBE"));
+        responseBody.put("subscribe", subscribe);
+        customMemberDetails.getAuthorities().forEach(authority -> {
+            log.info("Authority: " + authority.getAuthority());
+        });
+
+
+
         log.info(memberNo.toString());
         log.info("Admin: " + admin);
 
@@ -142,10 +165,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // rootCause를 기반으로 오류 메시지를 설정합니다.
         String message;
-        if (rootCause instanceof UsernameNotFoundException) {
-            message = "존재하지 않는 이메일입니다.";
-        } else if (rootCause instanceof BadCredentialsException) {
-            message = "잘못된 비밀번호입니다.";
+        if (rootCause instanceof UsernameNotFoundException || rootCause instanceof BadCredentialsException) {
+            message = "존재하지 않는 이메일이거나 잘못된 비밀번호 입니다.";
         } else if (rootCause instanceof DisabledException) {
             message = "계정이 비활성화되었습니다.";
         } else if (rootCause instanceof LockedException) {

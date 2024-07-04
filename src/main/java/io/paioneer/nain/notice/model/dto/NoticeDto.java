@@ -24,6 +24,7 @@ public class NoticeDto {
     private Date noticeModify;
     private Date noticeDelete;
     private MemberDto memberDto;
+    private Long memberNo;
     private String noticeFile;
     private String noticeMfile;
     private String noticeContent;

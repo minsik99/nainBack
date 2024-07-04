@@ -12,9 +12,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @RequiredArgsConstructor
@@ -62,6 +65,13 @@ public class ReissueController {
         Optional<MemberEntity> userOptional = memberService.findByMemberEmail(username);
         if (userOptional.isEmpty()) {
             return new ResponseEntity<>("user not found", HttpStatus.NOT_FOUND);
+        }
+
+        String subscribeYN = userOptional.get().getSubscribeYN();
+        List<String> roles = new ArrayList<>();
+        roles.add("ROLE_USER");
+        if ("Y".equalsIgnoreCase(subscribeYN)) {
+            roles.add("ROLE_SUBSCRIBE");
         }
 
         // 리프레시 토큰이 유효한지 확인합니다.

@@ -60,6 +60,7 @@ public class NoticeEntity {
                 .memberDto(memberEntity.toDto())
                 .noticeTitle(noticeTitle)
                 .noticeWriter(memberEntity.getMemberNickName())
+                .memberNo(memberEntity.toDto().getMemberNo())
                 .noticeDate(noticeDate)
                 .noticeModify(noticeModify)
                 .noticeDelete(noticeDelete)

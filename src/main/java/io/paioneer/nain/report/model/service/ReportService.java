@@ -59,7 +59,7 @@ public class ReportService {
                 uniqueReports.put(communityNo, report);
             }
         }
-
+        log.info(uniqueReports.toString());
         return new ArrayList<>(uniqueReports.values());
     }
 
@@ -77,7 +77,6 @@ public class ReportService {
     }
 
     public List<CommentReportCountDto> getCommentReportCountDto() {
-        log.info("getCommentReportCountDto");
         return commentReportRepository.getCommentReportCount();
     }
 
@@ -117,12 +116,13 @@ public class ReportService {
             communityReportRepository.save(rcommunityEntity);
             log.info("rcommunityEntity 저장 성공");
 
+
             BlockMemberEntity blockMemberEntity = new BlockMemberEntity();
-            blockMemberEntity.setMemberNo2(rcommunityEntity.getMemberEntity());
+            blockMemberEntity.setMemberNo2(rcommunityEntity.getCommunityEntity().getMemberEntity());
             blockMemberEntity.setBlockYN("Y");
             blockMemberEntity.setBlockComment(blockReason);
             blockMemberEntity.setBlockDate(new Date());
-            log.info("blockMemberEntity 생성 완료");
+            log.info("blockMemberEntity 생성 완료" + blockMemberEntity);
 
             blockMemberRepository.save(blockMemberEntity);
             log.info("blockMemberEntity 저장 성공");
@@ -161,11 +161,31 @@ public class ReportService {
         commentReportRepository.save(rcommentEntity);
 
         BlockMemberEntity blockMemberEntity = new BlockMemberEntity();
-        blockMemberEntity.setMemberNo2(rcommentEntity.getMemberEntity()); // memberEntity 설정
+        blockMemberEntity.setMemberNo2(rcommentEntity.getCommentEntity().getMemberEntity()); // memberEntity 설정
         blockMemberEntity.setBlockYN("Y");
         blockMemberEntity.setBlockComment(blockReason);
         blockMemberEntity.setBlockDate(new Date());
 
         blockMemberRepository.save(blockMemberEntity);
+    }
+
+    public boolean alreadyReported(Long memberNo, Long communityNo) {
+        boolean history = false;
+        int count = rcommunityRepository.reportHistoryCount(memberNo, communityNo);
+        if(count > 0){
+            history = true;
+        }
+        log.info("history t/f {}, {}", count, history);
+        return history;
+    }
+
+    public boolean alreadyReportedComment(Long memberNo, Long commentNo) {
+        boolean history = false;
+        int count = rcommentRepository.reportCommentHistoryCount(memberNo, commentNo);
+        if(count > 0){
+            history = true;
+        }
+        log.info("history t/f {}, {}", count, history);
+        return history;
     }
 }
