@@ -26,6 +26,9 @@ public class AcceptedKeywordEntity {
     @Column(name="JOB_CATEGORY", nullable = false)
     private String jobCategory; // 직무 카테고리
 
+    @Column(name="KEYWORD_TYPE", nullable = false)
+    private String keywordType; // 키워드 타입 ('직무', '경력')
+
     @Column(name="ACCEPT_KEYWORD", nullable = false)
     private String acceptKeyword; // 합격 키워드
 
@@ -39,6 +42,7 @@ public class AcceptedKeywordEntity {
         return AcceptedKeywordDto.builder()
                 .keywordNo(this.keywordNo)
                 .jobCategory(this.jobCategory)
+                .keywordType(this.keywordType)
                 .acceptKeyword(this.acceptKeyword)
                 .frequency(this.frequency)
                 .referenceDate(this.referenceDate)
