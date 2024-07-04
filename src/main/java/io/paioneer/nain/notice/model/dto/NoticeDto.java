@@ -26,7 +26,7 @@ public class NoticeDto {
     private MemberDto memberDto;
     private Long memberNo;
     private String noticeFile;
-    private String noticeMfile;
+    private String noticeMFile;
     private String noticeContent;
     private Long noticeReadCount;
     private Date noticeImportent;
@@ -40,7 +40,7 @@ public class NoticeDto {
                 .noticeDelete(noticeDelete)
                 .memberEntity(memberDto.toEntity())
                 .noticeFile(noticeFile)
-                .noticeMfile(noticeMfile)
+                .noticeMFile(noticeMFile)
                 .noticeContent(noticeContent)
                 .noticeReadCount(noticeReadCount)
                 .noticeImportent(noticeImportent)

@@ -34,7 +34,7 @@ public class QNoticeEntity extends EntityPathBase<NoticeEntity> {
 
     public final DateTimePath<java.util.Date> noticeImportent = createDateTime("noticeImportent", java.util.Date.class);
 
-    public final StringPath noticeMfile = createString("noticeMfile");
+    public final StringPath noticeMFile = createString("noticeMFile");
 
     public final DateTimePath<java.util.Date> noticeModify = createDateTime("noticeModify", java.util.Date.class);
 

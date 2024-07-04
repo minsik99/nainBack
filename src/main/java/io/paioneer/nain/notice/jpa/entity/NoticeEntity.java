@@ -43,7 +43,7 @@ public class NoticeEntity {
     private String noticeFile;
 
     @Column(name = " NOTICE_MFILE", nullable = false, length = 100)
-    private String noticeMfile;
+    private String noticeMFile;
 
     @Column(name = " NOTICE_CONTENT", nullable = false, length = 1000)
     private String noticeContent;
@@ -65,7 +65,7 @@ public class NoticeEntity {
                 .noticeModify(noticeModify)
                 .noticeDelete(noticeDelete)
                 .noticeFile(noticeFile)
-                .noticeMfile(noticeMfile)
+                .noticeMFile(noticeMFile)
                 .noticeContent(noticeContent)
                 .noticeReadCount(noticeReadCount)
                 .noticeImportent(noticeImportent)
