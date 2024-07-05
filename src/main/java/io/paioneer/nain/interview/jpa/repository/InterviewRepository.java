@@ -14,10 +14,10 @@ public interface InterviewRepository extends JpaRepository<InterviewEntity, Long
     @Query("select i from InterviewEntity i where i.memberEntity.memberNo = :memberNo")
     Page<InterviewEntity> findAllByMemberNo(Long memberNo, Pageable pageable);
 
-    @Query("SELECT COUNT(s) FROM InterviewEntity s WHERE s.videoScore < :score AND s.voiceScore < :score")
+    @Query("SELECT COUNT(s) FROM InterviewEntity s WHERE s.videoScore/2 + s.voiceScore/2  < :score")
     double countScoresLowerThan(@Param("score") double score);
 
-    @Query("SELECT COUNT(s) FROM InterviewEntity s WHERE s.videoScore > :score AND s.voiceScore > :score")
+    @Query("SELECT COUNT(s) FROM InterviewEntity s WHERE s.videoScore/2 + s.voiceScore/2 > :score")
     double countScoresHigherThan(@Param("score") double score);
 
     @Query("SELECT COUNT(s) FROM InterviewEntity s")

@@ -86,7 +86,7 @@ public class InterviewService {
 
     public String getFinalAnalysis(double score, String percentile, String emotionAnalysis, double successRate) {
 
-        return String.format("총점수는 %f 점으로 %s 에 속합니다. 시선및 감정분석결과 %s 이후 면접에서 합격할 확률은 %f%% 로 예상됩니다.",
+        return String.format("총점수는 %.2f 점으로 %s 에 속합니다. 시선및 감정분석결과 %s 이후 면접에서 합격할 확률은 %.2f%% 로 예상됩니다.",
                 score, percentile, emotionAnalysis, successRate);
     }
 
