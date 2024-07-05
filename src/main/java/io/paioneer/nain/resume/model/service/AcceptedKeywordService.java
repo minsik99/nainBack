@@ -22,16 +22,19 @@ public class AcceptedKeywordService {
     @Autowired
     private AcceptedKeywordRepository repository;
 
+    // 직무별 직무 키워드 출력
     public List<AcceptedKeywordDto> getJobKeywordsByCategory(String jobCategory) {
         List<AcceptedKeywordEntity> entities = repository.findTop10JobKeywordsByJobCategory(jobCategory);
         return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    // 직무별 요구 경력 출력
     public List<AcceptedKeywordDto> getExpKeywordsByCategory(String jobCategory) {
         List<AcceptedKeywordEntity> entities = repository.findTop10ExpKeywordsByJobCategory(jobCategory);
         return entities.stream().map(this::convertToDTO).collect(Collectors.toList());
     }
 
+    // 기준 일자 출력
     public Date getLatestReferenceDate(String jobCategory) {
         AcceptedKeywordEntity entity = repository.findFirstByJobCategoryOrderByReferenceDateDesc(jobCategory);
         if (entity != null) {

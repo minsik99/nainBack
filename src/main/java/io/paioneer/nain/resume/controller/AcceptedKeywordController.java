@@ -23,16 +23,19 @@ public class AcceptedKeywordController {
     @Autowired
     private AcceptedKeywordService service;
 
+    // 직무별 직무 키워드 출력
     @GetMapping("/api/jobkeywords")
     public List<AcceptedKeywordDto> getJobKeywords(@RequestParam String jobCategory) {
         return service.getJobKeywordsByCategory(jobCategory);
     }
 
+    // 직무별 요구 경력 출력
     @GetMapping("/api/expkeywords")
     public List<AcceptedKeywordDto> getExpKeywords(@RequestParam String jobCategory) {
         return service.getExpKeywordsByCategory(jobCategory);
     }
 
+    // 기준 일자 출력
     @GetMapping("/api/referenceDate")
     public ResponseEntity<Date> getReferenceDate(@RequestParam String jobCategory) {
         try {
