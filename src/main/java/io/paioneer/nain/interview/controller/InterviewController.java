@@ -75,7 +75,9 @@ public class InterviewController {
     @GetMapping("/analysis")
     public ResponseEntity<String> getAnalysis(@RequestParam double score, @RequestParam Long itvNo) {
         String percentile = interviewService.getPercentile(score);
+        log.info("내 평균에 따른 String {} ", percentile);
         double successRate = interviewService.getSuccess(score);
+        log.info("합격확률 {} ", successRate);
         Map<Integer, Double> avgScores = videoService.getAverageScores(itvNo);
         double totalScore = avgScores.values().stream()
                 .mapToDouble(Double::doubleValue)
