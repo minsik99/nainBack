@@ -53,11 +53,6 @@ public class CommentService {
 
     //댓글 입력
     public void insertComment(CommentDto commentDto) {
-        if(commentRepository.getLastCommentNo() == null) {
-            commentDto.setCommentNo(1L);
-        }else{
-            commentDto.setCommentNo(commentRepository.getLastCommentNo() + 1);
-        }
         commentRepository.save(commentDto.toEntity());
     }
 

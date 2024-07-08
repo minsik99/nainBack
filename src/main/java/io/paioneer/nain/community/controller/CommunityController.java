@@ -88,9 +88,6 @@ public class CommunityController {
             @RequestParam(name="keyword") String keyword, @RequestParam(name="type") String type,
             @RequestParam(name="page") int page, @RequestParam(name="limit") int limit, @RequestParam(name="sort", defaultValue ="communityNo") String sort){
         log.info("/community/search : keyword: {}, type: {}, page : {}, sort : {}", keyword, type, page, sort);
-//        if(keyword == null){
-//            keyword = "";
-//        }
         Pageable pageable = PageRequest.of(page - 1, limit);
         Paging pg = new Paging(communityService.countSearchList(type, keyword, pageable), page, limit);
         pg.calculate();
