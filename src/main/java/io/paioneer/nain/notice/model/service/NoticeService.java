@@ -111,16 +111,17 @@ public class NoticeService {
 //    }
 
     //검색 목록 조회
-    public ArrayList<NoticeDto> selectSearchNotice(String type, String keyword, Pageable pageable, OrderSpecifier entityPath) {
+    public ArrayList<NoticeDto> selectSearchNotice(String type, String keyword, Pageable pageable,
+                                                   OrderSpecifier entityPath) {
 
         ArrayList<NoticeEntity> entities;
         if (type.equals("title")) {
-            entities = noticeRepository.findBySearchNoticeContent(keyword, pageable, entityPath);
+            entities = noticeRepository.findBySearchNoticeTitle(keyword, pageable, entityPath);
             log.info("keyword : {}, pageable : {}, entityPath : {}", keyword, pageable.toString(), entityPath.toString());
         } else if (type.equals("writer")) {
             entities = noticeRepository.findBySearchNoticeWriter(keyword, pageable, entityPath);
         } else {
-            entities = noticeRepository.findBySearchNoticeTitle(keyword, pageable, entityPath);
+            entities = noticeRepository.findBySearchNoticeContent(keyword, pageable, entityPath);
         }
         ArrayList<NoticeDto> list = new ArrayList<>();
         for (NoticeEntity noticeEntity : entities) {

@@ -132,7 +132,8 @@ public class NoticeController {
 
     //파일 다운로드
     @GetMapping("/download")
-    public ResponseEntity<Resource> downloadNoticeFile(@RequestParam(name = "fileName") String fileName) {
+    public ResponseEntity<Resource> downloadNoticeFile(
+            @RequestParam(name = "fileName") String fileName) {
         try {
             log.info("파일명 : {} ", fileName);
             Path resourcePath = Paths.get("src/main/resources/notice");
@@ -222,7 +223,8 @@ public class NoticeController {
 
     //삭제값 입력
     @PutMapping("/del/{noticeNo}")
-    public ResponseEntity<Void> hiddenNotice(HttpServletRequest request, @PathVariable(name="noticeNo") Long noticeNo, @RequestBody NoticeDto noticeDto){
+    public ResponseEntity<Void> hiddenNotice(HttpServletRequest request,
+        @PathVariable(name="noticeNo") Long noticeNo, @RequestBody NoticeDto noticeDto){
         log.info("/delete/{}", noticeDto);
         String token = request.getHeader("Authorization").substring("Bearer ".length());
         Long memberNo = jwtUtil.getMemberNoFromToken(token);
