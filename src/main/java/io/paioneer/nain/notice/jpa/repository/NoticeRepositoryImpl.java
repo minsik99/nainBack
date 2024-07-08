@@ -52,7 +52,8 @@ public class NoticeRepositoryImpl implements NoticeRepositoryCustom {
 
     //제목 검색
     @Override
-    public ArrayList<NoticeEntity> findBySearchNoticeTitle(String keyword, Pageable pageable, OrderSpecifier entityPath) {
+    public ArrayList<NoticeEntity> findBySearchNoticeTitle(String keyword,
+              Pageable pageable, OrderSpecifier entityPath) {
 
         return (ArrayList<NoticeEntity>) queryFactory
                 .selectFrom(notice) //selelct * from notice
