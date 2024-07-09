@@ -64,7 +64,7 @@ public class VideoController {
             double totalScore = avgScores.values().stream()
                     .mapToDouble(Double::doubleValue)
                     .average()
-                    .orElse(1.0);
+                    .orElse(0.0);
             log.info("Total Score: {}", totalScore);
             BigDecimal roundedScore = new BigDecimal(totalScore).setScale(2, RoundingMode.HALF_UP);
             double finalScore = roundedScore.doubleValue();

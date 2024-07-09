@@ -19,45 +19,45 @@ public class MqttConfig {
 
     private final ObjectMapper objectMapper;
 
-//    @Value("${mqtt.broker-url}")
-//    private String brokerUrl;
-//
-//    @Value("${mqtt.websockets-url}")
-//    private String webSocketsUrl;
-//
-//    @Value("${mqtt.client-id}")
-//    private String clientId;
-//
-//    @Value("${mqtt.username}")
-//    private String username;
-//
-//    @Value("${mqtt.password}")
-//    private String password;
-//
-//    @Bean
-//    public MqttPahoClientFactory mqttClientFactory() {
-//        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
-//        MqttConnectOptions options = new MqttConnectOptions();
-//        options.setServerURIs(new String[]{brokerUrl, webSocketsUrl});
-//        options.setUserName(username);
-//        options.setPassword(password.toCharArray());
-//        factory.setConnectionOptions(options);
-//        return factory;
-//    }
-//
-//    @Bean
-//    public MessageChannel mqttInputChannel() {
-//        return new DirectChannel();
-//    }
-//
-//    @Bean
-//    public MqttPahoMessageDrivenChannelAdapter inbound() {
-//        MqttPahoMessageDrivenChannelAdapter adapter =
-//                new MqttPahoMessageDrivenChannelAdapter(clientId, mqttClientFactory(), "chat/messages");
-//        adapter.setCompletionTimeout(5000);
-//        adapter.setConverter(new DefaultPahoMessageConverter());
-//        adapter.setQos(1);
-//        adapter.setOutputChannel(mqttInputChannel());
-//        return adapter;
-//    }
+    @Value("${mqtt.broker-url}")
+    private String brokerUrl;
+
+    @Value("${mqtt.websockets-url}")
+    private String webSocketsUrl;
+
+    @Value("${mqtt.client-id}")
+    private String clientId;
+
+    @Value("${mqtt.username}")
+    private String username;
+
+    @Value("${mqtt.password}")
+    private String password;
+
+    @Bean
+    public MqttPahoClientFactory mqttClientFactory() {
+        DefaultMqttPahoClientFactory factory = new DefaultMqttPahoClientFactory();
+        MqttConnectOptions options = new MqttConnectOptions();
+        options.setServerURIs(new String[]{brokerUrl, webSocketsUrl});
+        options.setUserName(username);
+        options.setPassword(password.toCharArray());
+        factory.setConnectionOptions(options);
+        return factory;
+    }
+
+    @Bean
+    public MessageChannel mqttInputChannel() {
+        return new DirectChannel();
+    }
+
+    @Bean
+    public MqttPahoMessageDrivenChannelAdapter inbound() {
+        MqttPahoMessageDrivenChannelAdapter adapter =
+                new MqttPahoMessageDrivenChannelAdapter(clientId, mqttClientFactory(), "chat/messages");
+        adapter.setCompletionTimeout(5000);
+        adapter.setConverter(new DefaultPahoMessageConverter());
+        adapter.setQos(1);
+        adapter.setOutputChannel(mqttInputChannel());
+        return adapter;
+    }
 }

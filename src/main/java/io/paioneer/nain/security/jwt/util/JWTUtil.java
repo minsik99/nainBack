@@ -27,8 +27,7 @@ public class JWTUtil {
     private final MemberRepository memberRepository;
 
     // 생성자를 통해 application.properties에서 정의된 JWT 비밀키와 만료 시간, UserRepository를 주입받습니다.
-    public JWTUtil(@Value("${jwt.secret}")
-                   String secret, MemberRepository memberRepository) {
+    public JWTUtil(@Value("${jwt.secret}") String secret, MemberRepository memberRepository) {
         // 비밀키를 초기화합니다. 이 비밀키는 JWT의 서명에 사용됩니다.
         this.secretKey = new SecretKeySpec(secret.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
         this.memberRepository = memberRepository; // 사용자 정보를 조회하기 위한 UserRepository 인스턴스를 초기화합니다.
@@ -56,7 +55,6 @@ public class JWTUtil {
                 .claim("subscribe", subscribe)
                 .claim("category",category)
                 .claim("memberNo",memberNo)
-                .setIssuedAt(new Date())
                 .setExpiration(new Date(System.currentTimeMillis() + expiredMs)) // 만료 시간을 설정합니다.
                 .signWith(secretKey, SignatureAlgorithm.HS256) // 비밀키와 HS256 알고리즘으로 JWT를 서명합니다.
                 .compact(); // JWT 문자열을 생성합니다.

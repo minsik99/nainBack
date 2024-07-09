@@ -58,17 +58,14 @@ public class SecurityConfig {
                 // HTTP 요청에 대한 접근 권한을 설정합니다.
                 .authorizeHttpRequests(auth -> auth
 //                        .requestMatchers(HttpMethod.GET, "/staticstical/**", "/report/**", "/usermanager/**", "/adminmanager/**").hasRole("ADMIN")
-                        .requestMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN") // '/notice' 경로에 대한 POST 요청은 ADMIN 역할을 가진 사용자만 가능합니다.
                         .requestMatchers("/interview/**", "/video/**").hasRole("SUBSCRIBE")
                         .requestMatchers(HttpMethod.POST, "/notice").hasRole("ADMIN") // '/notice' 경로에 대한 POST 요청은 ADMIN 역할을 가진 사용자만 가능합니다.
-                        .requestMatchers("/api/auth/member", "/login", "/notice", "/reissue", "/auth/kakao/callback",
-                                "/auth/kakao/signup/callback","/file/view/*","/file/download/*", "/**").permitAll() // 해당 경로들은 인증 없이 접근 가능합니다.
+                        .requestMatchers("/api/auth/member", "/login", "/notice", "/reissue", "/auth/kakao/callback","/auth/kakao/signup/callback","/file/view/*","/file/download/*", "/**").permitAll() // 해당 경로들은 인증 없이 접근 가능합니다.
                         .anyRequest().authenticated()
                 ) // 그 외의 모든 요청은 인증을 요구합니다.
                 // JWTFilter와 LoginFilter를 필터 체인에 등록합니다.
                 .addFilterBefore(new JWTFilter(jwtUtil), LoginFilter.class)
-                .addFilterAt(new LoginFilter(memberService, refreshService, authenticationManager(authenticationConfiguration), jwtUtil),
-                        UsernamePasswordAuthenticationFilter.class)
+                .addFilterAt(new LoginFilter(memberService, refreshService, authenticationManager(authenticationConfiguration), jwtUtil), UsernamePasswordAuthenticationFilter.class)
                 // 로그아웃 처리를 커스터마이징합니다.
                 .logout(logout -> logout
                         .addLogoutHandler(new CustomLogoutHandler(jwtUtil, refreshService, memberService))

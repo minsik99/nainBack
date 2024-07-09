@@ -31,8 +31,7 @@ public class ResumeController {
 
     // 이력서 작성
     @PostMapping("/create")
-    public ResponseEntity<ResumeDto> createResume(HttpServletRequest request,
-                                                  @RequestBody ResumeDto resumeDto) {
+    public ResponseEntity<ResumeDto> createResume(HttpServletRequest request, @RequestBody ResumeDto resumeDto) {
         String token = request.getHeader("Authorization");
         if (token == null || !token.startsWith("Bearer ")) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
