@@ -1,11 +1,17 @@
 package io.paioneer.nain.notice.model.service;
 
-import io.paioneer.nain.notice.jpa.repository.NoticeQueryRepository;
+import com.querydsl.core.types.OrderSpecifier;
+import io.paioneer.nain.notice.jpa.entity.NoticeEntity;
 import io.paioneer.nain.notice.jpa.repository.NoticeRepository;
+import io.paioneer.nain.notice.model.dto.NoticeDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
 
 @Slf4j
 @Service
@@ -13,8 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class NoticeService {
     private final NoticeRepository noticeRepository;
-    private final NoticeQueryRepository noticeQueryRepository;
-
 
 
     //게시글 전체 갯수 조회
@@ -142,5 +146,5 @@ public class NoticeService {
 
 
 
-
 }
+
