@@ -14,7 +14,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/acceptedkeyword")
+@RequestMapping("/api/acceptedkeyword")
 @RequiredArgsConstructor
 public class AcceptedKeywordController {
     @Autowired

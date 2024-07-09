@@ -12,7 +12,7 @@ import java.util.List;
 @CrossOrigin
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/staticstical")
+@RequestMapping("/api/staticstical")
 public class StatisticalController {
     private final StatisticalService statisticalService;
 
