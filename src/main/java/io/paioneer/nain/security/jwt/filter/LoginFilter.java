@@ -17,7 +17,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
@@ -44,8 +46,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         this.refreshService = refreshService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        refreshExpiredMs = 86400000L;
-        accessExpiredMs = 3600000L;
+        refreshExpiredMs = 60000L;
+        accessExpiredMs = 30000L;
     }
 
     @Override
@@ -53,21 +55,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         try {
             // 요청 본문에서 사용자의 로그인 데이터를 InputUser 객체로 변환합니다.
             InputMember loginData = new ObjectMapper().readValue(request.getInputStream(), InputMember.class);
-            // 사용자 이름과 비밀번호를 기반으로 AuthenticationToken을 생성합니다. 이 토큰은 사용자가 제공한 이메일과 비밀번호를 담고 있으며,
-            // 이후 인증 과정에서 사용됩니다.
+            // 사용자 이름과 비밀번호를 기반으로 AuthenticationToken을 생성합니다. 이 토큰은 사용자가 제공한 이메일과 비밀번호를 담고 있으며, 이후 인증 과정에서 사용됩니다.
             UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(
                     loginData.getMemberEmail(), loginData.getMemberPwd());
-            Optional<MemberEntity> member = memberService.findByMemberEmail(loginData.getMemberEmail());
-            boolean exist = member.isPresent();
-            if (exist && member.get().getWithDrawalDate() != null) {
-                log.info("탈퇴일 확인: {}", member.get().getWithDrawalDate());
-                throw new DisabledException("Disabled Account");
-                }
-
-            else{
-                // AuthenticationManager를 사용하여 실제 인증을 수행합니다. 이 과정에서 사용자의 이메일과 비밀번호가 검증됩니다.
-                return authenticationManager.authenticate(authToken);
-            }
+            // AuthenticationManager를 사용하여 실제 인증을 수행합니다. 이 과정에서 사용자의 이메일과 비밀번호가 검증됩니다.
+            return authenticationManager.authenticate(authToken);
         } catch (AuthenticationException e) {
             // 요청 본문을 읽는 과정에서 오류가 발생한 경우, AuthenticationServiceException을 던집니다.
             throw new AuthenticationServiceException("인증 처리 중 오류가 발생했습니다.", e);
@@ -78,8 +70,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
     // 로그인 성공 시 실행되는 메소드입니다. 인증된 사용자 정보를 바탕으로 JWT를 생성하고, 이를 응답 헤더에 추가합니다.
     @Override
-    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response,
-                                            FilterChain chain, Authentication authentication) throws IOException {
+    protected void successfulAuthentication(HttpServletRequest request, HttpServletResponse response, FilterChain chain, Authentication authentication) throws IOException {
         // 인증 객체에서 CustomUserDetails를 추출합니다.
         CustomMemberDetails customMemberDetails = (CustomMemberDetails) authentication.getPrincipal();
 
@@ -87,16 +78,14 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         String username = customMemberDetails.getUsername();
 
         // 사용자 이름을 사용하여 JWT를 생성합니다.
-        String access  = jwtUtil.generateToken(username,"access",accessExpiredMs);    // 30000L;
-        String refresh  = jwtUtil.generateToken(username,"refresh",refreshExpiredMs); // 60000L;
+        String access  = jwtUtil.generateToken(username,"access",accessExpiredMs);
+        String refresh  = jwtUtil.generateToken(username,"refresh",refreshExpiredMs);
         log.info(access, refresh);
         Optional<MemberEntity> memberEntityOptional = memberService.findByMemberEmail(username);
         Long memberNo = 0L;
-        String subscribeYN = null;
         if(memberEntityOptional.isPresent()){
             MemberEntity memberEntity = memberEntityOptional.get();
             memberNo = memberEntity.getMemberNo();
-            subscribeYN = memberEntity.getSubscribeYN();
             RefreshToken refreshToken = RefreshToken.builder()
                     .id(UUID.randomUUID())
                     .status("activated")
@@ -115,8 +104,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         // 클라이언트가 Authorization 헤더를 읽을 수 있도록, 해당 헤더를 노출시킵니다.
         response.setHeader("Access-Control-Expose-Headers", "Authorization");
 
+
         // 여기서 부터 사용자 정보를 응답 바디에 추가하는 코드입니다.
         // 사용자의 권한이나 추가 정보를 JSON 형태로 변환하여 응답 바디에 포함시킬 수 있습니다.
+
 
         boolean admin = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_ADMIN"));
 
@@ -125,7 +116,6 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("isAdmin", admin);
         responseBody.put("refresh",refresh);
         responseBody.put("memberNo", memberNo);
-        responseBody.put("subscribeYN", subscribeYN);
 
         boolean subscribe = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUBSCRIBE"));
         responseBody.put("subscribe", subscribe);
@@ -133,8 +123,11 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
             log.info("Authority: " + authority.getAuthority());
         });
 
+
+
         log.info(memberNo.toString());
         log.info("Admin: " + admin);
+
 
         // ObjectMapper를 사용하여 Map을 JSON 문자열로 변환합니다.
         String responseBodyJson = new ObjectMapper().writeValueAsString(responseBody);
@@ -159,8 +152,10 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
 
         // rootCause를 기반으로 오류 메시지를 설정합니다.
         String message;
-        if (rootCause instanceof UsernameNotFoundException || rootCause instanceof BadCredentialsException) {
-            message = "존재하지 않는 이메일이거나, 잘못된 비밀번호입니다.";
+        if (rootCause instanceof UsernameNotFoundException) {
+            message = "존재하지 않는 이메일입니다.";
+        } else if (rootCause instanceof BadCredentialsException) {
+            message = "잘못된 비밀번호입니다.";
         } else if (rootCause instanceof DisabledException) {
             message = "계정이 비활성화되었습니다.";
         } else if (rootCause instanceof LockedException) {

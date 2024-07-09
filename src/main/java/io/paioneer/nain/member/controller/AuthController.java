@@ -96,9 +96,9 @@ public class AuthController {
             memberEntity.setSnsAccessToken(accessToken);
             memberRepository.save(memberEntity);
             // JWT 토큰 칼급
-            Long accessExpiredMs = 3600000L;
+            Long accessExpiredMs = 30000L;
             String accessTokenJwt = jwtUtil.generateToken(email, "access", accessExpiredMs);
-            Long refreshExpiredMs = 86400000L;
+            Long refreshExpiredMs = 60000L;
             String refreshTokenJwt = jwtUtil.generateToken(email, "refresh", refreshExpiredMs);
 
             RefreshToken refreshToken = RefreshToken.builder()

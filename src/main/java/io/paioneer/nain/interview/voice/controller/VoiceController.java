@@ -2,7 +2,6 @@ package io.paioneer.nain.interview.voice.controller;
 
 
 import io.paioneer.nain.interview.model.dto.QuestionDto;
-import io.paioneer.nain.interview.voice.jpa.entity.VoiceSentenceEntity;
 import io.paioneer.nain.interview.voice.model.dto.VoiceDto;
 import io.paioneer.nain.interview.voice.model.dto.VoiceSentenceDto;
 import io.paioneer.nain.interview.voice.model.service.VoiceService;
@@ -12,7 +11,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,23 +24,21 @@ public class VoiceController {
 
     private final VoiceService voiceService;
 
-    //Voice_시행한 면접 기록_질문 목록
+    //Voice_시행한 면접 기록
     @GetMapping("/questions/{itvNo}")
-    public ResponseEntity<ArrayList<VoiceDto>> selectRecord(@PathVariable(name="itvNo") Long itvNo){
+    public ResponseEntity<Map<String, Object>> selectRecord(@PathVariable(name="itvNo") Long itvNo){
         log.info("면접 번호 {}", itvNo);
         ArrayList<VoiceDto> qnaList = voiceService.selectRecord(itvNo);
-        log.info("질문리스트 {}", qnaList);
-        return new ResponseEntity<>(qnaList,HttpStatus.OK);
-    }
-
-    //Voice_시행한 면접 기록_답변 문장
-    @GetMapping("/answers/{voiceNo}")
-    public ResponseEntity<ArrayList<VoiceSentenceDto>> selectSentence(@PathVariable(name="voiceNo") Long voiceNo){
-        log.info("답변 번호 {}", voiceNo);
-
-        ArrayList<VoiceSentenceDto> answerList = voiceService.selectAnswer(voiceNo);
-        log.info("답변리스트 {}", answerList);
-        return new ResponseEntity<>(answerList,HttpStatus.OK);
+        ArrayList answerList = new ArrayList<>();
+        for(int i=0; i<qnaList.size(); i++){
+            answerList.add(voiceService.selectAnswer(qnaList.get(i).getVoiceNo()));
+        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("qnaList", qnaList);
+        result.put("answerList", answerList);
+        log.info("질문리스트 {}", qnaList.toString());
+        log.info("답변리스트 {}", answerList.toString());
+        return new ResponseEntity<>(result,HttpStatus.OK);
     }
 
 //    //문장 당 분석 내용(Map, 일정 수치만 리턴)

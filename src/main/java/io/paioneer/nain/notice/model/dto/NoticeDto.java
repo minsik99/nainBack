@@ -1,12 +1,12 @@
 package io.paioneer.nain.notice.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import io.paioneer.nain.member.model.dto.MemberDto;
 import io.paioneer.nain.notice.jpa.entity.NoticeEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.springframework.boot.autoconfigure.info.ProjectInfoProperties;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
@@ -17,18 +17,14 @@ import java.util.Date;
 @Builder
 @Component
 public class NoticeDto {
-    private Long noticeNo;
+    private int noticeNo;
     private String noticeTitle;
-    private String noticeWriter;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date noticeDate;
-    private Date noticeModify;
-    private Date noticeDelete;
-    private MemberDto memberDto;
     private Long memberNo;
-    private String noticeFile;
-    private String noticeMFile;
     private String noticeContent;
-    private Long noticeReadCount;
+    private int noticeReadCount;
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private Date noticeImportent;
 
     public NoticeEntity toEntity(){
@@ -36,11 +32,7 @@ public class NoticeDto {
                 .noticeNo(noticeNo)
                 .noticeTitle(noticeTitle)
                 .noticeDate(noticeDate)
-                .noticeModify(noticeModify)
-                .noticeDelete(noticeDelete)
-                .memberEntity(memberDto.toEntity())
-                .noticeFile(noticeFile)
-                .noticeMFile(noticeMFile)
+                .memberNo(memberNo)
                 .noticeContent(noticeContent)
                 .noticeReadCount(noticeReadCount)
                 .noticeImportent(noticeImportent)

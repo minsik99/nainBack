@@ -94,13 +94,9 @@ public class ReissueController {
             return new ResponseEntity<>("refresh token invalid or expired", HttpStatus.BAD_REQUEST);
         }
 
-        // 리프레시 토큰의 상태를 "used"로 변경
-        refreshToken.setStatus("used");
-        refreshService.save(refreshToken);
-
         // 새로운 액세스 토큰 생성
         // 액세스 토큰의 유효 시간 (밀리초 단위)
-        Long accessExpiredMs = 3600000L;
+        Long accessExpiredMs = 30000L;
         String access = jwtUtil.generateToken(username, "access", accessExpiredMs);
 
         // 응답에 새로운 액세스 토큰 추가

@@ -29,7 +29,6 @@ public class VoiceRepositoryImpl implements VoiceRepositoryCustom {
         return new ArrayList<>(queryFactory
                 .selectFrom(voiceEntity)
                 .where(voiceEntity.interviewEntity.itvNo.eq(itvNo))
-                .orderBy(voiceEntity.voiceNo.asc())
                 .fetch());
     }
 

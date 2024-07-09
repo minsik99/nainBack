@@ -1,43 +1,15 @@
 package io.paioneer.nain.notice.controller;
 
-import com.querydsl.core.types.OrderSpecifier;
-import com.querydsl.core.types.dsl.PathBuilder;
-import io.micrometer.common.util.StringUtils;
-import io.paioneer.nain.common.FileNameChange;
-import io.paioneer.nain.common.Paging;
-import io.paioneer.nain.common.TimeFormater;
-import io.paioneer.nain.member.model.dto.MemberDto;
-import io.paioneer.nain.member.model.service.MemberService;
-import io.paioneer.nain.notice.jpa.entity.NoticeEntity;
-import io.paioneer.nain.notice.model.dto.NoticeDto;
 import io.paioneer.nain.notice.model.service.NoticeService;
-import io.paioneer.nain.security.jwt.util.JWTUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.core.io.FileSystemResource;
-import org.springframework.core.io.Resource;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @Slf4j
 @RestController
-@RequestMapping("/notice")
+@RequestMapping("/notices")
 @RequiredArgsConstructor
 @CrossOrigin
 public class NoticeController {

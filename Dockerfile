@@ -1,5 +1,5 @@
 # 빌드 스테이지
-FROM gradle:7.5.1-jdk17-alpine as builder
+FROM gradle:7.5.1-jdk17-alpine AS builder
 WORKDIR /build
 
 # 그래들 파일이 변경되었을 때만 새롭게 의존 패키지 다운로드 받게 함
@@ -15,7 +15,13 @@ FROM openjdk:17-slim
 WORKDIR /app
 
 # 빌더 이미지에서 jar 파일만 복사
-COPY --from=builder /build/build/libs/*.war app.wae
+COPY --from=builder /build/build/libs/*.war app.war
+COPY ./wait-for-it.sh /app/wait-for-it.sh
+
+RUN chmod +x /app/wait-for-it.sh
+
+
+
 
 EXPOSE 9999
 
@@ -23,7 +29,7 @@ EXPOSE 9999
 USER nobody
 ENTRYPOINT [ \
    "java", \
-   "-war", \
+   "-jar", \
    "-Djava.security.egd=file:/dev/./urandom", \
    "-Dsun.net.inetaddr.ttl=0", \
    "app.war" \

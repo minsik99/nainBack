@@ -73,17 +73,15 @@ public class InterviewController {
     }
 
     @GetMapping("/analysis")
-    public ResponseEntity<String> getAnalysis(@RequestParam double score, @RequestParam Long itvNo) {
+    public ResponseEntity<String> getAnalysis(@RequestParam int score, @RequestParam Long itvNo) {
         String percentile = interviewService.getPercentile(score);
-        log.info("내 평균에 따른 String {} ", percentile);
-        double successRate = interviewService.getSuccess(score);
-        log.info("합격확률 {} ", successRate);
+        int successRate = interviewService.getSuccess(score);
         Map<Integer, Double> avgScores = videoService.getAverageScores(itvNo);
         double totalScore = avgScores.values().stream()
                 .mapToDouble(Double::doubleValue)
                 .average()
                 .orElse(0.0);
-        String emotionAnalysis = interviewService.getTotalAnalysis(totalScore, score);
+        String emotionAnalysis = interviewService.getTotalAnalysis((int)totalScore, score);
 
         return new ResponseEntity<>(interviewService.getFinalAnalysis(score, percentile, emotionAnalysis, successRate), HttpStatus.OK);
     }

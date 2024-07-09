@@ -16,7 +16,7 @@ public class ResumeRepositoryImpl implements ResumeRepositoryCustom {
 
     @Override
     public List<ResumeEntity> findResumesByMemberNo(Long memberNo) {
-        // 임시 값 설정
+        // 임시 값 설정 (memberNo 파라미터값 전달 가능 시 주석 예정)
         if (memberNo == null) {
             memberNo = 1L;
         }

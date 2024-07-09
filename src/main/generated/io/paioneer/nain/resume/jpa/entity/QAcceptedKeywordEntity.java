@@ -27,8 +27,6 @@ public class QAcceptedKeywordEntity extends EntityPathBase<AcceptedKeywordEntity
 
     public final NumberPath<Long> keywordNo = createNumber("keywordNo", Long.class);
 
-    public final StringPath keywordType = createString("keywordType");
-
     public final DateTimePath<java.util.Date> referenceDate = createDateTime("referenceDate", java.util.Date.class);
 
     public QAcceptedKeywordEntity(String variable) {

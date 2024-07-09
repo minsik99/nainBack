@@ -43,6 +43,7 @@ public class VoiceService {
             voiceSentenceDto.setPositive(positive);
             voiceSentenceDto.setNegative(negative);
             list.add(voiceSentenceDto);
+            log.info(voiceSentence.toDto().toString());
         }
         return list;
     }
