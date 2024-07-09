@@ -26,7 +26,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth/kakao")
 @Slf4j
 public class AuthController {
 
@@ -38,6 +38,9 @@ public class AuthController {
 
     @Value("${kakao.redirect-signup-uri}")
     private String kakaoRedirectSignupUri;
+
+    @Value("${allowedOrigin}")
+    private String allowedOrigin;
 
     private final MemberRepository memberRepository;
     private final MemberService memberService;
@@ -113,14 +116,14 @@ public class AuthController {
             refreshService.save(refreshToken);
 
             // 로그인 성공 후 URL에 토큰 정보 포함
-            String redirectUrl = String.format("http://localhost:3000/member/success?access=%s&refresh=%s&admin=%s&memberNo=%d",
-                    accessTokenJwt, refreshTokenJwt, memberEntity.getAdmin(), memberEntity.getMemberNo());
+            String redirectUrl = String.format(allowedOrigin + "/member/success?access=%s&refresh=%s&admin=%s&memberNo=%d&subscribeYN=%s",
+                    accessTokenJwt, refreshTokenJwt, memberEntity.getAdmin(), memberEntity.getMemberNo(), memberEntity.getSubscribeYN());
 
             response.sendRedirect(redirectUrl);
             log.info("로그인 성공: {}", email);
         } else {
             log.info("회원가입 필요: {}", email);
-            response.sendRedirect("http://localhost:3000/member");
+            response.sendRedirect(allowedOrigin + "/member");
         }
     }
 
@@ -168,7 +171,8 @@ public class AuthController {
 
         if(optionalMember.isPresent()){
             log.info("이미 등록된 사용자 : {}", email);
-            response.sendRedirect("http://localhost:3000/member");
+            response.sendRedirect("${allowedOrigin}" + "/member");
+
         }else {
             MemberEntity newMemberEntity = new MemberEntity();
             newMemberEntity.setMemberEmail(email);
@@ -189,7 +193,7 @@ public class AuthController {
             ResponseEntity<String> logoutResponse = restTemplate.exchange(logoutUrl, HttpMethod.POST, logoutRequestEntity, String.class);
             log.info("logout response = {}", logoutResponse.getBody());
 
-            response.sendRedirect("http://localhost:3000/member/login");
+            response.sendRedirect(allowedOrigin + "/member/login");
         }
     }
 

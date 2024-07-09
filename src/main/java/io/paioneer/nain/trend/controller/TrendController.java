@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/trends")
+@RequestMapping("/api/trends")
 @CrossOrigin
 public class TrendController {
 }

@@ -21,7 +21,7 @@ import java.util.List;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/report")
+@RequestMapping("/api/report")
 @CrossOrigin
 public class ReportController {
     private final ReportService reportService;

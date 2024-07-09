@@ -11,7 +11,7 @@ import java.util.List;
 
 @Slf4j
 @RestController
-@RequestMapping("/activity")
+@RequestMapping("/api/activity")
 @RequiredArgsConstructor
 public class ActivityController {
     private final ActivityService activityService;

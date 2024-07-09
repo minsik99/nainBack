@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/video")
+@RequestMapping("/api/video")
 @CrossOrigin
 public class VideoController {
 

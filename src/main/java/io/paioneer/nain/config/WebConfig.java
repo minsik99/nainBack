@@ -8,11 +8,13 @@ import org.springframework.beans.factory.annotation.Value;
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
 
+    @Value("${allowedOrigin}")
+    private String allowedOrigin;
 
     @Override
     public void addCorsMappings(CorsRegistry registry) {
         registry.addMapping("/**")
-                .allowedOrigins("http://13.209.244.239:3000")
+                .allowedOrigins(allowedOrigin)
 	        .allowedMethods("GET", "POST", "PUT", "DELETE", "HEAD", "OPTIONS")
                 .allowedHeaders("*")
                 .allowCredentials(true);

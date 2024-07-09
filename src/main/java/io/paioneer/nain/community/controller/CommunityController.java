@@ -43,7 +43,7 @@ import java.util.*;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/community")
+@RequestMapping("/api/community")
 @CrossOrigin
 public class CommunityController {
     private final CommunityService communityService;

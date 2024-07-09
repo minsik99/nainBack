@@ -26,7 +26,7 @@ import java.util.Map;
 @Slf4j
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/interview")
+@RequestMapping("/api/interview")
 @CrossOrigin
 public class InterviewController {
 

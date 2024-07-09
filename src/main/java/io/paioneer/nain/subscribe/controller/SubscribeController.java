@@ -22,7 +22,7 @@ import java.nio.charset.StandardCharsets;
 
 @RestController
 @Slf4j
-@RequestMapping("/subscribe")
+@RequestMapping("/api/subscribe")
 @RequiredArgsConstructor
 public class SubscribeController {
 
