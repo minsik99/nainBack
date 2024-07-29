@@ -84,16 +84,16 @@ public class InterviewService {
         return interviewDto.getVideoScore();
     }
 
-    public String getFinalAnalysis(int score, String percentile, String emotionAnalysis, int successRate) {
+    public String getFinalAnalysis(double score, String percentile, String emotionAnalysis, double successRate) {
 
-        return String.format("총점수는 %d 점으로 %s 에 속합니다. 시선및 감정분석결과 %s 이후 면접에서 합격할 확률은 %d%% 로 예상됩니다.",
+        return String.format("총점수는 %.2f 점으로 %s 에 속합니다. 시선및 감정분석결과 %s 이후 면접에서 합격할 확률은 %.2f%% 로 예상됩니다.",
                 score, percentile, emotionAnalysis, successRate);
     }
 
-    public String getPercentile(int score) {
-        int totalScores = interviewRepository.countTotalScores();
-        int countLowerScores = interviewRepository.countScoresLowerThan(score);
-        int countHigherScores = interviewRepository.countScoresHigherThan(score);
+    public String getPercentile(double score) {
+        double totalScores = interviewRepository.countTotalScores();
+        double countLowerScores = interviewRepository.countScoresLowerThan(score);
+        double countHigherScores = interviewRepository.countScoresHigherThan(score);
 
         if (totalScores == 0) {
             return "총 점수가 없습니다.";
@@ -108,7 +108,7 @@ public class InterviewService {
         }
     }
 
-    public int getSuccess(int score) {
+    public int getSuccess(double score) {
         if (score < 60) {
             return 50;
         } else if (score < 70) {
@@ -122,7 +122,7 @@ public class InterviewService {
         }
     }
 
-    public String getTotalAnalysis(int vscore, int score) {
+    public String getTotalAnalysis(int vscore, double score) {
         if (score <= vscore) {
             if (vscore < 60) {
                 return "기준치 미만으로";

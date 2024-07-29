@@ -46,8 +46,8 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         this.refreshService = refreshService;
         this.authenticationManager = authenticationManager;
         this.jwtUtil = jwtUtil;
-        refreshExpiredMs = 60000L;
-        accessExpiredMs = 30000L;
+        refreshExpiredMs = 86400000L;
+        accessExpiredMs = 360000L;
     }
 
     @Override
@@ -118,7 +118,7 @@ public class LoginFilter extends UsernamePasswordAuthenticationFilter {
         responseBody.put("memberNo", memberNo);
 
         boolean subscribe = customMemberDetails.getAuthorities().contains(new SimpleGrantedAuthority("ROLE_SUBSCRIBE"));
-        responseBody.put("subscribe", subscribe);
+        responseBody.put("isSubscribe", subscribe);
         customMemberDetails.getAuthorities().forEach(authority -> {
             log.info("Authority: " + authority.getAuthority());
         });

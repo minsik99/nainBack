@@ -54,8 +54,8 @@ public class InterviewEntity {
 
     @PrePersist
     protected void onCreate() {
-        this.videoScore = 1;
-        this.voiceScore = 1;
+        this.videoScore = 40.0;
+        this.voiceScore = 40.0;
         this.itvDate = TimeFormater.TimeCalculate();
     }
 

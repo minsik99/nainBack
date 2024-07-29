@@ -73,18 +73,33 @@ public class InterviewController {
     }
 
     @GetMapping("/analysis")
-    public ResponseEntity<String> getAnalysis(@RequestParam int score, @RequestParam Long itvNo) {
+    public ResponseEntity<String> getAnalysis(@RequestParam(name="score") double score, @RequestParam(name="itvNo") Long itvNo) {
+       
         String percentile = interviewService.getPercentile(score);
-        int successRate = interviewService.getSuccess(score);
+        log.info("Calculated percentile: {}", percentile);
+
+        double successRate = interviewService.getSuccess(score);
+        log.info("Calculated success rate: {}", successRate);
+
         Map<Integer, Double> avgScores = videoService.getAverageScores(itvNo);
+        log.info("Retrieved average scores: {}", avgScores);
+
         double totalScore = avgScores.values().stream()
                 .mapToDouble(Double::doubleValue)
                 .average()
-                .orElse(0.0);
-        String emotionAnalysis = interviewService.getTotalAnalysis((int)totalScore, score);
+                .orElse(40.0);
+        log.info("Calculated total score: {}", totalScore);
 
-        return new ResponseEntity<>(interviewService.getFinalAnalysis(score, percentile, emotionAnalysis, successRate), HttpStatus.OK);
+        String emotionAnalysis = interviewService.getTotalAnalysis((int) totalScore, score);
+        log.info("Calculated emotion analysis: {}", emotionAnalysis);
+
+        String finalAnalysis = interviewService.getFinalAnalysis(score, percentile, emotionAnalysis, successRate);
+        log.info("Generated final analysis: {}", finalAnalysis);
+
+        return new ResponseEntity<>(finalAnalysis, HttpStatus.OK);
     }
+
+
     @GetMapping("/totalVoice")
     public ResponseEntity<Double> getVoiceScore(@RequestParam(name="itvNo") Long itvNo){
         log.info(itvNo.toString());
