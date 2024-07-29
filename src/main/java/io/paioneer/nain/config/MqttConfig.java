@@ -53,7 +53,7 @@ public class MqttConfig {
     @Bean
     public MqttPahoMessageDrivenChannelAdapter inbound() {
         MqttPahoMessageDrivenChannelAdapter adapter =
-                new MqttPahoMessageDrivenChannelAdapter(clientId, mqttClientFactory(), "chat/messages");
+                new MqttPahoMessageDrivenChannelAdapter(clientId, mqttClientFactory(), "/ws/chat/messages");
         adapter.setCompletionTimeout(5000);
         adapter.setConverter(new DefaultPahoMessageConverter());
         adapter.setQos(1);

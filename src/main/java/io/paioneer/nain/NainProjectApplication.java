@@ -10,5 +10,5 @@ public class NainProjectApplication {
     public static void main(String[] args) {
         SpringApplication.run(NainProjectApplication.class, args);
     }
-
+    
 }

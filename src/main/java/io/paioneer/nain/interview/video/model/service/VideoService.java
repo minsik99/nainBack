@@ -53,7 +53,8 @@ public class VideoService {
             // Repository 호출 부분
             List<Tuple> videoResults = videoRepository.findVideoScoresByItvNo(itvNo);
             List<Tuple> emotionResults = emotionRepository.findEmotionScoresByItvNo(itvNo);
-
+            log.info("vidoeResults {}", videoResults);
+	    log.info("emotionResults {}", emotionResults);
             // Combined results 초기화
             Map<Integer, List<Double>> combinedResults = new HashMap<>();
 
@@ -75,7 +76,7 @@ public class VideoService {
             // 평균 점수 계산
             Map<Integer, Double> avgScores = new HashMap<>();
             combinedResults.forEach((k, v) -> {
-                double avg = v.stream().mapToDouble(Double::doubleValue).average().orElse(0.0);
+                double avg = v.stream().mapToDouble(Double::doubleValue).average().orElse(40.0);
                 BigDecimal roundedAvg = BigDecimal.valueOf(avg).setScale(2, RoundingMode.HALF_UP); // 소수점 둘째자리까지 반올림
                 avgScores.put(k, roundedAvg.doubleValue());
             });
@@ -83,6 +84,7 @@ public class VideoService {
             log.info("avgScores {} ::::::::::", avgScores.toString());
             return avgScores;
         } catch (Exception e) {
+	    log.info("Error while calculating average scores", e);
             log.error("Error while calculating average scores", e);
             throw e;  // 필요에 따라 예외를 다시 던져 상위 메서드에서 처리
         }

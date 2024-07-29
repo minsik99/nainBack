@@ -46,11 +46,18 @@ public class VideoController {
     }
 
     @GetMapping("/averageScores")
-    public ResponseEntity<Map<Integer, Double>> getAverageScores(@RequestParam(name="itvNo") Long itvNo) {
+    public ResponseEntity<Map<String, Double>> getAverageScores(@RequestParam(name="itvNo") Long itvNo) {
         try {
             log.info("평균 불러오기{}", itvNo);
             Map<Integer, Double> avgScores = videoService.getAverageScores(itvNo);
-            return new ResponseEntity<>(avgScores, HttpStatus.OK);
+            Map<String, Double> stringKeyMap = avgScores.entrySet().stream()
+            .collect(Collectors.toMap(
+                entry -> entry.getKey().toString(),
+                Map.Entry::getValue
+            ));
+
+        log.info("컨트롤러에서 받은 평균 점수: {}", stringKeyMap);
+        return new ResponseEntity<>(stringKeyMap, HttpStatus.OK);
         } catch (Exception e) {
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -60,11 +67,12 @@ public class VideoController {
     public ResponseEntity<Double> getTotalVideo(@RequestParam(name="itvNo") Long itvNo) {
         try {
             Map<Integer, Double> avgScores = videoService.getAverageScores(itvNo);
+	    log.info("평균 {}:", avgScores.toString());
 
             double totalScore = avgScores.values().stream()
                     .mapToDouble(Double::doubleValue)
                     .average()
-                    .orElse(0.0);
+                    .orElse(30.0);
             log.info("Total Score: {}", totalScore);
             BigDecimal roundedScore = new BigDecimal(totalScore).setScale(2, RoundingMode.HALF_UP);
             double finalScore = roundedScore.doubleValue();
@@ -85,6 +93,7 @@ public class VideoController {
             log.info("controller memberDot{}", interviewDto);
             return new ResponseEntity<>(interviewService.updateVideoScore(interviewDto), HttpStatus.OK);
         } catch (Exception e) {
+	    log.info("Error occurred while processing totalVideo request");
             log.error("Error occurred while update TotalVideo request", e);
             return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
         }
