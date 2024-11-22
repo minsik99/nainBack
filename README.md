@@ -1,23 +1,23 @@
-# nain
+### 프로젝트 이름 : Nain (2024.06 ~ 2024.07)
 
-# 커밋 앤 푸쉬 코멘트 Rule
-
-- 커밋
-   커밋제목은 영어로 통일
-   변경사항이 있는 경우 매 시간마다 커밋 권장.
-   코멘트 몰아서 달지 않도록 작업한 뭉치마다 커밋 권장.
-
-- 작성 내용
-   1. 무엇을 (파일이름)
-   2. 어떻게 (추가, 수정, 삭제)
-   3. 내용 : 이유, 도출된 결과
-   4. 참고사항 : 별도 학습 내용, 참고 링크
-
-   타이틀명 Insert | Update | Delete 파일명
--  기능이 여러개 존재시 커밋 따로 권장
--  ex member 패키지안 Member.java memberNo 수정시
-   ex. Update Member.java memberNo String > Long
--  내용 : Update Member.java memberNo String > Long
--  Member fin
-   CommunityController 게시글 작성, 게시글 수정 메소드 새로 추가하였음. Service 및 Repository 에 관련 내용 추가 필요.
-   게시글 작성시 파일 업로드 부분에 대한 내용이 미흡하여 서치하여 참고하였음. (https://velog.io/@gun_123/java-%ED%8C%8C%EC%9D%BC-%EC%97%85%EB%A1%9C%EB%93%9C-%EC%B2%98%EB%A6%AC)
+- 프로젝트 소개
+    - 사용자의 직무에 따른 모의 면접 환경 제공
+    - 이력서 합격 키워드를 제공하여 코칭 제공
+    - 취준생들을 위한 채팅과 Board기반 커뮤니티 서비스 제공
+- 참여 인원
+    - FE 4명, BE 3명
+- 사용 스킬 : JavaScript, React, Java 17, SpringBoot, Oracle 18c, JPA, Mosquitto, Python 3, Flask
+- 담당 역할
+    - 이력서 합격률을 높이기 위한 최신 IT 뉴스 검색 페이지
+        - 빠른 검색을 위해 Flask로 서버 분리
+        - 파이썬의 Beautiful Soup를 활용하여 **정적 크롤링**으로 구현
+        - UI/UX를 고려하여 Infinite Scroll 기능 추가
+        - 리액트의 react-intersection-observer을 활용하여 **무한 스크롤** 구현
+    - 유저간 소통을 위한 실시간 채팅 서비스 구현
+        - **MQTT** 를 통한 경량화된 채팅 서비스 구현
+- 트러블 슈팅
+    - WebSocket 사용에 따른 리소스와 트래픽 이슈
+        - 텍스트 기반 채팅을 위한 WebSocket이 많은 리소스 소모와 트래픽 지연 발생시킴
+    - 해결 방안
+        - Flask로 메시지 구독과 발행만 담당하는 서버 분리
+        - **Mosquitto**를 활용하여 **서버 리소스 30% 및 네트워크 트래픽 50% 감소**
